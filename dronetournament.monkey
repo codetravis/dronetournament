@@ -8,14 +8,16 @@ Const SCREEN_HEIGHT:Int = 480
 Class Vec2D
 	Field x:Float
 	Field y:Float
+	Field heading:Float
 	
-	Method New(x:Float=0, y:Float=0)
-		Set(x,y)
+	Method New(x:Float=0, y:Float=0, h:Float=0)
+		Set(x,y,h)
 	End
 	
-	Method Set(x:Float, y:Float)
+	Method Set(x:Float, y:Float, h:Float=0)
 		Self.x = x
 		Self.y = y
+		Self.heading = h
 	End
 End
 
@@ -24,32 +26,55 @@ Class Player
 	Field velocity:Vec2D
 	Field control:ControlPoint
 	Field maxVelocity:Float
+	Field minVelocity:Float
 	Field maxRotation:Float
 	Field moveXPoints:FloatDeque
 	Field moveYPoints:FloatDeque
 	Field Points:Deque<Vec2D>
 	Field heading:Float
+	Field friendly:Int
+	Field maxEnergy:Float
+	Field currentEnergy:Float
+	Field chargeEnergy:Float
 
-	Method New(x:Float, y:Float, initial_heading:Float, max_velocity_limit:Float, rotationLimit:Float)
+	Method New(x:Float, y:Float, initial_heading:Float, max_velocity_limit:Float, rotationLimit:Float, isfriendly:Int)
 		position = New Vec2D(x, y)
-		control = New ControlPoint(x + max_velocity_limit, y)
+		control = New ControlPoint(x + max_velocity_limit, y, 5, 5)
 		maxVelocity = max_velocity_limit
+		minVelocity = maxVelocity * 0.5
 		maxRotation = rotationLimit
 		heading = initial_heading
 		velocity = New Vec2D(maxVelocity * Cosr(heading * (PI/180)), maxVelocity * Sinr(heading * (PI/180)))
-		SetControl(velocity.x, velocity.y)
+		SetControl(velocity.x, velocity.y, SCREEN_WIDTH, SCREEN_HEIGHT)
+		friendly = isfriendly
+		maxEnergy = 100.0
+		currentEnergy = 0.0
+		chargeEnergy = 5.0
 	End
 
 	Method DrawStatic()
-		SetColor(128, 255, 128)
+		If (friendly)
+			SetColor(128, 255, 128)
+		Else
+			SetColor(255, 128, 128)
+		End
 		DrawRect(position.x, position.y, 15, 15)
 		control.Draw()
 		For Local i:Int = 0 Until Points.Length - 1
-			SetColor(255, 255, 255)
+			If ((currentEnergy + i * chargeEnergy) Mod 100 = 0)
+				SetColor(100, 100, 255)
+			Else
+				SetColor(255, 255, 255)
+			End
 			Local this_point:Vec2D = Points.Get(i)
 			DrawPoint(this_point.x, this_point.y)
 		End
-		SetColor(0, 255, 0)
+		If (friendly)
+			SetColor(0, 255, 0)
+			DrawText(heading, 0, 0)
+		Else
+			SetColor(255, 0, 0)
+		End
 		DrawLine(position.x, position.y, position.x + velocity.x, position.y + velocity.y)
 	End
 	
@@ -59,74 +84,141 @@ Class Player
 		heading = ATan2((next_point.y - position.y), (next_point.x - position.x))
 		velocity.Set(maxVelocity * Cosr(heading * (PI/180)), maxVelocity * Sinr(heading * (PI/180)))
 		position = next_point
+		currentEnergy = Min(100.0, currentEnergy + chargeEnergy)
+	End
+
+
+	Method ControlSelected(click_x:Float, click_y:Float)
+		If (control.selected)
+			Return True
+		Else If ((click_x >= control.position.x) And
+			(click_x <= (control.position.x + control.width)) And
+			(click_y >= control.position.y) And
+			(click_y <= (control.position.y + control.height)))
+			control.selected = True
+			Return True
+		Else
+			Return False
+		End
 	End
 	
-	Method SetControl(click_x:Float, click_y:Float)
-
+	Method ControlReleased()
+		control.selected = False
+	End
+	
+	Method SetControl(click_x:Float, click_y:Float, map_width:Float, map_height:Float)
 		Local goal_angle = ATan2((click_y - position.y), (click_x - position.x))
-		Local start_angle = heading
-		Local control_pos:Vec2D = New Vec2D(position.x, position.y)
+		Local start_angle = Self.heading
+		Local control_pos:Vec2D = New Vec2D(position.x, position.y, Self.heading)
 		Points = New Deque<Vec2D>
 		
 		For Local i:Int = 0 Until 30
 			control_pos = NewPoint(control_pos, start_angle, goal_angle, maxRotation, maxVelocity/30.0)
-			If (start_angle > goal_angle)
-				start_angle = start_angle - maxRotation
-			Else If (start_angle < goal_angle)
-				start_angle = start_angle + maxRotation
-			End
+			start_angle = control_pos.heading
 			goal_angle = ATan2((click_y - control_pos.y), (click_x - control_pos.x))
 			Points.PushLast(control_pos)
 		End
+		
+		If (control_pos.x > map_width)
+			control_pos.x = map_width - 10
+		Else If (control_pos.x < 0)
+			control_pos.x = 10
+		End
+		
+		If (control_pos.y > map_height)
+			control_pos.y = map_height - 10
+		Else If (control_pos.y < 0)
+			control_pos.y = 10
+		End
+		
 		control.position.Set(control_pos.x, control_pos.y)
+	End
+	
+	Method FireWeapon()
+		currentEnergy = 0
 	End
 End
 
 Class ControlPoint
 	Field position:Vec2D
+	Field width:Float
+	Field height:Float
+	Field selected:Bool
 
-	Method New(x:Float, y:Float)
+	Method New(x:Float, y:Float, w:Float, h:Float)
 		position = New Vec2D(x, y)
+		width = w
+		height = h
+		selected = False
 	End
 	
 	Method Draw()
 		SetColor(255, 128, 128)
-		DrawRect(position.x, position.y, 5, 5)
+		DrawRect(position.x, position.y, width, height)
 	End
 	
 End
 
-Function CubicHermite:FloatDeque (start_point:Float, end_point:Float, start_velocity:Float, end_velocity:Float)
-	Local pathPoints:FloatDeque = New FloatDeque
-	Local division:Float = 30.0
+
+Class Particle
+	Field position:Vec2D
+	Field size:Float
+	Field power:Float
+	Field speed:Float
+	Field angle:Float
+	Field lifetime:Int
 	
-	For Local i:Int = 0 Until division
-		Local t:Float = (Float(i)/division)
-		Local t_square:Float = t * t
-		Local t_cube:Float = t_square * t
-		
-		Local a:Float = 2*t_cube - 3*t_square + 1
-		Local b:Float = -2*t_cube + 3*t_square
-		Local c:Float = t_cube - 2*t_square + t
-		Local d:Float = t_cube - t_square 
-		
-		Local point:Float = a * start_point + b * end_point + c * start_velocity + d * end_velocity
-		pathPoints.PushLast(point)
-		
+	Method New(pos:Vec2D, si:Float, pow:Float, ang:Float, sp:Float)
+		position = pos
+		size = si
+		power = pow
+		speed = sp
+		angle = ang
+		lifetime = 30
 	End
-	Return pathPoints
+	
+	Method Draw()
+		SetColor(0, 0, 255)
+		DrawCircle(position.x - size, position.y - size, size)
+	End
+	
+	Method Update()
+		position.Set(position.x + speed * Cosr(angle * (PI/180)), position.y + speed * Sinr(angle * (PI/180)))
+		lifetime = lifetime - 1
+	End
+	
 End
 
 Function NewPoint:Vec2D (start_point:Vec2D, start_angle:Float, goal_angle:Float, max_angle_change:Float, distance:Float)
 
 	Local new_angle:Float
-	If (start_angle > goal_angle)
-		new_angle = start_angle - max_angle_change
-	Else If (start_angle < goal_angle)
-		new_angle = start_angle + max_angle_change
+	If ((start_angle >= 0 And goal_angle >= 0) Or (start_angle < 0 And goal_angle < 0))
+		If (start_angle > goal_angle)
+			new_angle = start_angle - Min((start_angle - goal_angle), max_angle_change)
+		Else If (start_angle < goal_angle)
+			new_angle = start_angle + Min((goal_angle - start_angle), max_angle_change)
+		Else
+			new_angle = start_angle
+		End
+	Else If (start_angle >= 0 And goal_angle < 0)
+		If (start_angle - goal_angle > 180)
+			new_angle = start_angle + max_angle_change
+		Else
+			new_angle = start_angle - Min((start_angle - goal_angle), max_angle_change)
+		End
+	Else If (start_angle < 0 And goal_angle >= 0)
+		If (goal_angle - start_angle > 180)
+			new_angle = start_angle - max_angle_change
+		Else
+			new_angle = start_angle + Min((goal_angle - start_angle), max_angle_change)
+		End	
 	End
 
-	Return New Vec2D(start_point.x + distance * Cosr(new_angle * (PI/180)), start_point.y + distance * Sinr(new_angle * (PI/180)))
+	If (Abs(new_angle - start_angle) > max_angle_change)
+		Print("Something went wrong -- New Angle: " + new_angle + " Start Angle: " + start_angle)
+	End
+
+	Return New Vec2D(start_point.x + distance * Cosr(new_angle * (PI/180)), start_point.y + distance * Sinr(new_angle * (PI/180)), new_angle)
 
 End
 
