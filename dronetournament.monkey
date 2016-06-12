@@ -36,20 +36,22 @@ Class Player
 	Field maxEnergy:Float
 	Field currentEnergy:Float
 	Field chargeEnergy:Float
+	Field armor:Int
 
-	Method New(x:Float, y:Float, initial_heading:Float, max_velocity_limit:Float, rotationLimit:Float, isfriendly:Int)
-		position = New Vec2D(x, y)
-		control = New ControlPoint(x + max_velocity_limit, y, 5, 5)
-		maxVelocity = max_velocity_limit
-		minVelocity = maxVelocity * 0.5
-		maxRotation = rotationLimit
-		heading = initial_heading
-		velocity = New Vec2D(maxVelocity * Cosr(heading * (PI/180)), maxVelocity * Sinr(heading * (PI/180)))
-		SetControl(velocity.x, velocity.y, SCREEN_WIDTH, SCREEN_HEIGHT)
-		friendly = isfriendly
-		maxEnergy = 100.0
-		currentEnergy = 0.0
-		chargeEnergy = 5.0
+	Method New(x:Float, y:Float, initial_heading:Float, max_velocity_limit:Float, rotationLimit:Float, armor:Int, isfriendly:Int)
+		Self.position = New Vec2D(x, y)
+		Self.control = New ControlPoint(x + max_velocity_limit, y, 10, 10)
+		Self.maxVelocity = max_velocity_limit
+		Self.minVelocity = maxVelocity * 0.5
+		Self.maxRotation = rotationLimit
+		Self.heading = initial_heading
+		Self.velocity = New Vec2D(maxVelocity * Cosr(heading * (PI/180)), maxVelocity * Sinr(heading * (PI/180)))
+		Self.SetControl(velocity.x, velocity.y, SCREEN_WIDTH, SCREEN_HEIGHT)
+		Self.friendly = isfriendly
+		Self.maxEnergy = 100.0
+		Self.currentEnergy = 0.0
+		Self.chargeEnergy = 5.0
+		Self.armor = armor
 	End
 
 	Method DrawStatic()
@@ -91,9 +93,9 @@ Class Player
 	Method ControlSelected(click_x:Float, click_y:Float)
 		If (control.selected)
 			Return True
-		Else If ((click_x >= control.position.x) And
+		Else If ((click_x >= control.position.x - control.width) And
 			(click_x <= (control.position.x + control.width)) And
-			(click_y >= control.position.y) And
+			(click_y >= control.position.y - control.width) And
 			(click_y <= (control.position.y + control.height)))
 			control.selected = True
 			Return True
@@ -137,6 +139,10 @@ Class Player
 	Method FireWeapon()
 		currentEnergy = 0
 	End
+	
+	Method TakeDamage()
+		Self.armor = Self.armor - 1
+	End
 End
 
 Class ControlPoint
@@ -153,7 +159,7 @@ Class ControlPoint
 	End
 	
 	Method Draw()
-		SetColor(255, 128, 128)
+		SetColor(255, 255, 128)
 		DrawRect(position.x, position.y, width, height)
 	End
 	
@@ -162,27 +168,35 @@ End
 
 Class Particle
 	Field position:Vec2D
+	Field past_position:Vec2D
 	Field size:Float
 	Field power:Float
 	Field speed:Float
 	Field angle:Float
 	Field lifetime:Int
+	Field friendly:Int
 	
-	Method New(pos:Vec2D, si:Float, pow:Float, ang:Float, sp:Float)
-		position = pos
-		size = si
-		power = pow
-		speed = sp
-		angle = ang
-		lifetime = 30
+	Method New(pos:Vec2D, si:Float, pow:Float, ang:Float, sp:Float, friendly:Int)
+		Self.position = New Vec2D(pos.x, pos.y)
+		Self.past_position = New Vec2D(pos.x, pos.y)
+		Self.size = si
+		Self.power = pow
+		Self.speed = sp
+		Self.angle = ang
+		Self.lifetime = 30
+		Self.friendly = friendly
 	End
 	
 	Method Draw()
 		SetColor(0, 0, 255)
 		DrawCircle(position.x - size, position.y - size, size)
+		DrawLine(past_position.x, past_position.y, position.x, position.y)
 	End
 	
 	Method Update()
+		Local posx:Float = position.x
+		Local posy:Float = position.y
+		past_position.Set(posx, posy)
 		position.Set(position.x + speed * Cosr(angle * (PI/180)), position.y + speed * Sinr(angle * (PI/180)))
 		lifetime = lifetime - 1
 	End
