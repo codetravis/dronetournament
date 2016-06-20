@@ -37,8 +37,9 @@ Class Player
 	Field currentEnergy:Float
 	Field chargeEnergy:Float
 	Field armor:Int
+	Field drone_image:Image
 
-	Method New(x:Float, y:Float, initial_heading:Float, max_velocity_limit:Float, rotationLimit:Float, armor:Int, isfriendly:Int)
+	Method New(x:Float, y:Float, initial_heading:Float, max_velocity_limit:Float, rotationLimit:Float, armor:Int, drone_image:Image, isfriendly:Int)
 		Self.position = New Vec2D(x, y)
 		Self.control = New ControlPoint(x + max_velocity_limit, y, 10, 10)
 		Self.maxVelocity = max_velocity_limit
@@ -52,6 +53,7 @@ Class Player
 		Self.currentEnergy = 0.0
 		Self.chargeEnergy = 5.0
 		Self.armor = armor
+		Self.drone_image = drone_image
 	End
 
 	Method DrawStatic()
@@ -60,24 +62,23 @@ Class Player
 		Else
 			SetColor(255, 128, 128)
 		End
-		DrawRect(position.x, position.y, 15, 15)
-		control.Draw()
-		For Local i:Int = 0 Until Points.Length - 1
-			If ((currentEnergy + i * chargeEnergy) Mod 100 = 0)
-				SetColor(100, 100, 255)
-			Else
-				SetColor(255, 255, 255)
+		
+		DrawImage(Self.drone_image, position.x, position.y, -heading, 1, 1)
+		DrawRect(position.x - 10, position.y - 10, 20, 20)
+
+		If (Self.friendly = 1)
+			control.Draw()
+
+			For Local i:Int = 0 Until Points.Length - 1
+				If ((currentEnergy + i * chargeEnergy) Mod 100 = 0)
+					SetColor(100, 100, 255)
+				Else
+					SetColor(255, 255, 255)
+				End
+				Local this_point:Vec2D = Points.Get(i)
+				DrawPoint(this_point.x, this_point.y)
 			End
-			Local this_point:Vec2D = Points.Get(i)
-			DrawPoint(this_point.x, this_point.y)
 		End
-		If (friendly)
-			SetColor(0, 255, 0)
-			DrawText(heading, 0, 0)
-		Else
-			SetColor(255, 0, 0)
-		End
-		DrawLine(position.x, position.y, position.x + velocity.x, position.y + velocity.y)
 	End
 	
 	Method Update()
@@ -177,6 +178,8 @@ Class Particle
 	Field friendly:Int
 	
 	Method New(pos:Vec2D, si:Float, pow:Float, ang:Float, sp:Float, friendly:Int)
+		Local newx = pos.x + 10 * Cosr(ang * (PI/180))
+		Local newy = pos.y + 10 * Sinr(ang * (PI/180))
 		Self.position = New Vec2D(pos.x, pos.y)
 		Self.past_position = New Vec2D(pos.x, pos.y)
 		Self.size = si
@@ -188,7 +191,8 @@ Class Particle
 	End
 	
 	Method Draw()
-		SetColor(0, 0, 255)
+		
+		SetColor(255 * friendly, 0, 255)
 		DrawCircle(position.x - size, position.y - size, size)
 		DrawLine(past_position.x, past_position.y, position.x, position.y)
 	End

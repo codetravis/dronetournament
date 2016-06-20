@@ -9,32 +9,46 @@ Class DroneTournamentGame Extends App
 	Field particles:List<Particle>
 	Field game_state:String
 	Field play_button:Image
+	Field win_button:Image
+	Field lose_button:Image
+	Field t_fighter_img:Image
 
 	Method OnCreate()
 		Print "Creating Game"
 		game_state = "menu"
-		SetUpdateRate(60)
-		opponents = New List<Player>()
-		player = New Player(150.0, 150.0, -30, 120, 4, 3, 1)
-		For Local i:Int = 0 To 3
-			Local xrand:Float = Rnd(200, 580)
-			Local yrand:Float = Rnd(200, 420)
-			Local opponent:Player = New Player(xrand, yrand, 30, 100, 3, 3, 0)
-			opponents.AddLast(opponent)
-		End
-		moves = 0
-		particles = New List<Particle>()
-		play_button = LoadImage("images/Play_Button.png")
+		SetUpdateRate(30)
+		
+		play_button = LoadImage("images/play_button.png")
+		win_button = LoadImage("images/win_button.png")
+		lose_button = LoadImage("images/lose_button.png")
+		t_fighter_img = LoadImage("images/t_fighter.png", 1, Image.MidHandle)
+		
+		
+		
 	End	
 	
 	Method OnUpdate()
 		If (game_state = "menu")
 			If (TouchDown(0))
+				opponents = New List<Player>()
+				player = New Player(150.0, 150.0, -30, 120, 4, 3, t_fighter_img, 1)
+				For Local i:Int = 0 To 3
+					Local xrand:Float = Rnd(200, 580)
+					Local yrand:Float = Rnd(200, 420)
+					Local opponent:Player = New Player(xrand, yrand, 30, 100, 3, 3, t_fighter_img, 0)
+				opponents.AddLast(opponent)
+				End
+				moves = 0
+				particles = New List<Particle>()
 				game_state = "tutorial"
 			End
 		Else If (game_state = "tutorial")
 			If (moves < 1)
-				If (TouchDown(0))
+				If (player.armor < 1)
+					game_state = "loser"
+				Else If (LiveOpponentCount(opponents) = 0)
+					game_state = "winner"
+				Else If (TouchDown(0))
 					If (player.ControlSelected(TouchX(0), TouchY(0)))
 						player.SetControl(TouchX(0), TouchY(0), 640, 480)
 					End
@@ -52,7 +66,13 @@ Class DroneTournamentGame Extends App
 				End
 			Else
 				For Local enemy:Player = Eachin opponents
-					enemy.Update()
+					If (enemy.armor > 0)
+						enemy.Update()
+						If (enemy.currentEnergy = 100)
+							particles.AddLast(New Particle(enemy.position, 2.5, 1, enemy.heading, 20, enemy.friendly))
+							enemy.FireWeapon()
+						End
+					End
 				End
 				player.Update()
 				If (player.currentEnergy = 100)
@@ -79,6 +99,15 @@ Class DroneTournamentGame Extends App
 				End
 			End
 		Else If (game_state = "multiplayer")
+		
+		Else If (game_state = "loser")
+			If (TouchDown(0))
+				game_state = "menu"
+			End
+		Else If (game_state = "winner")
+			If (TouchDown(0))
+				game_state = "menu"
+			End
 		End
 		
 	End
@@ -87,8 +116,13 @@ Class DroneTournamentGame Extends App
 		If (game_state = "menu")
 			Cls(100, 100, 100)
 			DrawImage(play_button, 10, 100)
+		Else If (game_state = "loser")
+			Cls(100, 100, 100)
+			DrawImage(lose_button, 10, 100)
+		Else If (game_state = "winner")
+			Cls(100, 100, 100)
+			DrawImage(win_button, 10, 100)
 		Else If (game_state = "tutorial")
-		
 			Cls(100, 100, 100)
 			player.DrawStatic()
 			
@@ -109,15 +143,14 @@ Class DroneTournamentGame Extends App
 			Return False
 		End
 
-		Local top_left:Vec2D = New Vec2D(unit.position.x, unit.position.y)
-		Local top_right:Vec2D = New Vec2D(unit.position.x + 15, unit.position.y)
-		Local bottom_left:Vec2D = New Vec2D(unit.position.x, unit.position.y + 15)
-		Local bottom_right:Vec2D = New Vec2D(unit.position.x + 15, unit.position.y + 15)
+		Local top_left:Vec2D = New Vec2D(unit.position.x - 10, unit.position.y - 10)
+		Local top_right:Vec2D = New Vec2D(unit.position.x + 10, unit.position.y - 10)
+		Local bottom_left:Vec2D = New Vec2D(unit.position.x - 10, unit.position.y + 10)
+		Local bottom_right:Vec2D = New Vec2D(unit.position.x + 10, unit.position.y + 10)
 		If (LinesIntersect(particle.past_position, particle.position, top_left, top_right ) Or
 			LinesIntersect(particle.past_position, particle.position, top_left, bottom_left) Or
 			LinesIntersect(particle.past_position, particle.position, top_right, bottom_right ) Or
 			LinesIntersect(particle.past_position, particle.position, bottom_right, bottom_left))
-			Print "Collision"
 			Return True
 		Else
 			Return False
@@ -135,6 +168,15 @@ Class DroneTournamentGame Extends App
 		Return(( abc <> abd) And (cda <> cdb))
 	End
 	
+	Method LiveOpponentCount:Int(enemies:List<Player>)
+		Local live_opponents:Int = 0
+		For Local enemy:Player = Eachin enemies
+			If (enemy.armor > 0)
+				live_opponents = live_opponents + 1
+			End
+		End
+		Return live_opponents
+	End
 	
 End
 
