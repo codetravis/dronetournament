@@ -31,7 +31,7 @@ Class DroneTournamentGame Extends App
 		If (game_state = "menu")
 			If (TouchDown(0))
 				opponents = New List<Player>()
-				player = New Player(150.0, 150.0, -30, 120, 4, 3, t_fighter_img, 1)
+				player = New Player(150.0, 150.0, -30, 120, 4, 5, t_fighter_img, 1)
 				For Local i:Int = 0 To 3
 					Local xrand:Float = Rnd(200, 580)
 					Local yrand:Float = Rnd(200, 420)
@@ -74,18 +74,25 @@ Class DroneTournamentGame Extends App
 						End
 					End
 				End
-				player.Update()
-				If (player.currentEnergy = 100)
-					particles.AddLast(New Particle(player.position, 2.5, 1, player.heading, 20, player.friendly))
-					player.FireWeapon()
+				If (player.armor > 0)
+					player.Update()
+					If (player.currentEnergy = 100)
+						particles.AddLast(New Particle(player.position, 2.5, 1, player.heading, 20, player.friendly))
+						player.FireWeapon()
+					End
 				End
 				For Local particle:Particle = Eachin particles
 					particle.Update()
-					For Local opponent:Player = Eachin opponents
-						If Collided(particle, opponent)
-							opponent.TakeDamage()
-							particles.Remove(particle)
-							Continue
+					If Collided(particle, player)
+						player.TakeDamage()
+						particles.Remove(particle)
+					Else
+						For Local opponent:Player = Eachin opponents
+							If Collided(particle, opponent)
+								opponent.TakeDamage()
+								particles.Remove(particle)
+								Exit
+							End
 						End
 					End
 
@@ -124,10 +131,12 @@ Class DroneTournamentGame Extends App
 			DrawImage(win_button, 10, 100)
 		Else If (game_state = "tutorial")
 			Cls(100, 100, 100)
-			player.DrawStatic()
+			If (player.armor > 0)
+				player.DrawStatic()
+			End
 			
 			For Local enemy:Player = Eachin opponents
-				If enemy.armor > 0
+				If (enemy.armor > 0)
 					enemy.DrawStatic()
 				End
 			End
@@ -151,6 +160,7 @@ Class DroneTournamentGame Extends App
 			LinesIntersect(particle.past_position, particle.position, top_left, bottom_left) Or
 			LinesIntersect(particle.past_position, particle.position, top_right, bottom_right ) Or
 			LinesIntersect(particle.past_position, particle.position, bottom_right, bottom_left))
+
 			Return True
 		Else
 			Return False
