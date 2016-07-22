@@ -1,5 +1,7 @@
 Import Mojo
 Import Math
+Import brl.json
+Import user
 
 Const SCREEN_WIDTH:Int = 640
 Const SCREEN_HEIGHT:Int = 480
@@ -21,7 +23,7 @@ Class Vec2D
 	End
 End
 
-Class Player
+Class Unit
 	Field position:Vec2D
 	Field velocity:Vec2D
 	Field control:ControlPoint
@@ -240,3 +242,20 @@ Function NewPoint:Vec2D (start_point:Vec2D, start_angle:Float, goal_angle:Float,
 
 End
 
+Class Game
+	Field units:List<Unit>
+	Field opponents:List<Unit>
+	Field particles:List<Particle>
+	
+	Method New()
+		Self.units = New List<Unit>()
+		Self.opponents = New List<Unit>()
+		Self.particles = New List<Particle>()
+	End
+	
+	Method LoadFromJson(game_json:JsonObject)
+	
+	End
+	
+	
+End
