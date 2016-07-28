@@ -24,83 +24,79 @@ Class Vec2D
 End
 
 Class Unit
+	Field unit_id:Int
 	Field position:Vec2D
 	Field velocity:Vec2D
 	Field control:ControlPoint
-	Field maxVelocity:Float
-	Field minVelocity:Float
-	Field maxRotation:Float
 	Field moveXPoints:FloatDeque
 	Field moveYPoints:FloatDeque
-	Field Points:Deque<Vec2D>
+	Field points:Deque<Vec2D>
 	Field heading:Float
 	Field friendly:Int
-	Field maxEnergy:Float
 	Field currentEnergy:Float
-	Field chargeEnergy:Float
 	Field armor:Int
-	Field drone_image:Image
+	Field unit_type:UnitType
 
-	Method New(x:Float, y:Float, initial_heading:Float, max_velocity_limit:Float, rotationLimit:Float, armor:Int, drone_image:Image, isfriendly:Int)
+	Method New(unit_id:Int, x:Float, y:Float, initial_heading:Float, unit_type:UnitType, isfriendly:Int)
+		Self.unit_id = unit_id
+		Self.unit_type = unit_type
+
 		Self.position = New Vec2D(x, y)
-		Self.control = New ControlPoint(x + max_velocity_limit, y, 10, 10)
-		Self.maxVelocity = max_velocity_limit
-		Self.minVelocity = maxVelocity * 0.5
-		Self.maxRotation = rotationLimit
+		Self.control = New ControlPoint(x + Self.unit_type.maxVelocity, y, 10, 10)
+
 		Self.heading = initial_heading
-		Self.velocity = New Vec2D(maxVelocity * Cosr(heading * (PI/180)), maxVelocity * Sinr(heading * (PI/180)))
+		Self.velocity = New Vec2D(Self.unit_type.maxVelocity * Cosr(heading * (PI/180)), Self.unit_type.maxVelocity * Sinr(heading * (PI/180)))
 		Self.SetControl(velocity.x, velocity.y, SCREEN_WIDTH, SCREEN_HEIGHT)
 		Self.friendly = isfriendly
-		Self.maxEnergy = 100.0
+
 		Self.currentEnergy = 0.0
-		Self.chargeEnergy = 5.0
-		Self.armor = armor
-		Self.drone_image = drone_image
+
+		Self.armor = Self.unit_type.maxArmor
 	End
 
 	Method DrawStatic()
-		If (friendly)
+		If (Self.friendly)
 			SetColor(128, 255, 128)
 		Else
 			SetColor(255, 128, 128)
 		End
 		
-		DrawImage(Self.drone_image, position.x, position.y, -heading, 1, 1)
-		DrawRect(position.x - 10, position.y - 10, 20, 20)
+		DrawImage(Self.unit_type.image, Self.position.x, Self.position.y, -Self.heading, 1, 1)
+		DrawRect(Self.position.x - 10, Self.position.y - 10, 20, 20)
 
 		If (Self.friendly = 1)
-			control.Draw()
+			Self.control.Draw()
 
-			For Local i:Int = 0 Until Points.Length - 1
-				If ((currentEnergy + i * chargeEnergy) Mod 100 = 0)
+			For Local i:Int = 0 Until Self.points.Length - 1
+				If ((Self.currentEnergy + i * Self.unit_type.chargeEnergy) Mod 100 = 0)
 					SetColor(100, 100, 255)
 				Else
 					SetColor(255, 255, 255)
 				End
-				Local this_point:Vec2D = Points.Get(i)
+				Local this_point:Vec2D = Self.points.Get(i)
 				DrawPoint(this_point.x, this_point.y)
 			End
 		End
 	End
 	
 	Method Update()
-		Local next_point:Vec2D = Points.PopFirst()
+		Local next_point:Vec2D = Self.points.PopFirst()
 
-		heading = ATan2((next_point.y - position.y), (next_point.x - position.x))
-		velocity.Set(maxVelocity * Cosr(heading * (PI/180)), maxVelocity * Sinr(heading * (PI/180)))
-		position = next_point
-		currentEnergy = Min(100.0, currentEnergy + chargeEnergy)
+		Self.heading = ATan2((next_point.y - Self.position.y), (next_point.x - Self.position.x))
+		Self.velocity.Set(Self.unit_type.maxVelocity * Cosr(heading * (PI/180)), Self.unit_type.maxVelocity * Sinr(Self.heading * (PI/180)))
+		Self.position = next_point
+		Self.currentEnergy = Min(100.0, Self.currentEnergy + Self.unit_type.chargeEnergy)
 	End
 
 
 	Method ControlSelected(click_x:Float, click_y:Float)
-		If (control.selected)
+		If (Self.control.selected)
 			Return True
-		Else If ((click_x >= control.position.x - control.width) And
-			(click_x <= (control.position.x + control.width)) And
-			(click_y >= control.position.y - control.width) And
-			(click_y <= (control.position.y + control.height)))
-			control.selected = True
+		Else If ((click_x >= Self.control.position.x - Self.control.width) And
+			(click_x <= (Self.control.position.x + Self.control.width)) And
+			(click_y >= Self.control.position.y - Self.control.width) And
+			(click_y <= (Self.control.position.y + Self.control.height)))
+			Self.control.selected = True
 			Return True
 		Else
 			Return False
@@ -108,20 +104,20 @@ Class Unit
 	End
 	
 	Method ControlReleased()
-		control.selected = False
+		Self.control.selected = False
 	End
 	
 	Method SetControl(click_x:Float, click_y:Float, map_width:Float, map_height:Float)
-		Local goal_angle = ATan2((click_y - position.y), (click_x - position.x))
+		Local goal_angle = ATan2((click_y - Self.position.y), (click_x - Self.position.x))
 		Local start_angle = Self.heading
-		Local control_pos:Vec2D = New Vec2D(position.x, position.y, Self.heading)
-		Points = New Deque<Vec2D>
+		Local control_pos:Vec2D = New Vec2D(Self.position.x, Self.position.y, Self.heading)
+		Self.points = New Deque<Vec2D>
 		
 		For Local i:Int = 0 Until 30
-			control_pos = NewPoint(control_pos, start_angle, goal_angle, maxRotation, maxVelocity/30.0)
+			control_pos = NewPoint(control_pos, start_angle, goal_angle, Self.unit_type.maxRotation, Self.unit_type.maxVelocity/30.0)
 			start_angle = control_pos.heading
 			goal_angle = ATan2((click_y - control_pos.y), (click_x - control_pos.x))
-			Points.PushLast(control_pos)
+			Self.points.PushLast(control_pos)
 		End
 		
 		If (control_pos.x > map_width)
@@ -136,11 +132,11 @@ Class Unit
 			control_pos.y = 10
 		End
 		
-		control.position.Set(control_pos.x, control_pos.y)
+		Self.control.position.Set(control_pos.x, control_pos.y)
 	End
 	
 	Method FireWeapon()
-		currentEnergy = 0
+		Self.currentEnergy = 0
 	End
 	
 	Method TakeDamage()
@@ -154,16 +150,16 @@ Class ControlPoint
 	Field height:Float
 	Field selected:Bool
 
-	Method New(x:Float, y:Float, w:Float, h:Float)
-		position = New Vec2D(x, y)
-		width = w
-		height = h
-		selected = False
+	Method New(x:Float, y:Float, width:Float, height:Float)
+		Self.position = New Vec2D(x, y)
+		Self.width = width
+		Self.height = height
+		Self.selected = False
 	End
 	
 	Method Draw()
 		SetColor(255, 255, 128)
-		DrawRect(position.x, position.y, width, height)
+		DrawRect(Self.position.x, Self.position.y, Self.width, Self.height)
 	End
 	
 End
@@ -179,15 +175,15 @@ Class Particle
 	Field lifetime:Int
 	Field friendly:Int
 	
-	Method New(pos:Vec2D, si:Float, pow:Float, ang:Float, sp:Float, friendly:Int)
-		Local newx = pos.x + 10 * Cosr(ang * (PI/180))
-		Local newy = pos.y + 10 * Sinr(ang * (PI/180))
+	Method New(pos:Vec2D, size:Float, power:Float, angle:Float, speed:Float, friendly:Int)
+		Local newx = pos.x + 10 * Cosr(angle * (PI/180))
+		Local newy = pos.y + 10 * Sinr(angle * (PI/180))
 		Self.position = New Vec2D(pos.x, pos.y)
 		Self.past_position = New Vec2D(pos.x, pos.y)
-		Self.size = si
-		Self.power = pow
-		Self.speed = sp
-		Self.angle = ang
+		Self.size = size
+		Self.power = power
+		Self.speed = speed
+		Self.angle = angle
 		Self.lifetime = 30
 		Self.friendly = friendly
 	End
@@ -242,19 +238,65 @@ Function NewPoint:Vec2D (start_point:Vec2D, start_angle:Float, goal_angle:Float,
 
 End
 
+Class UnitType
+	Field name:String
+	Field maxVelocity:Float
+	Field maxRotation:Float
+	Field maxEnergy:Float
+	Field chargeEnergy:Float
+	Field maxArmor:Float
+	Field image:Image
+	
+	Method New(type_json:JsonObject)
+		Self.name = type_json.GetString("name")
+		Self.maxVelocity = Float(type_json.GetString("speed"))
+		Self.maxRotation = Float(type_json.GetString("turn"))
+		Self.maxEnergy = Float(type_json.GetString("full_energy"))
+		Self.chargeEnergy = Float(type_json.GetString("charge_energy"))
+		Self.maxArmor = Float(type_json.GetString("armor"))
+		
+		Local image_name:String = type_json.GetString("image")
+		Self.image = LoadImage("images/" + image_name, 1, Image.MidHandle)
+	End
+End
+
 Class Game
-	Field units:List<Unit>
+	Field units:StringMap<Unit>
 	Field opponents:List<Unit>
 	Field particles:List<Particle>
+	Field types:StringMap<UnitType>
 	
 	Method New()
-		Self.units = New List<Unit>()
+		Self.units = New StringMap<Unit>()
 		Self.opponents = New List<Unit>()
 		Self.particles = New List<Particle>()
+		Self.types = New StringMap<UnitType>()
 	End
 	
 	Method LoadFromJson(game_json:JsonObject)
-	
+		Local unit_list:JsonArray = JsonArray(game_json.Get("units"))
+		Local types_list:JsonArray = JsonArray(game_json.Get("types"))
+		Local player_list:JsonArray = JsonArray(game_json.Get("players"))
+		
+		For Local i:Int = 0 Until types_list.Length
+			Local type_json:JsonObject = JsonObject(types_list.Get(i))
+			Local new_type:UnitType = New UnitType(type_json)
+			Self.types.Add(new_type.name, new_type)
+		End
+		
+		For Local i:Int = 0 Until unit_list.Length
+			Local unit_json:JsonObject = JsonObject(unit_list.Get(i))
+			Local type_name:String = unit_json.GetString("type")
+			Local unit_type:UnitType = Self.types.Get(type_name)
+
+			Local new_unit:Unit = New Unit(Int(unit_json.GetString("id")), 
+											Float(unit_json.GetString("x")), 
+											Float(unit_json.GetString("y")), 
+											Float(unit_json.GetString("heading")), 
+											unit_type, 1)
+			Self.units.Add(new_unit.unit_id, new_unit)
+		End 
+		
 	End
 	
 	

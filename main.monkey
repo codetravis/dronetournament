@@ -14,6 +14,7 @@ Class DroneTournamentGame Extends App
 	Field win_button:Image
 	Field lose_button:Image
 	Field t_fighter_img:Image
+	Field eye_fighter_img:Image
 	Field tournament_server_url:String = "http://localhost:4567/dronetournament" '"https://evolvinggames.herokuapp.com/dronetournament"
 	Field game_id:Int
 	Field multiplayer_service:MultiplayerService
@@ -38,6 +39,7 @@ Class DroneTournamentGame Extends App
 		win_button = LoadImage("images/win_button.png")
 		lose_button = LoadImage("images/lose_button.png")
 		t_fighter_img = LoadImage("images/t_fighter.png", 1, Image.MidHandle)
+		eye_fighter_img = LoadImage("images/eye_fighter.png", 1, Image.MidHandle)
 	End
 	
 	Method OnUpdate()
@@ -173,7 +175,8 @@ Class DroneTournamentGame Extends App
 				Self.game_list = JsonArray(multiplayer_service.response.Get("games"))
 				Self.game_state = "list_games"
 			Else If (action = "Load Game")
-				Self.game.LoadFromJson(JsonObject(multiplayer_service.response.Get("game")))
+				Self.game.LoadFromJson(multiplayer_service.response)
+				Self.game_state = "multiplayer"
 			End
 		End	
 	End
@@ -198,7 +201,13 @@ Class DroneTournamentGame Extends App
 			DrawImage(play_button, 10, 100)
 		Else If (game_state = "list_games")
 			DrawText("List Games", 50, 50)
-			
+		Else If (game_state = "multiplayer")
+			For Local key:String = Eachin Self.game.units.Keys
+				Local current_unit:Unit = Self.game.units.Get(key)
+				If (current_unit.armor > 0)
+					current_unit.DrawStatic()
+				End
+			End
 		Else If (game_state = "loser")
 			DrawImage(lose_button, 10, 100)
 		Else If (game_state = "winner")
@@ -230,13 +239,16 @@ Class DroneTournamentGame Extends App
 		Return live_opponents
 	End
 	
-	Method SetupTutorial:Void()
+	Method SetupTutorial:Void() 
+		Local t_type:UnitType = New UnitType(JsonObject("{~qname~q: ~qT-Fighter~q, ~qspeed~q: 120, ~qturn~q: 4, ~qarmor~q: 5, ~qfull_energy~q: 100, ~qcharge_energy~q: 5, ~qimage~q: ~qt_fighter.png~q}"))
 		Self.game.opponents = New List<Unit>()
-		Self.unit = New Unit(150.0, 150.0, -30, 120, 4, 5, t_fighter_img, 1)
+		Self.unit = New Unit(1, 150.0, 150.0, -30, t_type, 1)
+		
+		Local eye_type:UnitType = New UnitType(JsonObject("{~qname~q: ~qEye-Fighter~q, ~qspeed~q: 100, ~qturn~q: 3, ~qarmor~q: 2, ~qfull_energy~q: 100, ~qcharge_energy~q: 5, ~qimage~q: ~qeye_fighter.png~q}"))
 		For Local i:Int = 0 To 3
 			Local xrand:Float = Rnd(200, 580)
 			Local yrand:Float = Rnd(200, 420)
-			Local opponent:Unit = New Unit(xrand, yrand, 30, 100, 3, 3, t_fighter_img, 0)
+			Local opponent:Unit = New Unit(i + 2, xrand, yrand, 30, eye_type, 0)
 			Self.game.opponents.AddLast(opponent)
 		End
 		Self.moves = 0
@@ -245,7 +257,7 @@ Class DroneTournamentGame Extends App
 	End
 	
 	Method SetupMultiplayer:Void()
-		Self.game.units.AddLast(New Player(150.0, 150.0, -30, 120, 4, 5, t_fighter_img, 1))
+		'Self.game.units.AddLast(New Player(150.0, 150.0, -30, 120, 4, 5, t_fighter_img, 1))
 		Self.moves = 0
 		Self.game.particles = New List<Particle>()
 	End
