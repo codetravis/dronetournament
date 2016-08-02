@@ -26,6 +26,12 @@ Class MultiplayerService Implements IOnHttpRequestComplete
 		server_request.Send
 	End
 	
+	Method PostJsonRequest:Void(path:String, json:String)
+		ClearResponse()
+		server_request = New HttpRequest("POST", server_url + path, Self)
+		server_request.Send(json, "application/json")
+	End
+	
 	Method OnHttpRequestComplete:Void(request:HttpRequest)
 		Print request.ResponseText()
 		Print request.Status()
