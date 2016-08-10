@@ -25,7 +25,7 @@ End
 
 Class Unit
 	Field unit_id:Int
-	Field player_id:Int
+	Field player_id:String
 	Field position:Vec2D
 	Field velocity:Vec2D
 	Field control:ControlPoint
@@ -38,7 +38,7 @@ Class Unit
 	Field armor:Int
 	Field unit_type:UnitType
 
-	Method New(unit_id:Int, x:Float, y:Float, initial_heading:Float, unit_type:UnitType, player_id:Int, isfriendly:Int)
+	Method New(unit_id:Int, x:Float, y:Float, initial_heading:Float, unit_type:UnitType, player_id:String, isfriendly:Int)
 		Self.unit_id = unit_id
 		Self.player_id = player_id
 		Self.unit_type = unit_type
@@ -56,17 +56,17 @@ Class Unit
 		Self.armor = Self.unit_type.maxArmor
 	End
 
-	Method DrawStatic(player_id:String)
-		If (Self.player_id = Int(player_id))
+	Method DrawStatic(game_player_id:String)
+		If (Self.player_id = game_player_id)
 			SetColor(128, 255, 128)
 		Else
 			SetColor(255, 128, 128)
 		End
 		
 		DrawImage(Self.unit_type.image, Self.position.x, Self.position.y, -Self.heading, 1, 1)
-		DrawRect(Self.position.x - 10, Self.position.y - 10, 20, 20)
+		'DrawRect(Self.position.x - 10, Self.position.y - 10, 20, 20)
 
-		If (Self.player_id = Int(player_id))
+		If (Self.player_id = game_player_id)
 			Self.control.Draw()
 
 			For Local i:Int = 0 Until Self.points.Length - 1
