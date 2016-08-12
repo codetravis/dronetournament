@@ -133,6 +133,7 @@ Class DroneTournamentGame Extends App
 				game_state = "end_turn"
 			Else If (action = "Ready")
 				Self.moves = 30
+				Self.game.LoadServerMoves(multiplayer_service.response)
 				game_state = "multiplayer_ready"
 			End
 		End	
@@ -163,7 +164,7 @@ Class DroneTournamentGame Extends App
 			DrawImage(play_button, 10, 100)
 		Else If (game_state = "list_games")
 			DrawText("List Games", 50, 50)
-		Else If (Self.game_state = "multiplayer" Or Self.game_state = "multiplayer_ready")
+		Else If (Self.game_state = "multiplayer" Or Self.game_state = "multiplayer_ready" Or Self.game_state = "end_turn")
 			For Local key:String = Eachin Self.game.units.Keys
 				Local current_unit:Unit = Self.game.units.Get(key)
 				If (current_unit.armor > 0)
@@ -312,6 +313,21 @@ Class DroneTournamentGame Extends App
 					End
 				End
 			End
+			For Local particle:Particle = Eachin Self.game.particles
+				particle.Update()
+				For Local unit_id:String = Eachin Self.game.units.Keys
+					Local current_unit:Unit = Self.game.units.Get(unit_id)
+					If Collided(particle, current_unit)
+						current_unit.TakeDamage()
+						Self.game.particles.Remove(particle)
+						Exit
+					End
+				End
+
+				If particle.lifetime <= 0
+					Self.game.particles.Remove(particle)
+				End
+			End
 			Self.moves -= 1
 		Else
 			Self.game_state = "multiplayer"
@@ -375,7 +391,7 @@ Class DroneTournamentGame Extends App
 	End
 	
 	Method CheckIfAllPlayersAreReady:Void()
-		Self.multiplayer_service.GetRequest("/next_turn/" + Self.game.id)
+		Self.multiplayer_service.GetRequest("/next_turn/" + Self.game.id + "/" + Self.user.player_id)
 		Self.game_state = "server"
 	End
 	

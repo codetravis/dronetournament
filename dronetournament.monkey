@@ -305,5 +305,16 @@ Class Game
 		
 	End
 	
+	Method LoadServerMoves(game_json:JsonObject)
+		Local unit_list:JsonArray = JsonArray(game_json.Get("units"))
+		For Local i:Int = 0 Until unit_list.Length
+			Local unit_json:JsonObject = JsonObject(unit_list.Get(i))
+			Local current_unit:Unit = Self.units.Get(unit_json.GetString("id"))
+			current_unit.position.Set(Float(unit_json.GetString("x")), Float(unit_json.GetString("y")))
+			current_unit.heading = Float(unit_json.GetString("heading"))
+			current_unit.SetControl(Float(unit_json.GetString("control_x")), Float(unit_json.GetString("control_y")), 640, 480)
+		End
+	End
+	
 	
 End
