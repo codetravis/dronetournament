@@ -44,7 +44,7 @@ Class Unit
 		Self.unit_type = unit_type
 
 		Self.position = New Vec2D(x, y)
-		Self.control = New ControlPoint(x + Self.unit_type.maxVelocity, y, 10, 10)
+		Self.control = New ControlPoint(x + Self.unit_type.maxVelocity, y, initial_heading, 10, 10)
 
 		Self.heading = initial_heading
 		Self.velocity = New Vec2D(Self.unit_type.maxVelocity * Cosr(heading * (PI/180)), Self.unit_type.maxVelocity * Sinr(heading * (PI/180)))
@@ -64,7 +64,6 @@ Class Unit
 		End
 		
 		DrawImage(Self.unit_type.image, Self.position.x, Self.position.y, -Self.heading, 1, 1)
-		'DrawRect(Self.position.x - 10, Self.position.y - 10, 20, 20)
 
 		If (Self.player_id = game_player_id)
 			Self.control.Draw()
@@ -135,6 +134,25 @@ Class Unit
 		End
 		
 		Self.control.position.Set(control_pos.x, control_pos.y)
+		Self.control.heading = control_pos.heading
+	End
+	
+	Method SetServerControl(click_x:Float, click_y:Float, click_angle:Float)
+		Local goal_angle:Float = click_angle
+		Local start_angle:Float = Self.heading
+		Local control_pos:Vec2D = New Vec2D(Self.position.x, Self.position.y, Self.heading)
+		Self.points = New Deque<Vec2D>
+		
+		For Local i:Int = 0 Until 30
+			control_pos = NewPoint(control_pos, start_angle, goal_angle, Self.unit_type.maxRotation, Self.unit_type.maxVelocity/30.0)
+			start_angle = control_pos.heading
+			goal_angle = ATan2((click_y - control_pos.y), (click_x - control_pos.x))
+			Self.points.PushLast(control_pos)
+		End
+		
+		Self.control.position.Set(control_pos.x, control_pos.y)
+		Self.control.heading = goal_angle
+	
 	End
 	
 	Method FireWeapon()
@@ -151,12 +169,14 @@ Class ControlPoint
 	Field width:Float
 	Field height:Float
 	Field selected:Bool
+	Field heading:Float
 
-	Method New(x:Float, y:Float, width:Float, height:Float)
+	Method New(x:Float, y:Float, heading:Float, width:Float, height:Float)
 		Self.position = New Vec2D(x, y)
 		Self.width = width
 		Self.height = height
 		Self.selected = False
+		Self.heading = heading
 	End
 	
 	Method Draw()
@@ -312,7 +332,7 @@ Class Game
 			Local current_unit:Unit = Self.units.Get(unit_json.GetString("id"))
 			current_unit.position.Set(Float(unit_json.GetString("x")), Float(unit_json.GetString("y")))
 			current_unit.heading = Float(unit_json.GetString("heading"))
-			current_unit.SetControl(Float(unit_json.GetString("control_x")), Float(unit_json.GetString("control_y")), 640, 480)
+			current_unit.SetServerControl(Float(unit_json.GetString("control_x")), Float(unit_json.GetString("control_y")), Float(unit_json.GetString("control_heading")))
 		End
 	End
 	

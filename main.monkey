@@ -10,7 +10,8 @@ Class DroneTournamentGame Extends App
 	Field moves:Int
 	Field game:Game
 	Field game_state:String
-	Field play_button:Image
+	Field play_tutorial_button:Image
+	Field play_multiplayer_button:Image
 	Field win_button:Image
 	Field lose_button:Image
 	Field t_fighter_img:Image
@@ -36,9 +37,11 @@ Class DroneTournamentGame Extends App
 	End	
 	
 	Method LoadImages()
-		play_button = LoadImage("images/play_button.png")
+		play_tutorial_button = LoadImage("images/play_tutorial_button.png")
+		play_multiplayer_button = LoadImage("images/play_multiplayer_button.png")
 		win_button = LoadImage("images/win_button.png")
 		lose_button = LoadImage("images/lose_button.png")
+		
 		t_fighter_img = LoadImage("images/t_fighter.png", 1, Image.MidHandle)
 		eye_fighter_img = LoadImage("images/eye_fighter.png", 1, Image.MidHandle)
 	End
@@ -76,10 +79,15 @@ Class DroneTournamentGame Extends App
 		Else If (Self.game_state = "end_turn")
 			If (Millisecs() - Self.timer_begin > 3000)
 				Self.timer_begin = Millisecs()
-				CheckIfAllPlayersAreReady()
+				GetNextTurn()
 			End
 		Else If (Self.game_state = "multiplayer_ready")
 			RunMultiplayer()
+		Else If (Self.game_state = "updated")
+			If (Millisecs() - Self.timer_begin > 3000)
+				Self.timer_begin = Millisecs()
+				CheckIfAllPlayersUpdated()
+			End
 		Else If (Self.game_state = "loser")
 			If (TouchDown(0))
 				Self.game_state = "menu"
@@ -126,15 +134,22 @@ Class DroneTournamentGame Extends App
 				Self.game_list = JsonArray(multiplayer_service.response.Get("games"))
 				Self.game_state = "list_games"
 			Else If (action = "Load Game")
-				Self.game.LoadFromJson(multiplayer_service.response)
+				Self.game.LoadFromJson(Self.multiplayer_service.response)
 				Self.game_state = "multiplayer"
-			Else If (action = "Waiting")
+			Else If (action = "Turn Stop")
+				Self.game_state = "multiplayer"
+			Else If (action = "Waiting" Or action = "Turn Ended")
 				Self.timer_begin = Millisecs()
 				game_state = "end_turn"
 			Else If (action = "Ready")
 				Self.moves = 30
-				Self.game.LoadServerMoves(multiplayer_service.response)
+				Self.game.LoadServerMoves(Self.multiplayer_service.response)
 				game_state = "multiplayer_ready"
+			Else If (action = "Update Waiting")
+				Self.timer_begin = Millisecs()
+				game_state = "updated"
+			Else If (action = "Update Ready")
+				game_state = "multiplayer"
 			End
 		End	
 	End
@@ -161,10 +176,11 @@ Class DroneTournamentGame Extends App
 		If (game_state = "setup")	
 			DrawText("Enter a username: " + user.username, 50, 200)
 		Else If (game_state = "menu")
-			DrawImage(play_button, 10, 100)
+			DrawImage(play_tutorial_button, 10, -100)
+			DrawImage(play_multiplayer_button, 10, 100)
 		Else If (game_state = "list_games")
 			DrawText("List Games", 50, 50)
-		Else If (Self.game_state = "multiplayer" Or Self.game_state = "multiplayer_ready" Or Self.game_state = "end_turn")
+		Else If (Self.game_state = "multiplayer" Or Self.game_state = "multiplayer_ready" Or Self.game_state = "end_turn" Or Self.game_state = "updated")
 			For Local key:String = Eachin Self.game.units.Keys
 				Local current_unit:Unit = Self.game.units.Get(key)
 				If (current_unit.armor > 0)
@@ -206,11 +222,11 @@ Class DroneTournamentGame Extends App
 	End
 	
 	Method SetupTutorial:Void() 
-		Local t_type:UnitType = New UnitType(JsonObject("{~qname~q: ~qT-Fighter~q, ~qspeed~q: 120, ~qturn~q: 4, ~qarmor~q: 5, ~qfull_energy~q: 100, ~qcharge_energy~q: 5, ~qimage~q: ~qt_fighter.png~q}"))
+		Local t_type:UnitType = New UnitType(JsonObject("{~qname~q: ~qT-Fighter~q, ~qspeed~q: ~q120~q, ~qturn~q: ~q4~q, ~qarmor~q: ~q5~q, ~qfull_energy~q: ~q100~q, ~qcharge_energy~q: ~q5~q, ~qimage~q: ~qt_fighter.png~q}"))
 		Self.game.opponents = New List<Unit>()
 		Self.unit = New Unit(1, 150.0, 150.0, -30, t_type, 1, 1)
 		
-		Local eye_type:UnitType = New UnitType(JsonObject("{~qname~q: ~qEye-Fighter~q, ~qspeed~q: 100, ~qturn~q: 3, ~qarmor~q: 2, ~qfull_energy~q: 100, ~qcharge_energy~q: 5, ~qimage~q: ~qeye_fighter.png~q}"))
+		Local eye_type:UnitType = New UnitType(JsonObject("{~qname~q: ~qEye-Fighter~q, ~qspeed~q: ~q100~q, ~qturn~q: ~q3~q, ~qarmor~q: ~q2~q, ~qfull_energy~q: ~q100~q, ~qcharge_energy~q: ~q5~q, ~qimage~q: ~qeye_fighter.png~q}"))
 		For Local i:Int = 0 To 3
 			Local xrand:Float = Rnd(200, 580)
 			Local yrand:Float = Rnd(200, 420)
@@ -330,7 +346,7 @@ Class DroneTournamentGame Extends App
 			End
 			Self.moves -= 1
 		Else
-			Self.game_state = "multiplayer"
+			Self.game_state = "updated"
 		End
 	End
 
@@ -359,8 +375,7 @@ Class DroneTournamentGame Extends App
 	Method EndTurn:Void()
 		Local move_json:String = BuildMoveJson()
 		Self.multiplayer_service.PostJsonRequest("/end_turn/" + Self.game.id, move_json)
-		Self.game_state = "end_turn"
-		CheckIfAllPlayersAreReady()
+		Self.game_state = "server"
 	End
 	
 	Method BuildMoveJson:String()
@@ -381,6 +396,7 @@ Class DroneTournamentGame Extends App
 				move_json += "~qy~q: " + unit.position.y + ", "
 				move_json += "~qcontrol-x~q: " + unit.control.position.x + ", "
 				move_json += "~qcontrol-y~q: " + unit.control.position.y + ", "
+				move_json += "~qcontrol-heading~q: " + unit.control.heading + ", " 
 				move_json += "~qheading~q: " + unit.heading 
 				move_json += " }"
 			End
@@ -390,8 +406,14 @@ Class DroneTournamentGame Extends App
 		Return move_json		
 	End
 	
-	Method CheckIfAllPlayersAreReady:Void()
+	
+	Method GetNextTurn:Void()
 		Self.multiplayer_service.GetRequest("/next_turn/" + Self.game.id + "/" + Self.user.player_id)
+		Self.game_state = "server"
+	End
+	
+	Method CheckIfAllPlayersUpdated:Void()
+		Self.multiplayer_service.GetRequest("/update_state/" + Self.game.id + "/" + Self.user.player_id)
 		Self.game_state = "server"
 	End
 	
