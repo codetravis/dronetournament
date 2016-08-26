@@ -2,6 +2,7 @@ Import dronetournament
 Import user
 Import server
 Import brl.json
+Import user_interface
 
 Class DroneTournamentGame Extends App
 
@@ -10,10 +11,14 @@ Class DroneTournamentGame Extends App
 	Field moves:Int
 	Field game:Game
 	Field game_state:String
-	Field play_tutorial_button:Image
-	Field play_multiplayer_button:Image
+	Field play_tutorial_button_image:Image
+	Field play_tutorial_button:Button
+	Field play_multiplayer_button_image:Image
+	Field play_multiplayer_button:Button
 	Field win_button:Image
 	Field lose_button:Image
+	Field join_button:Button
+
 	Field t_fighter_img:Image
 	Field eye_fighter_img:Image
 	Field tournament_server_url:String = "http://localhost:4567/dronetournament" '"https://evolvinggames.herokuapp.com/dronetournament"
@@ -22,6 +27,7 @@ Class DroneTournamentGame Extends App
 	Field game_list:JsonArray
 	Field unit_types:JsonObject
 	Field timer_begin:Float
+	Field game_select:List<GameSelect>
 
 	Method OnCreate()
 		Print "Creating Game"
@@ -33,12 +39,13 @@ Class DroneTournamentGame Extends App
 		game = New Game()
 		
 		LoadImages()
+		CreateUIElements()
 		
 	End	
 	
 	Method LoadImages()
-		play_tutorial_button = LoadImage("images/play_tutorial_button.png")
-		play_multiplayer_button = LoadImage("images/play_multiplayer_button.png")
+		play_tutorial_button_image = LoadImage("images/play_tutorial_button.png")
+		play_multiplayer_button_image = LoadImage("images/play_multiplayer_button.png")
 		win_button = LoadImage("images/win_button.png")
 		lose_button = LoadImage("images/lose_button.png")
 		
@@ -46,14 +53,20 @@ Class DroneTournamentGame Extends App
 		eye_fighter_img = LoadImage("images/eye_fighter.png", 1, Image.MidHandle)
 	End
 	
+	Method CreateUIElements()
+		Self.play_tutorial_button = New Button(10, -100, 110, 60, 440, 170, Self.play_tutorial_button_image)
+		Self.play_multiplayer_button = New Button(10, 100, 60, 260, 540, 170, Self.play_multiplayer_button_image)
+		Self.join_button = New Button(10, 100, 60, 260, 540, 170, Self.play_multiplayer_button_image)
+	End
+	
 	Method OnUpdate()
 		If (game_state = "setup")
 			GetUsername()
 		Else If (game_state = "menu")
 			If (TouchDown(0))
-				If (TouchY(0) < 240)
+				If (Self.play_tutorial_button.Selected())
 					SetupTutorial()
-				Else
+				Else If (Self.play_multiplayer_button.Selected())
 					SignIn() 					
 				End
 			End
@@ -63,12 +76,14 @@ Class DroneTournamentGame Extends App
 			GetListOfActiveGames()
 		Else If (game_state = "list_games")
 			If (TouchDown(0))
-				If (TouchY(0) < 240)
-					Local game:JsonObject = JsonObject(Self.game_list.Get(0))
-					Local game_id:String = game.GetString("game_id")
-					Print "Game ID: " + game_id
-					GetGameInfoFromServer(game_id)
-				Else
+				For Local game_ui:GameSelect = Eachin Self.game_select
+					If (game_ui.Selected())
+						GetGameInfoFromServer(game_ui.game_id)
+						Exit
+					End
+				End
+				
+				If (join_button.Selected())
 					JoinGame()
 				End
 			End
@@ -132,10 +147,11 @@ Class DroneTournamentGame Extends App
 				Self.game_state = "get_games"
 			Else If (action = "List Games")
 				Self.game_list = JsonArray(multiplayer_service.response.Get("games"))
+				BuildGameListUI()
 				Self.game_state = "list_games"
 			Else If (action = "Load Game")
-				Self.game.LoadFromJson(Self.multiplayer_service.response)
-				Self.game_state = "multiplayer"
+				Self.game.LoadFromJson(Self.multiplayer_service.response, Self.user.player_id)
+				UsePlayerStateToSetGameState()
 			Else If (action = "Turn Stop")
 				Self.game_state = "multiplayer"
 			Else If (action = "Waiting" Or action = "Turn Ended")
@@ -169,6 +185,27 @@ Class DroneTournamentGame Extends App
 		Self.game_state = "server"
 	End
 	
+	Method BuildGameListUI()
+		Self.game_select = New List<GameSelect>()
+		Local x = 10
+		Local y = 10
+		For Local i:Int = 0 Until Self.game_list.Length
+			Local game_object:JsonObject = JsonObject(Self.game_list.Get(i))
+			Local game_ui:GameSelect = New GameSelect(x, y, 400, 50, game_object.GetString("game_id"))
+			Self.game_select.AddLast(game_ui)
+			y += 55
+		End 
+	End
+	
+	Method UsePlayerStateToSetGameState()
+		If (Self.game.player_state = "plan")
+			Self.game_state = "multiplayer"
+		Else If (Self.game.player_state = "finished")
+			Self.game_state = "end_turn"
+		Else If (Self.game.player_state = "updated")
+			Self.game_state = "updated"
+		End
+	End
 	
 	Method OnRender()
 		Cls(100, 100, 100)
@@ -176,10 +213,13 @@ Class DroneTournamentGame Extends App
 		If (game_state = "setup")	
 			DrawText("Enter a username: " + user.username, 50, 200)
 		Else If (game_state = "menu")
-			DrawImage(play_tutorial_button, 10, -100)
-			DrawImage(play_multiplayer_button, 10, 100)
+			Self.play_tutorial_button.Draw()
+			Self.play_multiplayer_button.Draw()
 		Else If (game_state = "list_games")
-			DrawText("List Games", 50, 50)
+			For Local game_ui:GameSelect = Eachin Self.game_select
+				game_ui.Draw()
+			End
+			Self.join_button.Draw()
 		Else If (Self.game_state = "multiplayer" Or Self.game_state = "multiplayer_ready" Or Self.game_state = "end_turn" Or Self.game_state = "updated")
 			For Local key:String = Eachin Self.game.units.Keys
 				Local current_unit:Unit = Self.game.units.Get(key)

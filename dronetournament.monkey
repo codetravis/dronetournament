@@ -2,26 +2,10 @@ Import Mojo
 Import Math
 Import brl.json
 Import user
+Import user_interface
 
 Const SCREEN_WIDTH:Int = 640
 Const SCREEN_HEIGHT:Int = 480
-
-
-Class Vec2D
-	Field x:Float
-	Field y:Float
-	Field heading:Float
-	
-	Method New(x:Float=0, y:Float=0, h:Float=0)
-		Set(x,y,h)
-	End
-	
-	Method Set(x:Float, y:Float, h:Float=0)
-		Self.x = x
-		Self.y = y
-		Self.heading = h
-	End
-End
 
 Class Unit
 	Field unit_id:Int
@@ -288,6 +272,7 @@ Class Game
 	Field opponents:List<Unit>
 	Field particles:List<Particle>
 	Field types:StringMap<UnitType>
+	Field player_state:String
 	
 	Method New()
 		Self.units = New StringMap<Unit>()
@@ -296,7 +281,7 @@ Class Game
 		Self.types = New StringMap<UnitType>()
 	End
 	
-	Method LoadFromJson(game_json:JsonObject)
+	Method LoadFromJson(game_json:JsonObject, player_id:String)
 		Self.id = game_json.GetString("id")
 		Local unit_list:JsonArray = JsonArray(game_json.Get("units"))
 		Local types_list:JsonArray = JsonArray(game_json.Get("types"))
@@ -321,7 +306,17 @@ Class Game
 											Int(unit_json.GetString("player_id")), 
 											Int(unit_json.GetString("player_id")))
 			Self.units.Add(new_unit.unit_id, new_unit)
-		End 
+		End
+		
+		For Local i:Int = 0 Until player_list.Length
+			Local player_json:JsonObject = JsonObject(player_list.Get(i))
+			Local current_player_id:String = player_json.GetString("player_id")
+			Local current_player_state:String = player_json.GetString("player_state")
+			If (current_player_id = player_id)
+				Self.player_state = current_player_state
+				Exit
+			End
+		End
 		
 	End
 	

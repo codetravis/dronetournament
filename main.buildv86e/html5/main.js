@@ -371,6 +371,10 @@ BBGame.prototype.LoadString=function( path ){
 	return "";
 }
 
+BBGame.prototype.CountJoysticks=function( update ){
+	return 0;
+}
+
 BBGame.prototype.PollJoystick=function( port,joyx,joyy,joyz,buttons ){
 	return false;
 }
@@ -644,6 +648,27 @@ function BBHtml5Game( canvas ){
 		
 		gl=this._gl;
 	}
+	
+	// --- start gamepad api by skn3 ---------
+	this._gamepads = null;
+	this._gamepadLookup = [-1,-1,-1,-1];//support 4 gamepads
+	var that = this;
+	window.addEventListener("gamepadconnected", function(e) {
+		that.connectGamepad(e.gamepad);
+	});
+	
+	window.addEventListener("gamepaddisconnected", function(e) {
+		that.disconnectGamepad(e.gamepad);
+	});
+	
+	//need to process already connected gamepads (before page was loaded)
+	var gamepads = this.getGamepads();
+	if (gamepads && gamepads.length > 0) {
+		for(var index=0;index < gamepads.length;index++) {
+			this.connectGamepad(gamepads[index]);
+		}
+	}
+	// --- end gamepad api by skn3 ---------
 }
 
 BBHtml5Game.prototype=extend_class( BBGame );
@@ -651,6 +676,139 @@ BBHtml5Game.prototype=extend_class( BBGame );
 BBHtml5Game.Html5Game=function(){
 	return BBHtml5Game._game;
 }
+
+// --- start gamepad api by skn3 ---------
+BBHtml5Game.prototype.getGamepads = function() {
+	return navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+}
+
+BBHtml5Game.prototype.connectGamepad = function(gamepad) {
+	if (!gamepad) {
+		return false;
+	}
+	
+	//check if this is a standard gamepad
+	if (gamepad.mapping == "standard") {
+		//yup so lets add it to an array of valid gamepads
+		//find empty controller slot
+		var slot = -1;
+		for(var index = 0;index < this._gamepadLookup.length;index++) {
+			if (this._gamepadLookup[index] == -1) {
+				slot = index;
+				break;
+			}
+		}
+		
+		//can we add this?
+		if (slot != -1) {
+			this._gamepadLookup[slot] = gamepad.index;
+			
+			//console.log("gamepad at html5 index "+gamepad.index+" mapped to monkey gamepad unit "+slot);
+		}
+	} else {
+		console.log('Monkey has ignored gamepad at raw port #'+gamepad.index+' with unrecognised mapping scheme \''+gamepad.mapping+'\'.');
+	}
+}
+
+BBHtml5Game.prototype.disconnectGamepad = function(gamepad) {
+	if (!gamepad) {
+		return false;
+	}
+	
+	//scan all gamepads for matching index
+	for(var index = 0;index < this._gamepadLookup.length;index++) {
+		if (this._gamepadLookup[index] == gamepad.index) {
+			//remove this gamepad
+			this._gamepadLookup[index] = -1
+			break;
+		}
+	}
+}
+
+BBHtml5Game.prototype.PollJoystick=function(port, joyx, joyy, joyz, buttons){
+	//is this the first gamepad being polled
+	if (port == 0) {
+		//yes it is so we use the web api to get all gamepad info
+		//we can then use this in subsequent calls to PollJoystick
+		this._gamepads = this.getGamepads();
+	}
+	
+	//dont bother processing if nothing to process
+	if (!this._gamepads) {
+	  return false;
+	}
+	
+	//so use the monkey port to find the correct raw data
+	var index = this._gamepadLookup[port];
+	if (index == -1) {
+		return false;
+	}
+
+	var gamepad = this._gamepads[index];
+	if (!gamepad) {
+		return false;
+	}
+	//so now process gamepad axis/buttons according to the standard mappings
+	//https://w3c.github.io/gamepad/#remapping
+	
+	//left stick axis
+	joyx[0] = gamepad.axes[0];
+	joyy[0] = -gamepad.axes[1];
+	
+	//right stick axis
+	joyx[1] = gamepad.axes[2];
+	joyy[1] = -gamepad.axes[3];
+	
+	//left trigger
+	joyz[0] = gamepad.buttons[6] ? gamepad.buttons[6].value : 0.0;
+	
+	//right trigger
+	joyz[1] = gamepad.buttons[7] ? gamepad.buttons[7].value : 0.0;
+	
+	//clear button states
+	for(var index = 0;index <32;index++) {
+		buttons[index] = false;
+	}
+	
+	//map html5 "standard" mapping to monkeys joy codes
+	/*
+	Const JOY_A=0
+	Const JOY_B=1
+	Const JOY_X=2
+	Const JOY_Y=3
+	Const JOY_LB=4
+	Const JOY_RB=5
+	Const JOY_BACK=6
+	Const JOY_START=7
+	Const JOY_LEFT=8
+	Const JOY_UP=9
+	Const JOY_RIGHT=10
+	Const JOY_DOWN=11
+	Const JOY_LSB=12
+	Const JOY_RSB=13
+	Const JOY_MENU=14
+	*/
+	buttons[0] = gamepad.buttons[0] && gamepad.buttons[0].pressed;
+	buttons[1] = gamepad.buttons[1] && gamepad.buttons[1].pressed;
+	buttons[2] = gamepad.buttons[2] && gamepad.buttons[2].pressed;
+	buttons[3] = gamepad.buttons[3] && gamepad.buttons[3].pressed;
+	buttons[4] = gamepad.buttons[4] && gamepad.buttons[4].pressed;
+	buttons[5] = gamepad.buttons[5] && gamepad.buttons[5].pressed;
+	buttons[6] = gamepad.buttons[8] && gamepad.buttons[8].pressed;
+	buttons[7] = gamepad.buttons[9] && gamepad.buttons[9].pressed;
+	buttons[8] = gamepad.buttons[14] && gamepad.buttons[14].pressed;
+	buttons[9] = gamepad.buttons[12] && gamepad.buttons[12].pressed;
+	buttons[10] = gamepad.buttons[15] && gamepad.buttons[15].pressed;
+	buttons[11] = gamepad.buttons[13] && gamepad.buttons[13].pressed;
+	buttons[12] = gamepad.buttons[10] && gamepad.buttons[10].pressed;
+	buttons[13] = gamepad.buttons[11] && gamepad.buttons[11].pressed;
+	buttons[14] = gamepad.buttons[16] && gamepad.buttons[16].pressed;
+	
+	//success
+	return true
+}
+// --- end gamepad api by skn3 ---------
+
 
 BBHtml5Game.prototype.ValidateUpdateTimer=function(){
 
@@ -864,7 +1022,7 @@ BBHtml5Game.prototype.Run=function(){
 			x-=c.offsetLeft;
 			c=c.offsetParent;
 		}
-		return x;
+		return x*xscale;
 	}			
 	
 	function touchY( touch ){
@@ -874,7 +1032,7 @@ BBHtml5Game.prototype.Run=function(){
 			y-=c.offsetTop;
 			c=c.offsetParent;
 		}
-		return y;
+		return y*yscale;
 	}
 	
 	canvas.onkeydown=function( e ){
@@ -997,6 +1155,8 @@ BBHtml5Game.prototype.Run=function(){
 	canvas.onfocus=function( e ){
 		if( CFG_MOJO_AUTO_SUSPEND_ENABLED=="1" ){
 			game.ResumeGame();
+		}else{
+			game.ValidateUpdateTimer();
 		}
 	}
 	
@@ -1006,7 +1166,7 @@ BBHtml5Game.prototype.Run=function(){
 			game.SuspendGame();
 		}
 	}
-	
+
 	canvas.updateSize=function(){
 		xscale=canvas.width/canvas.clientWidth;
 		yscale=canvas.height/canvas.clientHeight;
@@ -1018,7 +1178,7 @@ BBHtml5Game.prototype.Run=function(){
 	canvas.focus();
 	
 	game.StartGame();
-
+	
 	game.RenderGame();
 }
 
@@ -2199,16 +2359,16 @@ function c_App(){
 }
 c_App.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<152>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<152>";
 	if((bb_app__app)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<152>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<152>";
 		error("App has already been created");
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<153>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<153>";
 	bb_app__app=this;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<154>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<154>";
 	bb_app__delegate=c_GameDelegate.m_new.call(new c_GameDelegate);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<155>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<155>";
 	bb_app__game.SetDelegate(bb_app__delegate);
 	pop_err();
 	return this;
@@ -2250,14 +2410,14 @@ c_App.prototype.p_OnRender=function(){
 }
 c_App.prototype.p_OnClose=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<177>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<177>";
 	bb_app_EndApp();
 	pop_err();
 	return 0;
 }
 c_App.prototype.p_OnBack=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<181>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<181>";
 	this.p_OnClose();
 	pop_err();
 	return 0;
@@ -2377,30 +2537,30 @@ c_DroneTournamentGame.prototype.p_GetUsername=function(){
 }
 c_DroneTournamentGame.prototype.p_SetupTutorial=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<255>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<265>";
 	var t_t_type=c_UnitType.m_new.call(new c_UnitType,(c_JsonObject.m_new3.call(new c_JsonObject,"{\"name\": \"T-Fighter\", \"speed\": \"120\", \"turn\": \"4\", \"armor\": \"5\", \"full_energy\": \"100\", \"charge_energy\": \"5\", \"image\": \"t_fighter.png\"}")));
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<256>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<266>";
 	dbg_object(dbg_object(this).m_game).m_opponents=c_List.m_new.call(new c_List);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<257>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<267>";
 	dbg_object(this).m_unit=c_Unit.m_new.call(new c_Unit,1,150.0,150.0,-30.0,t_t_type,"1",1);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<259>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<269>";
 	var t_eye_type=c_UnitType.m_new.call(new c_UnitType,(c_JsonObject.m_new3.call(new c_JsonObject,"{\"name\": \"Eye-Fighter\", \"speed\": \"100\", \"turn\": \"3\", \"armor\": \"2\", \"full_energy\": \"100\", \"charge_energy\": \"5\", \"image\": \"eye_fighter.png\"}")));
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<260>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<270>";
 	for(var t_i=0;t_i<=3;t_i=t_i+1){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<261>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<271>";
 		var t_xrand=bb_random_Rnd2(200.0,580.0);
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<262>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<272>";
 		var t_yrand=bb_random_Rnd2(200.0,420.0);
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<263>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<273>";
 		var t_opponent=c_Unit.m_new.call(new c_Unit,t_i+2,t_xrand,t_yrand,30.0,t_eye_type,"0",2);
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<264>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<274>";
 		dbg_object(dbg_object(this).m_game).m_opponents.p_AddLast(t_opponent);
 	}
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<266>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<276>";
 	dbg_object(this).m_moves=0;
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<267>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<277>";
 	dbg_object(dbg_object(this).m_game).m_particles=c_List2.m_new.call(new c_List2);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<268>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<278>";
 	dbg_object(this).m_game_state="tutorial";
 	pop_err();
 }
@@ -2429,7 +2589,29 @@ c_DroneTournamentGame.prototype.p_BuildGameListUI=function(){
 		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<195>";
 		dbg_object(this).m_game_select.p_AddLast3(t_game_ui);
 		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<196>";
-		t_y+=50;
+		t_y+=55;
+	}
+	pop_err();
+	return 0;
+}
+c_DroneTournamentGame.prototype.p_UsePlayerStateToSetGameState=function(){
+	push_err();
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<201>";
+	if(dbg_object(dbg_object(this).m_game).m_player_state=="plan"){
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<202>";
+		dbg_object(this).m_game_state="multiplayer";
+	}else{
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<203>";
+		if(dbg_object(dbg_object(this).m_game).m_player_state=="finished"){
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<204>";
+			dbg_object(this).m_game_state="end_turn";
+		}else{
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<205>";
+			if(dbg_object(dbg_object(this).m_game).m_player_state=="updated"){
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<206>";
+				dbg_object(this).m_game_state="updated";
+			}
+		}
 	}
 	pop_err();
 	return 0;
@@ -2464,9 +2646,9 @@ c_DroneTournamentGame.prototype.p_DetermineGameState=function(){
 					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<152>";
 					if(t_action=="Load Game"){
 						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<153>";
-						dbg_object(this).m_game.p_LoadFromJson(dbg_object(dbg_object(this).m_multiplayer_service).m_response);
+						dbg_object(this).m_game.p_LoadFromJson(dbg_object(dbg_object(this).m_multiplayer_service).m_response,dbg_object(dbg_object(this).m_user).m_player_id);
 						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<154>";
-						dbg_object(this).m_game_state="multiplayer";
+						this.p_UsePlayerStateToSetGameState();
 					}else{
 						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<155>";
 						if(t_action=="Turn Stop"){
@@ -2538,149 +2720,149 @@ c_DroneTournamentGame.prototype.p_JoinGame=function(){
 }
 c_DroneTournamentGame.prototype.p_LiveOpponentCount=function(t_enemies){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<245>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<255>";
 	var t_live_opponents=0;
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<246>";
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<246>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<256>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<256>";
 	var t_=t_enemies.p_ObjectEnumerator();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<246>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<256>";
 	while(t_.p_HasNext()){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<246>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<256>";
 		var t_enemy=t_.p_NextObject();
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<247>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<257>";
 		if(dbg_object(t_enemy).m_armor>0){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<248>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<258>";
 			t_live_opponents=t_live_opponents+1;
 		}
 	}
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<251>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<261>";
 	pop_err();
 	return t_live_opponents;
 }
 c_DroneTournamentGame.prototype.p_RunTutorial=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<283>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<293>";
 	if(this.m_moves<1){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<284>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<294>";
 		if(dbg_object(this.m_unit).m_armor<1){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<285>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<295>";
 			dbg_object(this).m_game_state="loser";
 		}else{
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<286>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<296>";
 			if(this.p_LiveOpponentCount(dbg_object(dbg_object(this).m_game).m_opponents)==0){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<287>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<297>";
 				dbg_object(this).m_game_state="winner";
 			}else{
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<288>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<298>";
 				if((bb_input_TouchDown(0))!=0){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<289>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<299>";
 					if((dbg_object(this).m_unit.p_ControlSelected(bb_input_TouchX(0),bb_input_TouchY(0)))!=0){
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<290>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<300>";
 						dbg_object(this).m_unit.p_SetControl(bb_input_TouchX(0),bb_input_TouchY(0),640.0,480.0);
 					}
 				}else{
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<293>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<303>";
 					dbg_object(this).m_unit.p_ControlReleased();
 				}
 			}
 		}
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<296>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<306>";
 		if((bb_input_KeyHit(13))!=0){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<297>";
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<297>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<307>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<307>";
 			var t_=dbg_object(dbg_object(this).m_game).m_opponents.p_ObjectEnumerator();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<297>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<307>";
 			while(t_.p_HasNext()){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<297>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<307>";
 				var t_enemy=t_.p_NextObject();
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<298>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<308>";
 				var t_xrand=((bb_random_Rnd2(-15.0,15.0))|0);
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<299>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<309>";
 				var t_yrand=((bb_random_Rnd2(-15.0,15.0))|0);
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<300>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<310>";
 				t_enemy.p_SetControl(dbg_object(dbg_object(dbg_object(this).m_unit).m_position).m_x+(t_xrand),dbg_object(dbg_object(dbg_object(this).m_unit).m_position).m_y+(t_yrand),640.0,480.0);
 			}
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<302>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<312>";
 			this.m_moves=30;
 		}
 	}else{
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<305>";
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<305>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<315>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<315>";
 		var t_2=dbg_object(dbg_object(this).m_game).m_opponents.p_ObjectEnumerator();
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<305>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<315>";
 		while(t_2.p_HasNext()){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<305>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<315>";
 			var t_enemy2=t_2.p_NextObject();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<306>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<316>";
 			if(dbg_object(t_enemy2).m_armor>0){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<307>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<317>";
 				t_enemy2.p_Update();
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<308>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<318>";
 				if(dbg_object(t_enemy2).m_currentEnergy==100.0){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<309>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<319>";
 					dbg_object(this.m_game).m_particles.p_AddLast2(c_Particle.m_new.call(new c_Particle,dbg_object(t_enemy2).m_position,2.5,1.0,dbg_object(t_enemy2).m_heading,20.0,dbg_object(t_enemy2).m_friendly));
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<310>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<320>";
 					t_enemy2.p_FireWeapon();
 				}
 			}
 		}
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<314>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<324>";
 		if(dbg_object(dbg_object(this).m_unit).m_armor>0){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<315>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<325>";
 			dbg_object(this).m_unit.p_Update();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<316>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<326>";
 			if(dbg_object(dbg_object(this).m_unit).m_currentEnergy==100.0){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<317>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<327>";
 				dbg_object(dbg_object(this).m_game).m_particles.p_AddLast2(c_Particle.m_new.call(new c_Particle,dbg_object(dbg_object(this).m_unit).m_position,2.5,1.0,dbg_object(dbg_object(this).m_unit).m_heading,20.0,dbg_object(dbg_object(this).m_unit).m_friendly));
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<318>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<328>";
 				dbg_object(this).m_unit.p_FireWeapon();
 			}
 		}
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<321>";
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<321>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<331>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<331>";
 		var t_3=dbg_object(dbg_object(this).m_game).m_particles.p_ObjectEnumerator();
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<321>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<331>";
 		while(t_3.p_HasNext()){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<321>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<331>";
 			var t_particle=t_3.p_NextObject();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<322>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<332>";
 			t_particle.p_Update();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<323>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<333>";
 			if((bb_main_Collided(t_particle,dbg_object(this).m_unit))!=0){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<324>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<334>";
 				dbg_object(this).m_unit.p_TakeDamage();
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<325>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<335>";
 				dbg_object(dbg_object(this).m_game).m_particles.p_Remove(t_particle);
 			}else{
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<327>";
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<327>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<337>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<337>";
 				var t_4=dbg_object(dbg_object(this).m_game).m_opponents.p_ObjectEnumerator();
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<327>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<337>";
 				while(t_4.p_HasNext()){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<327>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<337>";
 					var t_opponent=t_4.p_NextObject();
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<328>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<338>";
 					if((bb_main_Collided(t_particle,t_opponent))!=0){
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<329>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<339>";
 						t_opponent.p_TakeDamage();
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<330>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<340>";
 						dbg_object(dbg_object(this).m_game).m_particles.p_Remove(t_particle);
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<331>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<341>";
 						break;
 					}
 				}
 			}
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<336>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<346>";
 			if(dbg_object(t_particle).m_lifetime<=0){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<337>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<347>";
 				dbg_object(dbg_object(this).m_game).m_particles.p_Remove(t_particle);
 			}
 		}
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<340>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<350>";
 		this.m_moves-=1;
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<341>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<351>";
 		if(this.m_moves<1){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<342>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<352>";
 			dbg_object(this).m_unit.p_SetControl(dbg_object(dbg_object(dbg_object(this).m_unit).m_position).m_x+dbg_object(dbg_object(dbg_object(this).m_unit).m_velocity).m_x,dbg_object(dbg_object(dbg_object(this).m_unit).m_position).m_y+dbg_object(dbg_object(dbg_object(this).m_unit).m_velocity).m_y,640.0,480.0);
 		}
 	}
@@ -2688,193 +2870,193 @@ c_DroneTournamentGame.prototype.p_RunTutorial=function(){
 }
 c_DroneTournamentGame.prototype.p_BuildMoveJson=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<412>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<422>";
 	var t_first=1;
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<413>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<423>";
 	var t_move_json="{ \"data\" : { \"player_id\": "+dbg_object(this.m_user).m_player_id+", ";
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<414>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<424>";
 	t_move_json=t_move_json+"\"moves\" : [ ";
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<416>";
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<416>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<426>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<426>";
 	var t_=dbg_object(dbg_object(this).m_game).m_units.p_Keys().p_ObjectEnumerator();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<416>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<426>";
 	while(t_.p_HasNext()){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<416>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<426>";
 		var t_unit_id=t_.p_NextObject();
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<417>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<427>";
 		var t_unit=dbg_object(dbg_object(this).m_game).m_units.p_Get2(t_unit_id);
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<418>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<428>";
 		if(dbg_object(t_unit).m_player_id==dbg_object(this.m_user).m_player_id){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<419>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<429>";
 			if(t_first==1){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<420>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<430>";
 				t_first=0;
 			}else{
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<422>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<432>";
 				t_move_json=t_move_json+", ";
 			}
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<424>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<434>";
 			t_move_json=t_move_json+("{ \"unit_id\": "+String(dbg_object(t_unit).m_unit_id)+", ");
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<425>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<435>";
 			t_move_json=t_move_json+("\"x\": "+String(dbg_object(dbg_object(t_unit).m_position).m_x)+", ");
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<426>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<436>";
 			t_move_json=t_move_json+("\"y\": "+String(dbg_object(dbg_object(t_unit).m_position).m_y)+", ");
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<427>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<437>";
 			t_move_json=t_move_json+("\"control-x\": "+String(dbg_object(dbg_object(dbg_object(t_unit).m_control).m_position).m_x)+", ");
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<428>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<438>";
 			t_move_json=t_move_json+("\"control-y\": "+String(dbg_object(dbg_object(dbg_object(t_unit).m_control).m_position).m_y)+", ");
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<429>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<439>";
 			t_move_json=t_move_json+("\"control-heading\": "+String(dbg_object(dbg_object(t_unit).m_control).m_heading)+", ");
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<430>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<440>";
 			t_move_json=t_move_json+("\"heading\": "+String(dbg_object(t_unit).m_heading));
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<431>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<441>";
 			t_move_json=t_move_json+" }";
 		}
 	}
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<434>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<444>";
 	t_move_json=t_move_json+" ] } }";
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<436>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<446>";
 	pop_err();
 	return t_move_json;
 }
 c_DroneTournamentGame.prototype.p_EndTurn=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<406>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<416>";
 	var t_move_json=this.p_BuildMoveJson();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<407>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<417>";
 	dbg_object(this).m_multiplayer_service.p_PostJsonRequest("/end_turn/"+dbg_object(dbg_object(this).m_game).m_id,t_move_json);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<408>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<418>";
 	dbg_object(this).m_game_state="server";
 	pop_err();
 }
 c_DroneTournamentGame.prototype.p_UserPlanMoves=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<384>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<394>";
 	if((bb_input_TouchDown(0))!=0){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<385>";
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<385>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<395>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<395>";
 		var t_=dbg_object(dbg_object(this).m_game).m_units.p_Keys().p_ObjectEnumerator();
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<385>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<395>";
 		while(t_.p_HasNext()){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<385>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<395>";
 			var t_unit_id=t_.p_NextObject();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<386>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<396>";
 			var t_unit=dbg_object(dbg_object(this).m_game).m_units.p_Get2(t_unit_id);
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<387>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<397>";
 			if(dbg_object(t_unit).m_player_id==dbg_object(this.m_user).m_player_id && ((t_unit.p_ControlSelected(bb_input_TouchX(0),bb_input_TouchY(0)))!=0)){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<388>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<398>";
 				t_unit.p_SetControl(bb_input_TouchX(0),bb_input_TouchY(0),640.0,480.0);
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<389>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<399>";
 				break;
 			}
 		}
 	}else{
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<393>";
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<393>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<403>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<403>";
 		var t_2=dbg_object(dbg_object(this).m_game).m_units.p_Keys().p_ObjectEnumerator();
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<393>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<403>";
 		while(t_2.p_HasNext()){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<393>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<403>";
 			var t_unit_id2=t_2.p_NextObject();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<394>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<404>";
 			var t_unit2=dbg_object(dbg_object(this).m_game).m_units.p_Get2(t_unit_id2);
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<395>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<405>";
 			t_unit2.p_ControlReleased();
 		}
 	}
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<399>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<409>";
 	if((bb_input_KeyHit(13))!=0){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<400>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<410>";
 		this.p_EndTurn();
 	}
 	pop_err();
 }
 c_DroneTournamentGame.prototype.p_GetNextTurn=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<441>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<451>";
 	dbg_object(this).m_multiplayer_service.p_GetRequest("/next_turn/"+dbg_object(dbg_object(this).m_game).m_id+"/"+dbg_object(dbg_object(this).m_user).m_player_id);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<442>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<452>";
 	dbg_object(this).m_game_state="server";
 	pop_err();
 }
 c_DroneTournamentGame.prototype.p_RunMultiplayer=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<348>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<358>";
 	if(dbg_object(this).m_moves>0){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<349>";
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<349>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<359>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<359>";
 		var t_=dbg_object(dbg_object(this).m_game).m_units.p_Keys().p_ObjectEnumerator();
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<349>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<359>";
 		while(t_.p_HasNext()){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<349>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<359>";
 			var t_unit_id=t_.p_NextObject();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<350>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<360>";
 			var t_current_unit=dbg_object(dbg_object(this).m_game).m_units.p_Get2(t_unit_id);
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<351>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<361>";
 			if(dbg_object(t_current_unit).m_armor>0){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<352>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<362>";
 				t_current_unit.p_Update();
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<353>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<363>";
 				if(dbg_object(t_current_unit).m_currentEnergy==100.0){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<354>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<364>";
 					dbg_object(this.m_game).m_particles.p_AddLast2(c_Particle.m_new.call(new c_Particle,dbg_object(t_current_unit).m_position,2.5,1.0,dbg_object(t_current_unit).m_heading,20.0,dbg_object(t_current_unit).m_friendly));
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<355>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<365>";
 					t_current_unit.p_FireWeapon();
 				}
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<357>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<367>";
 				if(this.m_moves==1){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<358>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<368>";
 					t_current_unit.p_SetControl(dbg_object(dbg_object(t_current_unit).m_position).m_x+dbg_object(dbg_object(t_current_unit).m_velocity).m_x,dbg_object(dbg_object(t_current_unit).m_position).m_y+dbg_object(dbg_object(t_current_unit).m_velocity).m_y,640.0,480.0);
 				}
 			}
 		}
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<362>";
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<362>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<372>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<372>";
 		var t_2=dbg_object(dbg_object(this).m_game).m_particles.p_ObjectEnumerator();
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<362>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<372>";
 		while(t_2.p_HasNext()){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<362>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<372>";
 			var t_particle=t_2.p_NextObject();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<363>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<373>";
 			t_particle.p_Update();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<364>";
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<364>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<374>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<374>";
 			var t_3=dbg_object(dbg_object(this).m_game).m_units.p_Keys().p_ObjectEnumerator();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<364>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<374>";
 			while(t_3.p_HasNext()){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<364>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<374>";
 				var t_unit_id2=t_3.p_NextObject();
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<365>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<375>";
 				var t_current_unit2=dbg_object(dbg_object(this).m_game).m_units.p_Get2(t_unit_id2);
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<366>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<376>";
 				if((bb_main_Collided(t_particle,t_current_unit2))!=0){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<367>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<377>";
 					t_current_unit2.p_TakeDamage();
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<368>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<378>";
 					dbg_object(dbg_object(this).m_game).m_particles.p_Remove(t_particle);
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<369>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<379>";
 					break;
 				}
 			}
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<373>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<383>";
 			if(dbg_object(t_particle).m_lifetime<=0){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<374>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<384>";
 				dbg_object(dbg_object(this).m_game).m_particles.p_Remove(t_particle);
 			}
 		}
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<377>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<387>";
 		dbg_object(this).m_moves-=1;
 	}else{
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<379>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<389>";
 		dbg_object(this).m_game_state="updated";
 	}
 	pop_err();
 }
 c_DroneTournamentGame.prototype.p_CheckIfAllPlayersUpdated=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<446>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<456>";
 	dbg_object(this).m_multiplayer_service.p_GetRequest("/update_state/"+dbg_object(dbg_object(this).m_game).m_id+"/"+dbg_object(dbg_object(this).m_user).m_player_id);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<447>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<457>";
 	dbg_object(this).m_game_state="server";
 	pop_err();
 }
@@ -3007,101 +3189,101 @@ c_DroneTournamentGame.prototype.p_OnUpdate=function(){
 }
 c_DroneTournamentGame.prototype.p_OnRender=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<201>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<211>";
 	bb_graphics_Cls(100.0,100.0,100.0);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<203>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<213>";
 	if(this.m_game_state=="setup"){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<204>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<214>";
 		bb_graphics_DrawText("Enter a username: "+dbg_object(this.m_user).m_username,50.0,200.0,0.0,0.0);
 	}else{
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<205>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<215>";
 		if(this.m_game_state=="menu"){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<206>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<216>";
 			dbg_object(this).m_play_tutorial_button.p_Draw();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<207>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<217>";
 			dbg_object(this).m_play_multiplayer_button.p_Draw();
 		}else{
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<208>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<218>";
 			if(this.m_game_state=="list_games"){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<209>";
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<209>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<219>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<219>";
 				var t_=dbg_object(this).m_game_select.p_ObjectEnumerator();
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<209>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<219>";
 				while(t_.p_HasNext()){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<209>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<219>";
 					var t_game_ui=t_.p_NextObject();
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<210>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<220>";
 					t_game_ui.p_Draw();
 				}
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<212>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<222>";
 				dbg_object(this).m_join_button.p_Draw();
 			}else{
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<213>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<223>";
 				if(dbg_object(this).m_game_state=="multiplayer" || dbg_object(this).m_game_state=="multiplayer_ready" || dbg_object(this).m_game_state=="end_turn" || dbg_object(this).m_game_state=="updated"){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<214>";
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<214>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<224>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<224>";
 					var t_2=dbg_object(dbg_object(this).m_game).m_units.p_Keys().p_ObjectEnumerator();
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<214>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<224>";
 					while(t_2.p_HasNext()){
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<214>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<224>";
 						var t_key=t_2.p_NextObject();
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<215>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<225>";
 						var t_current_unit=dbg_object(dbg_object(this).m_game).m_units.p_Get2(t_key);
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<216>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<226>";
 						if(dbg_object(t_current_unit).m_armor>0){
-							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<217>";
+							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<227>";
 							t_current_unit.p_DrawStatic(dbg_object(dbg_object(this).m_user).m_player_id);
 						}
 					}
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<220>";
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<220>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<230>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<230>";
 					var t_3=dbg_object(dbg_object(this).m_game).m_particles.p_ObjectEnumerator();
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<220>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<230>";
 					while(t_3.p_HasNext()){
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<220>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<230>";
 						var t_part=t_3.p_NextObject();
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<221>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<231>";
 						t_part.p_Draw();
 					}
 				}else{
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<223>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<233>";
 					if(dbg_object(this).m_game_state=="loser"){
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<224>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<234>";
 						bb_graphics_DrawImage(this.m_lose_button,10.0,100.0,0);
 					}else{
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<225>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<235>";
 						if(dbg_object(this).m_game_state=="winner"){
-							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<226>";
+							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<236>";
 							bb_graphics_DrawImage(this.m_win_button,10.0,100.0,0);
 						}else{
-							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<227>";
+							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<237>";
 							if(dbg_object(this).m_game_state=="tutorial"){
-								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<228>";
+								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<238>";
 								if(dbg_object(this.m_unit).m_armor>0){
-									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<229>";
+									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<239>";
 									this.m_unit.p_DrawStatic("1");
 								}
-								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<232>";
-								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<232>";
+								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<242>";
+								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<242>";
 								var t_4=dbg_object(dbg_object(this).m_game).m_opponents.p_ObjectEnumerator();
-								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<232>";
+								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<242>";
 								while(t_4.p_HasNext()){
-									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<232>";
+									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<242>";
 									var t_enemy=t_4.p_NextObject();
-									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<233>";
+									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<243>";
 									if(dbg_object(t_enemy).m_armor>0){
-										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<234>";
+										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<244>";
 										t_enemy.p_DrawStatic("2");
 									}
 								}
-								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<238>";
-								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<238>";
+								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<248>";
+								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<248>";
 								var t_5=dbg_object(dbg_object(this).m_game).m_particles.p_ObjectEnumerator();
-								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<238>";
+								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<248>";
 								while(t_5.p_HasNext()){
-									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<238>";
+									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<248>";
 									var t_part2=t_5.p_NextObject();
-									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<239>";
+									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<249>";
 									t_part2.p_Draw();
 								}
 							}
@@ -3124,109 +3306,109 @@ function c_GameDelegate(){
 c_GameDelegate.prototype=extend_class(BBGameDelegate);
 c_GameDelegate.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<65>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<65>";
 	pop_err();
 	return this;
 }
 c_GameDelegate.prototype.StartGame=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<75>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<75>";
 	this.m__graphics=(new gxtkGraphics);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<76>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<76>";
 	bb_graphics_SetGraphicsDevice(this.m__graphics);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<77>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<77>";
 	bb_graphics_SetFont(null,32);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<79>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<79>";
 	this.m__audio=(new gxtkAudio);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<80>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<80>";
 	bb_audio_SetAudioDevice(this.m__audio);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<82>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<82>";
 	this.m__input=c_InputDevice.m_new.call(new c_InputDevice);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<83>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<83>";
 	bb_input_SetInputDevice(this.m__input);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<85>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<85>";
 	bb_app_ValidateDeviceWindow(false);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<87>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<87>";
 	bb_app_EnumDisplayModes();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<89>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<89>";
 	bb_app__app.p_OnCreate();
 	pop_err();
 }
 c_GameDelegate.prototype.SuspendGame=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<93>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<93>";
 	bb_app__app.p_OnSuspend();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<94>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<94>";
 	this.m__audio.Suspend();
 	pop_err();
 }
 c_GameDelegate.prototype.ResumeGame=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<98>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<98>";
 	this.m__audio.Resume();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<99>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<99>";
 	bb_app__app.p_OnResume();
 	pop_err();
 }
 c_GameDelegate.prototype.UpdateGame=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<103>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<103>";
 	bb_app_ValidateDeviceWindow(true);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<104>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<104>";
 	this.m__input.p_BeginUpdate();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<105>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<105>";
 	bb_app__app.p_OnUpdate();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<106>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<106>";
 	this.m__input.p_EndUpdate();
 	pop_err();
 }
 c_GameDelegate.prototype.RenderGame=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<110>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<110>";
 	bb_app_ValidateDeviceWindow(true);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<111>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<111>";
 	var t_mode=this.m__graphics.BeginRender();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<112>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<112>";
 	if((t_mode)!=0){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<112>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<112>";
 		bb_graphics_BeginRender();
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<113>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<113>";
 	if(t_mode==2){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<113>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<113>";
 		bb_app__app.p_OnLoading();
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<113>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<113>";
 		bb_app__app.p_OnRender();
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<114>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<114>";
 	if((t_mode)!=0){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<114>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<114>";
 		bb_graphics_EndRender();
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<115>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<115>";
 	this.m__graphics.EndRender();
 	pop_err();
 }
 c_GameDelegate.prototype.KeyEvent=function(t_event,t_data){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<119>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<119>";
 	this.m__input.p_KeyEvent(t_event,t_data);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<120>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<120>";
 	if(t_event!=1){
 		pop_err();
 		return;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<121>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<121>";
 	var t_1=t_data;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<122>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<122>";
 	if(t_1==432){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<123>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<123>";
 		bb_app__app.p_OnClose();
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<124>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<124>";
 		if(t_1==416){
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<125>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<125>";
 			bb_app__app.p_OnBack();
 		}
 	}
@@ -3234,25 +3416,25 @@ c_GameDelegate.prototype.KeyEvent=function(t_event,t_data){
 }
 c_GameDelegate.prototype.MouseEvent=function(t_event,t_data,t_x,t_y){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<130>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<130>";
 	this.m__input.p_MouseEvent(t_event,t_data,t_x,t_y);
 	pop_err();
 }
 c_GameDelegate.prototype.TouchEvent=function(t_event,t_data,t_x,t_y){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<134>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<134>";
 	this.m__input.p_TouchEvent(t_event,t_data,t_x,t_y);
 	pop_err();
 }
 c_GameDelegate.prototype.MotionEvent=function(t_event,t_data,t_x,t_y,t_z){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<138>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<138>";
 	this.m__input.p_MotionEvent(t_event,t_data,t_x,t_y,t_z);
 	pop_err();
 }
 c_GameDelegate.prototype.DiscardGraphics=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<142>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<142>";
 	this.m__graphics.DiscardGraphics();
 	pop_err();
 }
@@ -3260,7 +3442,7 @@ var bb_app__delegate=null;
 var bb_app__game=null;
 function bbMain(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<490>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<500>";
 	c_DroneTournamentGame.m_new.call(new c_DroneTournamentGame);
 	pop_err();
 	return 0;
@@ -3268,7 +3450,7 @@ function bbMain(){
 var bb_graphics_device=null;
 function bb_graphics_SetGraphicsDevice(t_dev){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<63>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<63>";
 	bb_graphics_device=t_dev;
 	pop_err();
 	return 0;
@@ -3287,71 +3469,71 @@ function c_Image(){
 c_Image.m_DefaultFlags=0;
 c_Image.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<70>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<70>";
 	pop_err();
 	return this;
 }
 c_Image.prototype.p_SetHandle=function(t_tx,t_ty){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<114>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<114>";
 	dbg_object(this).m_tx=t_tx;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<115>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<115>";
 	dbg_object(this).m_ty=t_ty;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<116>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<116>";
 	dbg_object(this).m_flags=dbg_object(this).m_flags&-2;
 	pop_err();
 	return 0;
 }
 c_Image.prototype.p_ApplyFlags=function(t_iflags){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<197>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<197>";
 	this.m_flags=t_iflags;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<199>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<199>";
 	if((this.m_flags&2)!=0){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<200>";
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<200>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<200>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<200>";
 		var t_=this.m_frames;
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<200>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<200>";
 		var t_2=0;
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<200>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<200>";
 		while(t_2<t_.length){
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<200>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<200>";
 			var t_f=dbg_array(t_,t_2)[dbg_index];
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<200>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<200>";
 			t_2=t_2+1;
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<201>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<201>";
 			dbg_object(t_f).m_x+=1;
 		}
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<203>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<203>";
 		this.m_width-=2;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<206>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<206>";
 	if((this.m_flags&4)!=0){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<207>";
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<207>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<207>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<207>";
 		var t_3=this.m_frames;
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<207>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<207>";
 		var t_4=0;
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<207>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<207>";
 		while(t_4<t_3.length){
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<207>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<207>";
 			var t_f2=dbg_array(t_3,t_4)[dbg_index];
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<207>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<207>";
 			t_4=t_4+1;
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<208>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<208>";
 			dbg_object(t_f2).m_y+=1;
 		}
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<210>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<210>";
 		this.m_height-=2;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<213>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<213>";
 	if((this.m_flags&1)!=0){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<214>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<214>";
 		this.p_SetHandle((this.m_width)/2.0,(this.m_height)/2.0);
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<217>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<217>";
 	if(this.m_frames.length==1 && dbg_object(dbg_array(this.m_frames,0)[dbg_index]).m_x==0 && dbg_object(dbg_array(this.m_frames,0)[dbg_index]).m_y==0 && this.m_width==this.m_surface.Width() && this.m_height==this.m_surface.Height()){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<218>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<218>";
 		this.m_flags|=65536;
 	}
 	pop_err();
@@ -3359,91 +3541,91 @@ c_Image.prototype.p_ApplyFlags=function(t_iflags){
 }
 c_Image.prototype.p_Init=function(t_surf,t_nframes,t_iflags){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<143>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<143>";
 	if((this.m_surface)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<143>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<143>";
 		error("Image already initialized");
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<144>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<144>";
 	this.m_surface=t_surf;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<146>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<146>";
 	this.m_width=((this.m_surface.Width()/t_nframes)|0);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<147>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<147>";
 	this.m_height=this.m_surface.Height();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<149>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<149>";
 	this.m_frames=new_object_array(t_nframes);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<150>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<150>";
 	for(var t_i=0;t_i<t_nframes;t_i=t_i+1){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<151>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<151>";
 		dbg_array(this.m_frames,t_i)[dbg_index]=c_Frame.m_new.call(new c_Frame,t_i*this.m_width,0);
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<154>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<154>";
 	this.p_ApplyFlags(t_iflags);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<155>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<155>";
 	pop_err();
 	return this;
 }
 c_Image.prototype.p_Init2=function(t_surf,t_x,t_y,t_iwidth,t_iheight,t_nframes,t_iflags,t_src,t_srcx,t_srcy,t_srcw,t_srch){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<159>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<159>";
 	if((this.m_surface)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<159>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<159>";
 		error("Image already initialized");
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<160>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<160>";
 	this.m_surface=t_surf;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<161>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<161>";
 	this.m_source=t_src;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<163>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<163>";
 	this.m_width=t_iwidth;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<164>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<164>";
 	this.m_height=t_iheight;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<166>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<166>";
 	this.m_frames=new_object_array(t_nframes);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<168>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<168>";
 	var t_ix=t_x;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<168>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<168>";
 	var t_iy=t_y;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<170>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<170>";
 	for(var t_i=0;t_i<t_nframes;t_i=t_i+1){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<171>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<171>";
 		if(t_ix+this.m_width>t_srcw){
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<172>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<172>";
 			t_ix=0;
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<173>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<173>";
 			t_iy+=this.m_height;
 		}
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<175>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<175>";
 		if(t_ix+this.m_width>t_srcw || t_iy+this.m_height>t_srch){
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<176>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<176>";
 			error("Image frame outside surface");
 		}
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<178>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<178>";
 		dbg_array(this.m_frames,t_i)[dbg_index]=c_Frame.m_new.call(new c_Frame,t_ix+t_srcx,t_iy+t_srcy);
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<179>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<179>";
 		t_ix+=this.m_width;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<182>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<182>";
 	this.p_ApplyFlags(t_iflags);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<183>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<183>";
 	pop_err();
 	return this;
 }
 c_Image.prototype.p_Width=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<81>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<81>";
 	pop_err();
 	return this.m_width;
 }
 c_Image.prototype.p_Height=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<85>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<85>";
 	pop_err();
 	return this.m_height;
 }
 c_Image.prototype.p_Frames=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<93>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<93>";
 	var t_=this.m_frames.length;
 	pop_err();
 	return t_;
@@ -3475,17 +3657,17 @@ function c_GraphicsContext(){
 }
 c_GraphicsContext.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<29>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<29>";
 	pop_err();
 	return this;
 }
 c_GraphicsContext.prototype.p_Validate=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<40>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<40>";
 	if((this.m_matDirty)!=0){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<41>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<41>";
 		bb_graphics_renderDevice.SetMatrix(dbg_object(bb_graphics_context).m_ix,dbg_object(bb_graphics_context).m_iy,dbg_object(bb_graphics_context).m_jx,dbg_object(bb_graphics_context).m_jy,dbg_object(bb_graphics_context).m_tx,dbg_object(bb_graphics_context).m_ty);
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<42>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<42>";
 		this.m_matDirty=0;
 	}
 	pop_err();
@@ -3494,21 +3676,21 @@ c_GraphicsContext.prototype.p_Validate=function(){
 var bb_graphics_context=null;
 function bb_data_FixDataPath(t_path){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/data.monkey<7>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/data.monkey<7>";
 	var t_i=t_path.indexOf(":/",0);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/data.monkey<8>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/data.monkey<8>";
 	if(t_i!=-1 && t_path.indexOf("/",0)==t_i+1){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/data.monkey<8>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/data.monkey<8>";
 		pop_err();
 		return t_path;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/data.monkey<9>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/data.monkey<9>";
 	if(string_startswith(t_path,"./") || string_startswith(t_path,"/")){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/data.monkey<9>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/data.monkey<9>";
 		pop_err();
 		return t_path;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/data.monkey<10>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/data.monkey<10>";
 	var t_="monkey://data/"+t_path;
 	pop_err();
 	return t_;
@@ -3520,26 +3702,26 @@ function c_Frame(){
 }
 c_Frame.m_new=function(t_x,t_y){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<23>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<23>";
 	dbg_object(this).m_x=t_x;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<24>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<24>";
 	dbg_object(this).m_y=t_y;
 	pop_err();
 	return this;
 }
 c_Frame.m_new2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<18>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<18>";
 	pop_err();
 	return this;
 }
 function bb_graphics_LoadImage(t_path,t_frameCount,t_flags){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<239>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<239>";
 	var t_surf=bb_graphics_device.LoadSurface(bb_data_FixDataPath(t_path));
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<240>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<240>";
 	if((t_surf)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<240>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<240>";
 		var t_=(c_Image.m_new.call(new c_Image)).p_Init(t_surf,t_frameCount,t_flags);
 		pop_err();
 		return t_;
@@ -3549,11 +3731,11 @@ function bb_graphics_LoadImage(t_path,t_frameCount,t_flags){
 }
 function bb_graphics_LoadImage2(t_path,t_frameWidth,t_frameHeight,t_frameCount,t_flags){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<244>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<244>";
 	var t_surf=bb_graphics_device.LoadSurface(bb_data_FixDataPath(t_path));
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<245>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<245>";
 	if((t_surf)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<245>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<245>";
 		var t_=(c_Image.m_new.call(new c_Image)).p_Init2(t_surf,0,0,t_frameWidth,t_frameHeight,t_frameCount,t_flags,null,0,0,t_surf.Width(),t_surf.Height());
 		pop_err();
 		return t_;
@@ -3563,21 +3745,21 @@ function bb_graphics_LoadImage2(t_path,t_frameWidth,t_frameHeight,t_frameCount,t
 }
 function bb_graphics_SetFont(t_font,t_firstChar){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<548>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<548>";
 	if(!((t_font)!=null)){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<549>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<549>";
 		if(!((dbg_object(bb_graphics_context).m_defaultFont)!=null)){
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<550>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<550>";
 			dbg_object(bb_graphics_context).m_defaultFont=bb_graphics_LoadImage("mojo_font.png",96,2);
 		}
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<552>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<552>";
 		t_font=dbg_object(bb_graphics_context).m_defaultFont;
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<553>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<553>";
 		t_firstChar=32;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<555>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<555>";
 	dbg_object(bb_graphics_context).m_font=t_font;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<556>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<556>";
 	dbg_object(bb_graphics_context).m_firstChar=t_firstChar;
 	pop_err();
 	return 0;
@@ -3585,7 +3767,7 @@ function bb_graphics_SetFont(t_font,t_firstChar){
 var bb_audio_device=null;
 function bb_audio_SetAudioDevice(t_dev){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/audio.monkey<22>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/audio.monkey<22>";
 	bb_audio_device=t_dev;
 	pop_err();
 	return 0;
@@ -3610,9 +3792,9 @@ function c_InputDevice(){
 }
 c_InputDevice.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<26>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<26>";
 	for(var t_i=0;t_i<4;t_i=t_i+1){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<27>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<27>";
 		dbg_array(this.m__joyStates,t_i)[dbg_index]=c_JoyState.m_new.call(new c_JoyState);
 	}
 	pop_err();
@@ -3620,45 +3802,45 @@ c_InputDevice.m_new=function(){
 }
 c_InputDevice.prototype.p_PutKeyHit=function(t_key){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<237>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<241>";
 	if(this.m__keyHitPut==this.m__keyHitQueue.length){
 		pop_err();
 		return;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<238>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<242>";
 	dbg_array(this.m__keyHit,t_key)[dbg_index]+=1;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<239>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<243>";
 	dbg_array(this.m__keyHitQueue,this.m__keyHitPut)[dbg_index]=t_key;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<240>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<244>";
 	this.m__keyHitPut+=1;
 	pop_err();
 }
 c_InputDevice.prototype.p_BeginUpdate=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<189>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<193>";
 	for(var t_i=0;t_i<4;t_i=t_i+1){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<190>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<194>";
 		var t_state=dbg_array(this.m__joyStates,t_i)[dbg_index];
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<191>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<195>";
 		if(!BBGame.Game().PollJoystick(t_i,dbg_object(t_state).m_joyx,dbg_object(t_state).m_joyy,dbg_object(t_state).m_joyz,dbg_object(t_state).m_buttons)){
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<191>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<195>";
 			break;
 		}
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<192>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<196>";
 		for(var t_j=0;t_j<32;t_j=t_j+1){
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<193>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<197>";
 			var t_key=256+t_i*32+t_j;
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<194>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<198>";
 			if(dbg_array(dbg_object(t_state).m_buttons,t_j)[dbg_index]){
-				err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<195>";
+				err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<199>";
 				if(!dbg_array(this.m__keyDown,t_key)[dbg_index]){
-					err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<196>";
+					err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<200>";
 					dbg_array(this.m__keyDown,t_key)[dbg_index]=true;
-					err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<197>";
+					err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<201>";
 					this.p_PutKeyHit(t_key);
 				}
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<200>";
+				err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<204>";
 				dbg_array(this.m__keyDown,t_key)[dbg_index]=false;
 			}
 		}
@@ -3667,74 +3849,74 @@ c_InputDevice.prototype.p_BeginUpdate=function(){
 }
 c_InputDevice.prototype.p_EndUpdate=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<207>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<211>";
 	for(var t_i=0;t_i<this.m__keyHitPut;t_i=t_i+1){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<208>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<212>";
 		dbg_array(this.m__keyHit,dbg_array(this.m__keyHitQueue,t_i)[dbg_index])[dbg_index]=0;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<210>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<214>";
 	this.m__keyHitPut=0;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<211>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<215>";
 	this.m__charGet=0;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<212>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<216>";
 	this.m__charPut=0;
 	pop_err();
 }
 c_InputDevice.prototype.p_KeyEvent=function(t_event,t_data){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<111>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<115>";
 	var t_1=t_event;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<112>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<116>";
 	if(t_1==1){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<113>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<117>";
 		if(!dbg_array(this.m__keyDown,t_data)[dbg_index]){
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<114>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<118>";
 			dbg_array(this.m__keyDown,t_data)[dbg_index]=true;
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<115>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<119>";
 			this.p_PutKeyHit(t_data);
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<116>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<120>";
 			if(t_data==1){
-				err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<117>";
+				err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<121>";
 				dbg_array(this.m__keyDown,384)[dbg_index]=true;
-				err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<118>";
+				err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<122>";
 				this.p_PutKeyHit(384);
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<119>";
+				err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<123>";
 				if(t_data==384){
-					err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<120>";
+					err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<124>";
 					dbg_array(this.m__keyDown,1)[dbg_index]=true;
-					err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<121>";
+					err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<125>";
 					this.p_PutKeyHit(1);
 				}
 			}
 		}
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<124>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<128>";
 		if(t_1==2){
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<125>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<129>";
 			if(dbg_array(this.m__keyDown,t_data)[dbg_index]){
-				err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<126>";
+				err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<130>";
 				dbg_array(this.m__keyDown,t_data)[dbg_index]=false;
-				err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<127>";
+				err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<131>";
 				if(t_data==1){
-					err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<128>";
+					err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<132>";
 					dbg_array(this.m__keyDown,384)[dbg_index]=false;
 				}else{
-					err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<129>";
+					err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<133>";
 					if(t_data==384){
-						err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<130>";
+						err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<134>";
 						dbg_array(this.m__keyDown,1)[dbg_index]=false;
 					}
 				}
 			}
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<133>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<137>";
 			if(t_1==3){
-				err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<134>";
+				err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<138>";
 				if(this.m__charPut<this.m__charQueue.length){
-					err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<135>";
+					err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<139>";
 					dbg_array(this.m__charQueue,this.m__charPut)[dbg_index]=t_data;
-					err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<136>";
+					err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<140>";
 					this.m__charPut+=1;
 				}
 			}
@@ -3744,21 +3926,21 @@ c_InputDevice.prototype.p_KeyEvent=function(t_event,t_data){
 }
 c_InputDevice.prototype.p_MouseEvent=function(t_event,t_data,t_x,t_y){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<142>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<146>";
 	var t_2=t_event;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<143>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<147>";
 	if(t_2==4){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<144>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<148>";
 		this.p_KeyEvent(1,1+t_data);
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<145>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<149>";
 		if(t_2==5){
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<146>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<150>";
 			this.p_KeyEvent(2,1+t_data);
 			pop_err();
 			return;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<148>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<152>";
 			if(t_2==6){
 			}else{
 				pop_err();
@@ -3766,33 +3948,33 @@ c_InputDevice.prototype.p_MouseEvent=function(t_event,t_data,t_x,t_y){
 			}
 		}
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<152>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<156>";
 	this.m__mouseX=t_x;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<153>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<157>";
 	this.m__mouseY=t_y;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<154>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<158>";
 	dbg_array(this.m__touchX,0)[dbg_index]=t_x;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<155>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<159>";
 	dbg_array(this.m__touchY,0)[dbg_index]=t_y;
 	pop_err();
 }
 c_InputDevice.prototype.p_TouchEvent=function(t_event,t_data,t_x,t_y){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<159>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<163>";
 	var t_3=t_event;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<160>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<164>";
 	if(t_3==7){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<161>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<165>";
 		this.p_KeyEvent(1,384+t_data);
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<162>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<166>";
 		if(t_3==8){
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<163>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<167>";
 			this.p_KeyEvent(2,384+t_data);
 			pop_err();
 			return;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<165>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<169>";
 			if(t_3==9){
 			}else{
 				pop_err();
@@ -3800,106 +3982,106 @@ c_InputDevice.prototype.p_TouchEvent=function(t_event,t_data,t_x,t_y){
 			}
 		}
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<169>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<173>";
 	dbg_array(this.m__touchX,t_data)[dbg_index]=t_x;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<170>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<174>";
 	dbg_array(this.m__touchY,t_data)[dbg_index]=t_y;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<171>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<175>";
 	if(t_data==0){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<172>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<176>";
 		this.m__mouseX=t_x;
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<173>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<177>";
 		this.m__mouseY=t_y;
 	}
 	pop_err();
 }
 c_InputDevice.prototype.p_MotionEvent=function(t_event,t_data,t_x,t_y,t_z){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<178>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<182>";
 	var t_4=t_event;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<179>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<183>";
 	if(t_4==10){
 	}else{
 		pop_err();
 		return;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<183>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<187>";
 	this.m__accelX=t_x;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<184>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<188>";
 	this.m__accelY=t_y;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<185>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<189>";
 	this.m__accelZ=t_z;
 	pop_err();
 }
 c_InputDevice.prototype.p_SetKeyboardEnabled=function(t_enabled){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<42>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<42>";
 	BBGame.Game().SetKeyboardEnabled(t_enabled);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<43>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<43>";
 	pop_err();
 	return 1;
 }
 c_InputDevice.prototype.p_GetChar=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<57>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<57>";
 	if(this.m__charGet==this.m__charPut){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<57>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<57>";
 		pop_err();
 		return 0;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<58>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<58>";
 	var t_chr=dbg_array(this.m__charQueue,this.m__charGet)[dbg_index];
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<59>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<59>";
 	this.m__charGet+=1;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<60>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<60>";
 	pop_err();
 	return t_chr;
 }
 c_InputDevice.prototype.p_KeyDown=function(t_key){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<47>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<47>";
 	if(t_key>0 && t_key<512){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<47>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<47>";
 		pop_err();
 		return dbg_array(this.m__keyDown,t_key)[dbg_index];
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<48>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<48>";
 	pop_err();
 	return false;
 }
 c_InputDevice.prototype.p_TouchX=function(t_index){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<77>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<77>";
 	if(t_index>=0 && t_index<32){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<77>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<77>";
 		pop_err();
 		return dbg_array(this.m__touchX,t_index)[dbg_index];
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<78>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<78>";
 	pop_err();
 	return 0.0;
 }
 c_InputDevice.prototype.p_TouchY=function(t_index){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<82>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<82>";
 	if(t_index>=0 && t_index<32){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<82>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<82>";
 		pop_err();
 		return dbg_array(this.m__touchY,t_index)[dbg_index];
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<83>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<83>";
 	pop_err();
 	return 0.0;
 }
 c_InputDevice.prototype.p_KeyHit=function(t_key){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<52>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<52>";
 	if(t_key>0 && t_key<512){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<52>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<52>";
 		pop_err();
 		return dbg_array(this.m__keyHit,t_key)[dbg_index];
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<53>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<53>";
 	pop_err();
 	return 0;
 }
@@ -3912,14 +4094,14 @@ function c_JoyState(){
 }
 c_JoyState.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/inputdevice.monkey<14>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<14>";
 	pop_err();
 	return this;
 }
 var bb_input_device=null;
 function bb_input_SetInputDevice(t_dev){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/input.monkey<22>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/input.monkey<22>";
 	bb_input_device=t_dev;
 	pop_err();
 	return 0;
@@ -3928,22 +4110,22 @@ var bb_app__devWidth=0;
 var bb_app__devHeight=0;
 function bb_app_ValidateDeviceWindow(t_notifyApp){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<57>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<57>";
 	var t_w=bb_app__game.GetDeviceWidth();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<58>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<58>";
 	var t_h=bb_app__game.GetDeviceHeight();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<59>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<59>";
 	if(t_w==bb_app__devWidth && t_h==bb_app__devHeight){
 		pop_err();
 		return;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<60>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<60>";
 	bb_app__devWidth=t_w;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<61>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<61>";
 	bb_app__devHeight=t_h;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<62>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<62>";
 	if(t_notifyApp){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<62>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<62>";
 		bb_app__app.p_OnResize();
 	}
 	pop_err();
@@ -3955,16 +4137,16 @@ function c_DisplayMode(){
 }
 c_DisplayMode.m_new=function(t_width,t_height){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<192>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<192>";
 	this.m__width=t_width;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<193>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<193>";
 	this.m__height=t_height;
 	pop_err();
 	return this;
 }
 c_DisplayMode.m_new2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<189>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<189>";
 	pop_err();
 	return this;
 }
@@ -3974,7 +4156,7 @@ function c_Map(){
 }
 c_Map.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<7>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<7>";
 	pop_err();
 	return this;
 }
@@ -3982,232 +4164,232 @@ c_Map.prototype.p_Compare=function(t_lhs,t_rhs){
 }
 c_Map.prototype.p_FindNode=function(t_key){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<157>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<157>";
 	var t_node=this.m_root;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<159>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<159>";
 	while((t_node)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<160>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<160>";
 		var t_cmp=this.p_Compare(t_key,dbg_object(t_node).m_key);
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<161>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<161>";
 		if(t_cmp>0){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<162>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<162>";
 			t_node=dbg_object(t_node).m_right;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<163>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<163>";
 			if(t_cmp<0){
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<164>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<164>";
 				t_node=dbg_object(t_node).m_left;
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<166>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<166>";
 				pop_err();
 				return t_node;
 			}
 		}
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<169>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<169>";
 	pop_err();
 	return t_node;
 }
 c_Map.prototype.p_Contains=function(t_key){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<25>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<25>";
 	var t_=this.p_FindNode(t_key)!=null;
 	pop_err();
 	return t_;
 }
 c_Map.prototype.p_RotateLeft=function(t_node){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<251>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<251>";
 	var t_child=dbg_object(t_node).m_right;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<252>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<252>";
 	dbg_object(t_node).m_right=dbg_object(t_child).m_left;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<253>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<253>";
 	if((dbg_object(t_child).m_left)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<254>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<254>";
 		dbg_object(dbg_object(t_child).m_left).m_parent=t_node;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<256>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<256>";
 	dbg_object(t_child).m_parent=dbg_object(t_node).m_parent;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<257>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<257>";
 	if((dbg_object(t_node).m_parent)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<258>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<258>";
 		if(t_node==dbg_object(dbg_object(t_node).m_parent).m_left){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<259>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<259>";
 			dbg_object(dbg_object(t_node).m_parent).m_left=t_child;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<261>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<261>";
 			dbg_object(dbg_object(t_node).m_parent).m_right=t_child;
 		}
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<264>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<264>";
 		this.m_root=t_child;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<266>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<266>";
 	dbg_object(t_child).m_left=t_node;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<267>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<267>";
 	dbg_object(t_node).m_parent=t_child;
 	pop_err();
 	return 0;
 }
 c_Map.prototype.p_RotateRight=function(t_node){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<271>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<271>";
 	var t_child=dbg_object(t_node).m_left;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<272>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<272>";
 	dbg_object(t_node).m_left=dbg_object(t_child).m_right;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<273>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<273>";
 	if((dbg_object(t_child).m_right)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<274>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<274>";
 		dbg_object(dbg_object(t_child).m_right).m_parent=t_node;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<276>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<276>";
 	dbg_object(t_child).m_parent=dbg_object(t_node).m_parent;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<277>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<277>";
 	if((dbg_object(t_node).m_parent)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<278>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<278>";
 		if(t_node==dbg_object(dbg_object(t_node).m_parent).m_right){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<279>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<279>";
 			dbg_object(dbg_object(t_node).m_parent).m_right=t_child;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<281>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<281>";
 			dbg_object(dbg_object(t_node).m_parent).m_left=t_child;
 		}
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<284>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<284>";
 		this.m_root=t_child;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<286>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<286>";
 	dbg_object(t_child).m_right=t_node;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<287>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<287>";
 	dbg_object(t_node).m_parent=t_child;
 	pop_err();
 	return 0;
 }
 c_Map.prototype.p_InsertFixup=function(t_node){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<212>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<212>";
 	while(((dbg_object(t_node).m_parent)!=null) && dbg_object(dbg_object(t_node).m_parent).m_color==-1 && ((dbg_object(dbg_object(t_node).m_parent).m_parent)!=null)){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<213>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<213>";
 		if(dbg_object(t_node).m_parent==dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_left){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<214>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<214>";
 			var t_uncle=dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_right;
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<215>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<215>";
 			if(((t_uncle)!=null) && dbg_object(t_uncle).m_color==-1){
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<216>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<216>";
 				dbg_object(dbg_object(t_node).m_parent).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<217>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<217>";
 				dbg_object(t_uncle).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<218>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<218>";
 				dbg_object(dbg_object(t_uncle).m_parent).m_color=-1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<219>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<219>";
 				t_node=dbg_object(t_uncle).m_parent;
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<221>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<221>";
 				if(t_node==dbg_object(dbg_object(t_node).m_parent).m_right){
-					err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<222>";
+					err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<222>";
 					t_node=dbg_object(t_node).m_parent;
-					err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<223>";
+					err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<223>";
 					this.p_RotateLeft(t_node);
 				}
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<225>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<225>";
 				dbg_object(dbg_object(t_node).m_parent).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<226>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<226>";
 				dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_color=-1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<227>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<227>";
 				this.p_RotateRight(dbg_object(dbg_object(t_node).m_parent).m_parent);
 			}
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<230>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<230>";
 			var t_uncle2=dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_left;
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<231>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<231>";
 			if(((t_uncle2)!=null) && dbg_object(t_uncle2).m_color==-1){
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<232>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<232>";
 				dbg_object(dbg_object(t_node).m_parent).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<233>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<233>";
 				dbg_object(t_uncle2).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<234>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<234>";
 				dbg_object(dbg_object(t_uncle2).m_parent).m_color=-1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<235>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<235>";
 				t_node=dbg_object(t_uncle2).m_parent;
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<237>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<237>";
 				if(t_node==dbg_object(dbg_object(t_node).m_parent).m_left){
-					err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<238>";
+					err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<238>";
 					t_node=dbg_object(t_node).m_parent;
-					err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<239>";
+					err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<239>";
 					this.p_RotateRight(t_node);
 				}
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<241>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<241>";
 				dbg_object(dbg_object(t_node).m_parent).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<242>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<242>";
 				dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_color=-1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<243>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<243>";
 				this.p_RotateLeft(dbg_object(dbg_object(t_node).m_parent).m_parent);
 			}
 		}
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<247>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<247>";
 	dbg_object(this.m_root).m_color=1;
 	pop_err();
 	return 0;
 }
 c_Map.prototype.p_Set=function(t_key,t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<29>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<29>";
 	var t_node=this.m_root;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<30>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<30>";
 	var t_parent=null;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<30>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<30>";
 	var t_cmp=0;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<32>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<32>";
 	while((t_node)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<33>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<33>";
 		t_parent=t_node;
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<34>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<34>";
 		t_cmp=this.p_Compare(t_key,dbg_object(t_node).m_key);
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<35>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<35>";
 		if(t_cmp>0){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<36>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<36>";
 			t_node=dbg_object(t_node).m_right;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<37>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<37>";
 			if(t_cmp<0){
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<38>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<38>";
 				t_node=dbg_object(t_node).m_left;
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<40>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<40>";
 				dbg_object(t_node).m_value=t_value;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<41>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<41>";
 				pop_err();
 				return false;
 			}
 		}
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<45>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<45>";
 	t_node=c_Node.m_new.call(new c_Node,t_key,t_value,-1,t_parent);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<47>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<47>";
 	if((t_parent)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<48>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<48>";
 		if(t_cmp>0){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<49>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<49>";
 			dbg_object(t_parent).m_right=t_node;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<51>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<51>";
 			dbg_object(t_parent).m_left=t_node;
 		}
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<53>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<53>";
 		this.p_InsertFixup(t_node);
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<55>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<55>";
 		this.m_root=t_node;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<57>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<57>";
 	pop_err();
 	return true;
 }
 c_Map.prototype.p_Insert=function(t_key,t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<146>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<146>";
 	var t_=this.p_Set(t_key,t_value);
 	pop_err();
 	return t_;
@@ -4218,15 +4400,15 @@ function c_IntMap(){
 c_IntMap.prototype=extend_class(c_Map);
 c_IntMap.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<534>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<534>";
 	c_Map.m_new.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<534>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<534>";
 	pop_err();
 	return this;
 }
 c_IntMap.prototype.p_Compare=function(t_lhs,t_rhs){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<537>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<537>";
 	var t_=t_lhs-t_rhs;
 	pop_err();
 	return t_;
@@ -4243,51 +4425,51 @@ c_Stack.m_new=function(){
 }
 c_Stack.m_new2=function(t_data){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<13>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<13>";
 	dbg_object(this).m_data=t_data.slice(0);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<14>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<14>";
 	dbg_object(this).m_length=t_data.length;
 	pop_err();
 	return this;
 }
 c_Stack.prototype.p_Push=function(t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<71>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<71>";
 	if(this.m_length==this.m_data.length){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<72>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<72>";
 		this.m_data=resize_object_array(this.m_data,this.m_length*2+10);
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<74>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<74>";
 	dbg_array(this.m_data,this.m_length)[dbg_index]=t_value;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<75>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<75>";
 	this.m_length+=1;
 	pop_err();
 }
 c_Stack.prototype.p_Push2=function(t_values,t_offset,t_count){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<83>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<83>";
 	for(var t_i=0;t_i<t_count;t_i=t_i+1){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<84>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<84>";
 		this.p_Push(dbg_array(t_values,t_offset+t_i)[dbg_index]);
 	}
 	pop_err();
 }
 c_Stack.prototype.p_Push3=function(t_values,t_offset){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<79>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<79>";
 	this.p_Push2(t_values,t_offset,t_values.length-t_offset);
 	pop_err();
 }
 c_Stack.prototype.p_ToArray=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<18>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<18>";
 	var t_t=new_object_array(this.m_length);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<19>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<19>";
 	for(var t_i=0;t_i<this.m_length;t_i=t_i+1){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<20>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<20>";
 		dbg_array(t_t,t_i)[dbg_index]=dbg_array(this.m_data,t_i)[dbg_index];
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<22>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<22>";
 	pop_err();
 	return t_t;
 }
@@ -4302,20 +4484,20 @@ function c_Node(){
 }
 c_Node.m_new=function(t_key,t_value,t_color,t_parent){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<364>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<364>";
 	dbg_object(this).m_key=t_key;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<365>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<365>";
 	dbg_object(this).m_value=t_value;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<366>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<366>";
 	dbg_object(this).m_color=t_color;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<367>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<367>";
 	dbg_object(this).m_parent=t_parent;
 	pop_err();
 	return this;
 }
 c_Node.m_new2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<361>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<361>";
 	pop_err();
 	return this;
 }
@@ -4323,53 +4505,53 @@ var bb_app__displayModes=[];
 var bb_app__desktopMode=null;
 function bb_app_DeviceWidth(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<263>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<263>";
 	pop_err();
 	return bb_app__devWidth;
 }
 function bb_app_DeviceHeight(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<267>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<267>";
 	pop_err();
 	return bb_app__devHeight;
 }
 function bb_app_EnumDisplayModes(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<33>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<33>";
 	var t_modes=bb_app__game.GetDisplayModes();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<34>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<34>";
 	var t_mmap=c_IntMap.m_new.call(new c_IntMap);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<35>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<35>";
 	var t_mstack=c_Stack.m_new.call(new c_Stack);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<36>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<36>";
 	for(var t_i=0;t_i<t_modes.length;t_i=t_i+1){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<37>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<37>";
 		var t_w=dbg_object(dbg_array(t_modes,t_i)[dbg_index]).width;
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<38>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<38>";
 		var t_h=dbg_object(dbg_array(t_modes,t_i)[dbg_index]).height;
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<39>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<39>";
 		var t_size=t_w<<16|t_h;
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<40>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<40>";
 		if(t_mmap.p_Contains(t_size)){
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<42>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<42>";
 			var t_mode=c_DisplayMode.m_new.call(new c_DisplayMode,dbg_object(dbg_array(t_modes,t_i)[dbg_index]).width,dbg_object(dbg_array(t_modes,t_i)[dbg_index]).height);
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<43>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<43>";
 			t_mmap.p_Insert(t_size,t_mode);
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<44>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<44>";
 			t_mstack.p_Push(t_mode);
 		}
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<47>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<47>";
 	bb_app__displayModes=t_mstack.p_ToArray();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<48>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<48>";
 	var t_mode2=bb_app__game.GetDesktopMode();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<49>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<49>";
 	if((t_mode2)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<50>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<50>";
 		bb_app__desktopMode=c_DisplayMode.m_new.call(new c_DisplayMode,dbg_object(t_mode2).width,dbg_object(t_mode2).height);
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<52>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<52>";
 		bb_app__desktopMode=c_DisplayMode.m_new.call(new c_DisplayMode,bb_app_DeviceWidth(),bb_app_DeviceHeight());
 	}
 	pop_err();
@@ -4377,100 +4559,100 @@ function bb_app_EnumDisplayModes(){
 var bb_graphics_renderDevice=null;
 function bb_graphics_SetMatrix(t_ix,t_iy,t_jx,t_jy,t_tx,t_ty){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<312>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<312>";
 	dbg_object(bb_graphics_context).m_ix=t_ix;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<313>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<313>";
 	dbg_object(bb_graphics_context).m_iy=t_iy;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<314>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<314>";
 	dbg_object(bb_graphics_context).m_jx=t_jx;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<315>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<315>";
 	dbg_object(bb_graphics_context).m_jy=t_jy;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<316>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<316>";
 	dbg_object(bb_graphics_context).m_tx=t_tx;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<317>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<317>";
 	dbg_object(bb_graphics_context).m_ty=t_ty;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<318>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<318>";
 	dbg_object(bb_graphics_context).m_tformed=((t_ix!=1.0 || t_iy!=0.0 || t_jx!=0.0 || t_jy!=1.0 || t_tx!=0.0 || t_ty!=0.0)?1:0);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<319>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<319>";
 	dbg_object(bb_graphics_context).m_matDirty=1;
 	pop_err();
 	return 0;
 }
 function bb_graphics_SetMatrix2(t_m){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<308>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<308>";
 	bb_graphics_SetMatrix(dbg_array(t_m,0)[dbg_index],dbg_array(t_m,1)[dbg_index],dbg_array(t_m,2)[dbg_index],dbg_array(t_m,3)[dbg_index],dbg_array(t_m,4)[dbg_index],dbg_array(t_m,5)[dbg_index]);
 	pop_err();
 	return 0;
 }
 function bb_graphics_SetColor(t_r,t_g,t_b){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<254>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<254>";
 	dbg_object(bb_graphics_context).m_color_r=t_r;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<255>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<255>";
 	dbg_object(bb_graphics_context).m_color_g=t_g;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<256>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<256>";
 	dbg_object(bb_graphics_context).m_color_b=t_b;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<257>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<257>";
 	bb_graphics_renderDevice.SetColor(t_r,t_g,t_b);
 	pop_err();
 	return 0;
 }
 function bb_graphics_SetAlpha(t_alpha){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<271>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<271>";
 	dbg_object(bb_graphics_context).m_alpha=t_alpha;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<272>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<272>";
 	bb_graphics_renderDevice.SetAlpha(t_alpha);
 	pop_err();
 	return 0;
 }
 function bb_graphics_SetBlend(t_blend){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<280>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<280>";
 	dbg_object(bb_graphics_context).m_blend=t_blend;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<281>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<281>";
 	bb_graphics_renderDevice.SetBlend(t_blend);
 	pop_err();
 	return 0;
 }
 function bb_graphics_SetScissor(t_x,t_y,t_width,t_height){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<289>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<289>";
 	dbg_object(bb_graphics_context).m_scissor_x=t_x;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<290>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<290>";
 	dbg_object(bb_graphics_context).m_scissor_y=t_y;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<291>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<291>";
 	dbg_object(bb_graphics_context).m_scissor_width=t_width;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<292>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<292>";
 	dbg_object(bb_graphics_context).m_scissor_height=t_height;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<293>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<293>";
 	bb_graphics_renderDevice.SetScissor(((t_x)|0),((t_y)|0),((t_width)|0),((t_height)|0));
 	pop_err();
 	return 0;
 }
 function bb_graphics_BeginRender(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<225>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<225>";
 	bb_graphics_renderDevice=bb_graphics_device;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<226>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<226>";
 	dbg_object(bb_graphics_context).m_matrixSp=0;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<227>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<227>";
 	bb_graphics_SetMatrix(1.0,0.0,0.0,1.0,0.0,0.0);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<228>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<228>";
 	bb_graphics_SetColor(255.0,255.0,255.0);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<229>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<229>";
 	bb_graphics_SetAlpha(1.0);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<230>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<230>";
 	bb_graphics_SetBlend(0);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<231>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<231>";
 	bb_graphics_SetScissor(0.0,0.0,(bb_app_DeviceWidth()),(bb_app_DeviceHeight()));
 	pop_err();
 	return 0;
 }
 function bb_graphics_EndRender(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<235>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<235>";
 	bb_graphics_renderDevice=null;
 	pop_err();
 	return 0;
@@ -4480,16 +4662,16 @@ function c_BBGameEvent(){
 }
 function bb_app_EndApp(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<259>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<259>";
 	error("");
 	pop_err();
 }
 var bb_app__updateRate=0;
 function bb_app_SetUpdateRate(t_hertz){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<224>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<224>";
 	bb_app__updateRate=t_hertz;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<225>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<225>";
 	bb_app__game.SetUpdateRate(t_hertz);
 	pop_err();
 }
@@ -4621,13 +4803,13 @@ function c_JsonValue(){
 }
 c_JsonValue.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<14>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<14>";
 	pop_err();
 	return this;
 }
 c_JsonValue.prototype.p_StringValue=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<29>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<29>";
 	bb_json_ThrowError();
 	pop_err();
 	return "";
@@ -4639,61 +4821,61 @@ function c_JsonObject(){
 c_JsonObject.prototype=extend_class(c_JsonValue);
 c_JsonObject.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<46>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<46>";
 	c_JsonValue.m_new.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<47>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<47>";
 	this.m__data=c_StringMap.m_new.call(new c_StringMap);
 	pop_err();
 	return this;
 }
 c_JsonObject.m_new2=function(t_data){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<54>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<54>";
 	c_JsonValue.m_new.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<55>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<55>";
 	this.m__data=t_data;
 	pop_err();
 	return this;
 }
 c_JsonObject.m_new3=function(t_json){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<50>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<50>";
 	c_JsonValue.m_new.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<51>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<51>";
 	this.m__data=(c_JsonParser.m_new.call(new c_JsonParser,t_json)).p_ParseObject();
 	pop_err();
 	return this;
 }
 c_JsonObject.prototype.p_Get=function(t_key,t_defval){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<83>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<83>";
 	if(!this.m__data.p_Contains2(t_key)){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<83>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<83>";
 		pop_err();
 		return t_defval;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<84>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<84>";
 	var t_val=this.m__data.p_Get2(t_key);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<85>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<85>";
 	if((t_val)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<85>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<85>";
 		pop_err();
 		return t_val;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<86>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<86>";
 	var t_=(c_JsonNull.m_Instance());
 	pop_err();
 	return t_;
 }
 c_JsonObject.prototype.p_GetString=function(t_key,t_defval){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<105>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<105>";
 	if(!this.m__data.p_Contains2(t_key)){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<105>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<105>";
 		pop_err();
 		return t_defval;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<106>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<106>";
 	var t_=this.p_Get(t_key,null).p_StringValue();
 	pop_err();
 	return t_;
@@ -4704,7 +4886,7 @@ function c_Map2(){
 }
 c_Map2.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<7>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<7>";
 	pop_err();
 	return this;
 }
@@ -4712,236 +4894,236 @@ c_Map2.prototype.p_Compare2=function(t_lhs,t_rhs){
 }
 c_Map2.prototype.p_RotateLeft2=function(t_node){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<251>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<251>";
 	var t_child=dbg_object(t_node).m_right;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<252>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<252>";
 	dbg_object(t_node).m_right=dbg_object(t_child).m_left;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<253>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<253>";
 	if((dbg_object(t_child).m_left)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<254>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<254>";
 		dbg_object(dbg_object(t_child).m_left).m_parent=t_node;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<256>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<256>";
 	dbg_object(t_child).m_parent=dbg_object(t_node).m_parent;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<257>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<257>";
 	if((dbg_object(t_node).m_parent)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<258>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<258>";
 		if(t_node==dbg_object(dbg_object(t_node).m_parent).m_left){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<259>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<259>";
 			dbg_object(dbg_object(t_node).m_parent).m_left=t_child;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<261>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<261>";
 			dbg_object(dbg_object(t_node).m_parent).m_right=t_child;
 		}
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<264>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<264>";
 		this.m_root=t_child;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<266>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<266>";
 	dbg_object(t_child).m_left=t_node;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<267>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<267>";
 	dbg_object(t_node).m_parent=t_child;
 	pop_err();
 	return 0;
 }
 c_Map2.prototype.p_RotateRight2=function(t_node){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<271>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<271>";
 	var t_child=dbg_object(t_node).m_left;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<272>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<272>";
 	dbg_object(t_node).m_left=dbg_object(t_child).m_right;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<273>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<273>";
 	if((dbg_object(t_child).m_right)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<274>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<274>";
 		dbg_object(dbg_object(t_child).m_right).m_parent=t_node;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<276>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<276>";
 	dbg_object(t_child).m_parent=dbg_object(t_node).m_parent;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<277>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<277>";
 	if((dbg_object(t_node).m_parent)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<278>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<278>";
 		if(t_node==dbg_object(dbg_object(t_node).m_parent).m_right){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<279>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<279>";
 			dbg_object(dbg_object(t_node).m_parent).m_right=t_child;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<281>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<281>";
 			dbg_object(dbg_object(t_node).m_parent).m_left=t_child;
 		}
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<284>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<284>";
 		this.m_root=t_child;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<286>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<286>";
 	dbg_object(t_child).m_right=t_node;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<287>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<287>";
 	dbg_object(t_node).m_parent=t_child;
 	pop_err();
 	return 0;
 }
 c_Map2.prototype.p_InsertFixup2=function(t_node){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<212>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<212>";
 	while(((dbg_object(t_node).m_parent)!=null) && dbg_object(dbg_object(t_node).m_parent).m_color==-1 && ((dbg_object(dbg_object(t_node).m_parent).m_parent)!=null)){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<213>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<213>";
 		if(dbg_object(t_node).m_parent==dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_left){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<214>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<214>";
 			var t_uncle=dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_right;
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<215>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<215>";
 			if(((t_uncle)!=null) && dbg_object(t_uncle).m_color==-1){
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<216>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<216>";
 				dbg_object(dbg_object(t_node).m_parent).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<217>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<217>";
 				dbg_object(t_uncle).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<218>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<218>";
 				dbg_object(dbg_object(t_uncle).m_parent).m_color=-1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<219>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<219>";
 				t_node=dbg_object(t_uncle).m_parent;
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<221>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<221>";
 				if(t_node==dbg_object(dbg_object(t_node).m_parent).m_right){
-					err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<222>";
+					err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<222>";
 					t_node=dbg_object(t_node).m_parent;
-					err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<223>";
+					err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<223>";
 					this.p_RotateLeft2(t_node);
 				}
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<225>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<225>";
 				dbg_object(dbg_object(t_node).m_parent).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<226>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<226>";
 				dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_color=-1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<227>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<227>";
 				this.p_RotateRight2(dbg_object(dbg_object(t_node).m_parent).m_parent);
 			}
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<230>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<230>";
 			var t_uncle2=dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_left;
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<231>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<231>";
 			if(((t_uncle2)!=null) && dbg_object(t_uncle2).m_color==-1){
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<232>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<232>";
 				dbg_object(dbg_object(t_node).m_parent).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<233>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<233>";
 				dbg_object(t_uncle2).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<234>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<234>";
 				dbg_object(dbg_object(t_uncle2).m_parent).m_color=-1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<235>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<235>";
 				t_node=dbg_object(t_uncle2).m_parent;
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<237>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<237>";
 				if(t_node==dbg_object(dbg_object(t_node).m_parent).m_left){
-					err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<238>";
+					err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<238>";
 					t_node=dbg_object(t_node).m_parent;
-					err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<239>";
+					err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<239>";
 					this.p_RotateRight2(t_node);
 				}
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<241>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<241>";
 				dbg_object(dbg_object(t_node).m_parent).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<242>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<242>";
 				dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_color=-1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<243>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<243>";
 				this.p_RotateLeft2(dbg_object(dbg_object(t_node).m_parent).m_parent);
 			}
 		}
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<247>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<247>";
 	dbg_object(this.m_root).m_color=1;
 	pop_err();
 	return 0;
 }
 c_Map2.prototype.p_Set2=function(t_key,t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<29>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<29>";
 	var t_node=this.m_root;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<30>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<30>";
 	var t_parent=null;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<30>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<30>";
 	var t_cmp=0;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<32>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<32>";
 	while((t_node)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<33>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<33>";
 		t_parent=t_node;
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<34>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<34>";
 		t_cmp=this.p_Compare2(t_key,dbg_object(t_node).m_key);
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<35>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<35>";
 		if(t_cmp>0){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<36>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<36>";
 			t_node=dbg_object(t_node).m_right;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<37>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<37>";
 			if(t_cmp<0){
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<38>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<38>";
 				t_node=dbg_object(t_node).m_left;
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<40>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<40>";
 				dbg_object(t_node).m_value=t_value;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<41>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<41>";
 				pop_err();
 				return false;
 			}
 		}
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<45>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<45>";
 	t_node=c_Node2.m_new.call(new c_Node2,t_key,t_value,-1,t_parent);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<47>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<47>";
 	if((t_parent)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<48>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<48>";
 		if(t_cmp>0){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<49>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<49>";
 			dbg_object(t_parent).m_right=t_node;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<51>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<51>";
 			dbg_object(t_parent).m_left=t_node;
 		}
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<53>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<53>";
 		this.p_InsertFixup2(t_node);
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<55>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<55>";
 		this.m_root=t_node;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<57>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<57>";
 	pop_err();
 	return true;
 }
 c_Map2.prototype.p_FindNode2=function(t_key){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<157>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<157>";
 	var t_node=this.m_root;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<159>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<159>";
 	while((t_node)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<160>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<160>";
 		var t_cmp=this.p_Compare2(t_key,dbg_object(t_node).m_key);
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<161>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<161>";
 		if(t_cmp>0){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<162>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<162>";
 			t_node=dbg_object(t_node).m_right;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<163>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<163>";
 			if(t_cmp<0){
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<164>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<164>";
 				t_node=dbg_object(t_node).m_left;
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<166>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<166>";
 				pop_err();
 				return t_node;
 			}
 		}
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<169>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<169>";
 	pop_err();
 	return t_node;
 }
 c_Map2.prototype.p_Contains2=function(t_key){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<25>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<25>";
 	var t_=this.p_FindNode2(t_key)!=null;
 	pop_err();
 	return t_;
 }
 c_Map2.prototype.p_Get2=function(t_key){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<101>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<101>";
 	var t_node=this.p_FindNode2(t_key);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<102>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<102>";
 	if((t_node)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<102>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<102>";
 		pop_err();
 		return dbg_object(t_node).m_value;
 	}
@@ -4954,15 +5136,15 @@ function c_StringMap(){
 c_StringMap.prototype=extend_class(c_Map2);
 c_StringMap.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<551>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<551>";
 	c_Map2.m_new.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<551>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<551>";
 	pop_err();
 	return this;
 }
 c_StringMap.prototype.p_Compare2=function(t_lhs,t_rhs){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<554>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<554>";
 	var t_=string_compare(t_lhs,t_rhs);
 	pop_err();
 	return t_;
@@ -4976,318 +5158,318 @@ function c_JsonParser(){
 }
 c_JsonParser.prototype.p_GetChar=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<345>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<345>";
 	if(this.m__pos==this.m__text.length){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<345>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<345>";
 		bb_json_ThrowError();
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<346>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<346>";
 	this.m__pos+=1;
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<347>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<347>";
 	var t_=dbg_charCodeAt(this.m__text,this.m__pos-1);
 	pop_err();
 	return t_;
 }
 c_JsonParser.prototype.p_CParseDigits=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<367>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<367>";
 	var t_p=this.m__pos;
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<368>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<368>";
 	while(this.m__pos<this.m__text.length && dbg_charCodeAt(this.m__text,this.m__pos)>=48 && dbg_charCodeAt(this.m__text,this.m__pos)<=57){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<369>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<369>";
 		this.m__pos+=1;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<371>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<371>";
 	var t_=this.m__pos>t_p;
 	pop_err();
 	return t_;
 }
 c_JsonParser.prototype.p_CParseChar=function(t_chr){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<361>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<361>";
 	if(this.m__pos>=this.m__text.length || dbg_charCodeAt(this.m__text,this.m__pos)!=t_chr){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<361>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<361>";
 		pop_err();
 		return false;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<362>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<362>";
 	this.m__pos+=1;
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<363>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<363>";
 	pop_err();
 	return true;
 }
 c_JsonParser.prototype.p_PeekChar=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<351>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<351>";
 	if(this.m__pos==this.m__text.length){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<351>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<351>";
 		pop_err();
 		return 0;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<352>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<352>";
 	pop_err();
 	return dbg_charCodeAt(this.m__text,this.m__pos);
 }
 c_JsonParser.prototype.p_Bump=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<376>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<376>";
 	while(this.m__pos<this.m__text.length && dbg_charCodeAt(this.m__text,this.m__pos)<=32){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<377>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<377>";
 		this.m__pos+=1;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<380>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<380>";
 	if(this.m__pos==this.m__text.length){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<381>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<381>";
 		this.m__toke="";
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<382>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<382>";
 		this.m__type=0;
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<383>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<383>";
 		pop_err();
 		return this.m__toke;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<386>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<386>";
 	var t_pos=this.m__pos;
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<387>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<387>";
 	var t_chr=this.p_GetChar();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<389>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<389>";
 	if(t_chr==34){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<390>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<390>";
 		do{
-			err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<391>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<391>";
 			var t_chr2=this.p_GetChar();
-			err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<392>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<392>";
 			if(t_chr2==34){
-				err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<392>";
+				err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<392>";
 				break;
 			}
-			err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<393>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<393>";
 			if(t_chr2==92){
-				err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<393>";
+				err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<393>";
 				this.p_GetChar();
 			}
 		}while(!(false));
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<395>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<395>";
 		this.m__type=1;
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<396>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<396>";
 		if(t_chr==45 || t_chr>=48 && t_chr<=57){
-			err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<397>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<397>";
 			if(t_chr==45){
-				err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<398>";
+				err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<398>";
 				t_chr=this.p_GetChar();
-				err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<399>";
+				err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<399>";
 				if(t_chr<48 || t_chr>57){
-					err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<399>";
+					err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<399>";
 					bb_json_ThrowError();
 				}
 			}
-			err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<401>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<401>";
 			if(t_chr!=48){
-				err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<402>";
+				err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<402>";
 				this.p_CParseDigits();
 			}
-			err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<404>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<404>";
 			if(this.p_CParseChar(46)){
-				err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<405>";
+				err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<405>";
 				this.p_CParseDigits();
 			}
-			err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<407>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<407>";
 			if(this.p_CParseChar(69) || this.p_CParseChar(101)){
-				err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<408>";
+				err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<408>";
 				if(this.p_PeekChar()==43 || this.p_PeekChar()==45){
-					err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<408>";
+					err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<408>";
 					this.p_GetChar();
 				}
-				err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<409>";
+				err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<409>";
 				if(!this.p_CParseDigits()){
-					err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<409>";
+					err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<409>";
 					bb_json_ThrowError();
 				}
 			}
-			err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<411>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<411>";
 			this.m__type=2;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<412>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<412>";
 			if(t_chr>=65 && t_chr<91 || t_chr>=97 && t_chr<123){
-				err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<413>";
+				err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<413>";
 				t_chr=this.p_PeekChar();
-				err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<414>";
+				err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<414>";
 				while(t_chr>=65 && t_chr<91 || t_chr>=97 && t_chr<123){
-					err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<415>";
+					err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<415>";
 					this.p_GetChar();
-					err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<416>";
+					err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<416>";
 					t_chr=this.p_PeekChar();
 				}
-				err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<418>";
+				err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<418>";
 				this.m__type=4;
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<420>";
+				err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<420>";
 				this.m__type=3;
 			}
 		}
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<422>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<422>";
 	this.m__toke=this.m__text.slice(t_pos,this.m__pos);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<423>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<423>";
 	pop_err();
 	return this.m__toke;
 }
 c_JsonParser.m_new=function(t_json){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<316>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<316>";
 	this.m__text=t_json;
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<317>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<317>";
 	this.p_Bump();
 	pop_err();
 	return this;
 }
 c_JsonParser.m_new2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<313>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<313>";
 	pop_err();
 	return this;
 }
 c_JsonParser.prototype.p_CParse=function(t_toke){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<435>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<435>";
 	if(t_toke!=this.m__toke){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<435>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<435>";
 		pop_err();
 		return false;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<436>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<436>";
 	this.p_Bump();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<437>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<437>";
 	pop_err();
 	return true;
 }
 c_JsonParser.prototype.p_Parse=function(t_toke){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<441>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<441>";
 	if(!this.p_CParse(t_toke)){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<441>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<441>";
 		bb_json_ThrowError();
 	}
 	pop_err();
 }
 c_JsonParser.prototype.p_TokeType=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<431>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<431>";
 	pop_err();
 	return this.m__type;
 }
 c_JsonParser.prototype.p_Toke=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<427>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<427>";
 	pop_err();
 	return this.m__toke;
 }
 c_JsonParser.prototype.p_ParseString=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<471>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<471>";
 	if(this.p_TokeType()!=1){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<471>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<471>";
 		bb_json_ThrowError();
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<472>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<472>";
 	var t_toke=this.p_Toke().slice(1,-1);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<473>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<473>";
 	var t_i=t_toke.indexOf("\\",0);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<474>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<474>";
 	if(t_i!=-1){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<475>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<475>";
 		var t_frags=c_StringStack.m_new2.call(new c_StringStack);
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<475>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<475>";
 		var t_p=0;
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<475>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<475>";
 		var t_esc="";
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<476>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<476>";
 		do{
-			err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<477>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<477>";
 			if(t_i+1>=t_toke.length){
-				err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<477>";
+				err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<477>";
 				bb_json_ThrowError();
 			}
-			err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<478>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<478>";
 			t_frags.p_Push4(t_toke.slice(t_p,t_i));
-			err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<479>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<479>";
 			var t_1=dbg_charCodeAt(t_toke,t_i+1);
-			err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<480>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<480>";
 			if(t_1==34){
-				err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<480>";
+				err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<480>";
 				t_esc="\"";
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<481>";
+				err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<481>";
 				if(t_1==92){
-					err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<481>";
+					err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<481>";
 					t_esc="\\";
 				}else{
-					err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<482>";
+					err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<482>";
 					if(t_1==47){
-						err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<482>";
+						err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<482>";
 						t_esc="/";
 					}else{
-						err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<483>";
+						err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<483>";
 						if(t_1==98){
-							err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<483>";
+							err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<483>";
 							t_esc=String.fromCharCode(8);
 						}else{
-							err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<484>";
+							err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<484>";
 							if(t_1==102){
-								err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<484>";
+								err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<484>";
 								t_esc=String.fromCharCode(12);
 							}else{
-								err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<485>";
+								err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<485>";
 								if(t_1==114){
-									err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<485>";
+									err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<485>";
 									t_esc=String.fromCharCode(13);
 								}else{
-									err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<486>";
+									err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<486>";
 									if(t_1==110){
-										err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<486>";
+										err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<486>";
 										t_esc=String.fromCharCode(10);
 									}else{
-										err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<487>";
+										err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<487>";
 										if(t_1==117){
-											err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<488>";
+											err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<488>";
 											if(t_i+6>t_toke.length){
-												err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<488>";
+												err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<488>";
 												bb_json_ThrowError();
 											}
-											err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<489>";
+											err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<489>";
 											var t_val=0;
-											err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<490>";
+											err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<490>";
 											for(var t_j=2;t_j<6;t_j=t_j+1){
-												err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<491>";
+												err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<491>";
 												var t_chr=dbg_charCodeAt(t_toke,t_i+t_j);
-												err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<492>";
+												err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<492>";
 												if(t_chr>=48 && t_chr<58){
-													err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<493>";
+													err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<493>";
 													t_val=t_val<<4|t_chr-48;
 												}else{
-													err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<494>";
+													err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<494>";
 													if(t_chr>=65 && t_chr<123){
-														err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<495>";
+														err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<495>";
 														t_chr&=31;
-														err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<496>";
+														err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<496>";
 														if(t_chr<1 || t_chr>6){
-															err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<496>";
+															err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<496>";
 															bb_json_ThrowError();
 														}
-														err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<497>";
+														err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<497>";
 														t_val=t_val<<4|t_chr+9;
 													}else{
-														err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<499>";
+														err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<499>";
 														bb_json_ThrowError();
 													}
 												}
 											}
-											err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<502>";
+											err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<502>";
 											t_esc=String.fromCharCode(t_val);
-											err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<503>";
+											err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<503>";
 											t_i+=4;
 										}else{
-											err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<505>";
+											err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<505>";
 											bb_json_ThrowError();
 										}
 									}
@@ -5297,154 +5479,154 @@ c_JsonParser.prototype.p_ParseString=function(){
 					}
 				}
 			}
-			err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<507>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<507>";
 			t_frags.p_Push4(t_esc);
-			err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<508>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<508>";
 			t_p=t_i+2;
-			err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<509>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<509>";
 			t_i=t_toke.indexOf("\\",t_p);
-			err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<510>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<510>";
 			if(t_i!=-1){
-				err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<510>";
+				err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<510>";
 				continue;
 			}
-			err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<511>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<511>";
 			t_frags.p_Push4(t_toke.slice(t_p));
-			err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<512>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<512>";
 			break;
 		}while(!(false));
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<514>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<514>";
 		t_toke=t_frags.p_Join("");
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<516>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<516>";
 	this.p_Bump();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<517>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<517>";
 	pop_err();
 	return t_toke;
 }
 c_JsonParser.prototype.p_ParseNumber=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<521>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<521>";
 	if(this.p_TokeType()!=2){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<521>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<521>";
 		bb_json_ThrowError();
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<522>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<522>";
 	var t_toke=this.p_Toke();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<523>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<523>";
 	this.p_Bump();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<524>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<524>";
 	pop_err();
 	return t_toke;
 }
 c_JsonParser.prototype.p_ParseArray=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<459>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<459>";
 	this.p_Parse("[");
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<460>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<460>";
 	if(this.p_CParse("]")){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<460>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<460>";
 		pop_err();
 		return [];
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<461>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<461>";
 	var t_stack=c_Stack3.m_new.call(new c_Stack3);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<462>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<462>";
 	do{
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<463>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<463>";
 		var t_value=this.p_ParseValue();
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<464>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<464>";
 		t_stack.p_Push7(t_value);
 	}while(!(!this.p_CParse(",")));
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<466>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<466>";
 	this.p_Parse("]");
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<467>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<467>";
 	var t_=t_stack.p_ToArray();
 	pop_err();
 	return t_;
 }
 c_JsonParser.prototype.p_ParseValue=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<321>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<321>";
 	if(this.p_TokeType()==1){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<321>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<321>";
 		var t_=(c_JsonString.m_Instance(this.p_ParseString()));
 		pop_err();
 		return t_;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<322>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<322>";
 	if(this.p_TokeType()==2){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<322>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<322>";
 		var t_2=(c_JsonNumber.m_Instance(this.p_ParseNumber()));
 		pop_err();
 		return t_2;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<323>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<323>";
 	if(this.p_Toke()=="{"){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<323>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<323>";
 		var t_3=(c_JsonObject.m_new2.call(new c_JsonObject,this.p_ParseObject()));
 		pop_err();
 		return t_3;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<324>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<324>";
 	if(this.p_Toke()=="["){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<324>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<324>";
 		var t_4=(c_JsonArray.m_new2.call(new c_JsonArray,this.p_ParseArray()));
 		pop_err();
 		return t_4;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<325>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<325>";
 	if(this.p_CParse("true")){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<325>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<325>";
 		var t_5=(c_JsonBool.m_Instance(true));
 		pop_err();
 		return t_5;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<326>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<326>";
 	if(this.p_CParse("false")){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<326>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<326>";
 		var t_6=(c_JsonBool.m_Instance(false));
 		pop_err();
 		return t_6;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<327>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<327>";
 	if(this.p_CParse("null")){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<327>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<327>";
 		var t_7=(c_JsonNull.m_Instance());
 		pop_err();
 		return t_7;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<328>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<328>";
 	bb_json_ThrowError();
 	pop_err();
 	return null;
 }
 c_JsonParser.prototype.p_ParseObject=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<445>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<445>";
 	this.p_Parse("{");
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<446>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<446>";
 	var t_map=c_StringMap.m_new.call(new c_StringMap);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<447>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<447>";
 	if(this.p_CParse("}")){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<447>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<447>";
 		pop_err();
 		return t_map;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<448>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<448>";
 	do{
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<449>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<449>";
 		var t_name=this.p_ParseString();
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<450>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<450>";
 		this.p_Parse(":");
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<451>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<451>";
 		var t_value=this.p_ParseValue();
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<452>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<452>";
 		t_map.p_Set2(t_name,t_value);
 	}while(!(!this.p_CParse(",")));
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<454>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<454>";
 	this.p_Parse("}");
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<455>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<455>";
 	pop_err();
 	return t_map;
 }
@@ -5454,13 +5636,13 @@ function c_JsonError(){
 c_JsonError.prototype=extend_class(ThrowableObject);
 c_JsonError.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<11>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<11>";
 	pop_err();
 	return this;
 }
 function bb_json_ThrowError(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<6>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<6>";
 	throw c_JsonError.m_new.call(new c_JsonError);
 }
 function c_Stack2(){
@@ -5475,51 +5657,51 @@ c_Stack2.m_new=function(){
 }
 c_Stack2.m_new2=function(t_data){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<13>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<13>";
 	dbg_object(this).m_data=t_data.slice(0);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<14>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<14>";
 	dbg_object(this).m_length=t_data.length;
 	pop_err();
 	return this;
 }
 c_Stack2.prototype.p_Push4=function(t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<71>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<71>";
 	if(this.m_length==this.m_data.length){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<72>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<72>";
 		this.m_data=resize_string_array(this.m_data,this.m_length*2+10);
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<74>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<74>";
 	dbg_array(this.m_data,this.m_length)[dbg_index]=t_value;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<75>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<75>";
 	this.m_length+=1;
 	pop_err();
 }
 c_Stack2.prototype.p_Push5=function(t_values,t_offset,t_count){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<83>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<83>";
 	for(var t_i=0;t_i<t_count;t_i=t_i+1){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<84>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<84>";
 		this.p_Push4(dbg_array(t_values,t_offset+t_i)[dbg_index]);
 	}
 	pop_err();
 }
 c_Stack2.prototype.p_Push6=function(t_values,t_offset){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<79>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<79>";
 	this.p_Push5(t_values,t_offset,t_values.length-t_offset);
 	pop_err();
 }
 c_Stack2.prototype.p_ToArray=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<18>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<18>";
 	var t_t=new_string_array(this.m_length);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<19>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<19>";
 	for(var t_i=0;t_i<this.m_length;t_i=t_i+1){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<20>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<20>";
 		dbg_array(t_t,t_i)[dbg_index]=dbg_array(this.m_data,t_i)[dbg_index];
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<22>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<22>";
 	pop_err();
 	return t_t;
 }
@@ -5529,22 +5711,22 @@ function c_StringStack(){
 c_StringStack.prototype=extend_class(c_Stack2);
 c_StringStack.m_new=function(t_data){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<355>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<355>";
 	c_Stack2.m_new2.call(this,t_data);
 	pop_err();
 	return this;
 }
 c_StringStack.m_new2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<352>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<352>";
 	c_Stack2.m_new.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<352>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<352>";
 	pop_err();
 	return this;
 }
 c_StringStack.prototype.p_Join=function(t_separator){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<359>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<359>";
 	var t_=this.p_ToArray().join(t_separator);
 	pop_err();
 	return t_;
@@ -5556,38 +5738,38 @@ function c_JsonString(){
 c_JsonString.prototype=extend_class(c_JsonValue);
 c_JsonString.m_new=function(t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<257>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<257>";
 	c_JsonValue.m_new.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<258>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<258>";
 	this.m__value=t_value;
 	pop_err();
 	return this;
 }
 c_JsonString.m_new2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<255>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<255>";
 	c_JsonValue.m_new.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<255>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<255>";
 	pop_err();
 	return this;
 }
 c_JsonString.m__null=null;
 c_JsonString.m_Instance=function(t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<270>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<270>";
 	if((t_value).length!=0){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<270>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<270>";
 		var t_=c_JsonString.m_new.call(new c_JsonString,t_value);
 		pop_err();
 		return t_;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<271>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<271>";
 	pop_err();
 	return c_JsonString.m__null;
 }
 c_JsonString.prototype.p_StringValue=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<262>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<262>";
 	pop_err();
 	return this.m__value;
 }
@@ -5598,32 +5780,32 @@ function c_JsonNumber(){
 c_JsonNumber.prototype=extend_class(c_JsonValue);
 c_JsonNumber.m_new=function(t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<284>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<284>";
 	c_JsonValue.m_new.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<286>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<286>";
 	this.m__value=t_value;
 	pop_err();
 	return this;
 }
 c_JsonNumber.m_new2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<282>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<282>";
 	c_JsonValue.m_new.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<282>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<282>";
 	pop_err();
 	return this;
 }
 c_JsonNumber.m__zero=null;
 c_JsonNumber.m_Instance=function(t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<302>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<302>";
 	if(t_value!="0"){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<302>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<302>";
 		var t_=c_JsonNumber.m_new.call(new c_JsonNumber,t_value);
 		pop_err();
 		return t_;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<303>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<303>";
 	pop_err();
 	return c_JsonNumber.m__zero;
 }
@@ -5634,53 +5816,53 @@ function c_JsonArray(){
 c_JsonArray.prototype=extend_class(c_JsonValue);
 c_JsonArray.m_new=function(t_length){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<133>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<133>";
 	c_JsonValue.m_new.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<134>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<134>";
 	this.m__data=new_object_array(t_length);
 	pop_err();
 	return this;
 }
 c_JsonArray.m_new2=function(t_data){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<137>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<137>";
 	c_JsonValue.m_new.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<138>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<138>";
 	this.m__data=t_data;
 	pop_err();
 	return this;
 }
 c_JsonArray.m_new3=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<131>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<131>";
 	c_JsonValue.m_new.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<131>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<131>";
 	pop_err();
 	return this;
 }
 c_JsonArray.prototype.p_Length=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<142>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<142>";
 	var t_=this.m__data.length;
 	pop_err();
 	return t_;
 }
 c_JsonArray.prototype.p_Get3=function(t_index){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<167>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<167>";
 	if(t_index<0 || t_index>=this.m__data.length){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<167>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<167>";
 		bb_json_ThrowError();
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<168>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<168>";
 	var t_val=dbg_array(this.m__data,t_index)[dbg_index];
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<169>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<169>";
 	if((t_val)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<169>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<169>";
 		pop_err();
 		return t_val;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<170>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<170>";
 	var t_=(c_JsonNull.m_Instance());
 	pop_err();
 	return t_;
@@ -5697,51 +5879,51 @@ c_Stack3.m_new=function(){
 }
 c_Stack3.m_new2=function(t_data){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<13>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<13>";
 	dbg_object(this).m_data=t_data.slice(0);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<14>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<14>";
 	dbg_object(this).m_length=t_data.length;
 	pop_err();
 	return this;
 }
 c_Stack3.prototype.p_Push7=function(t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<71>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<71>";
 	if(this.m_length==this.m_data.length){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<72>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<72>";
 		this.m_data=resize_object_array(this.m_data,this.m_length*2+10);
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<74>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<74>";
 	dbg_array(this.m_data,this.m_length)[dbg_index]=t_value;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<75>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<75>";
 	this.m_length+=1;
 	pop_err();
 }
 c_Stack3.prototype.p_Push8=function(t_values,t_offset,t_count){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<83>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<83>";
 	for(var t_i=0;t_i<t_count;t_i=t_i+1){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<84>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<84>";
 		this.p_Push7(dbg_array(t_values,t_offset+t_i)[dbg_index]);
 	}
 	pop_err();
 }
 c_Stack3.prototype.p_Push9=function(t_values,t_offset){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<79>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<79>";
 	this.p_Push8(t_values,t_offset,t_values.length-t_offset);
 	pop_err();
 }
 c_Stack3.prototype.p_ToArray=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<18>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<18>";
 	var t_t=new_object_array(this.m_length);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<19>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<19>";
 	for(var t_i=0;t_i<this.m_length;t_i=t_i+1){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<20>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<20>";
 		dbg_array(t_t,t_i)[dbg_index]=dbg_array(this.m_data,t_i)[dbg_index];
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<22>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<22>";
 	pop_err();
 	return t_t;
 }
@@ -5752,18 +5934,18 @@ function c_JsonBool(){
 c_JsonBool.prototype=extend_class(c_JsonValue);
 c_JsonBool.m_new=function(t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<228>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<228>";
 	c_JsonValue.m_new.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<229>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<229>";
 	this.m__value=t_value;
 	pop_err();
 	return this;
 }
 c_JsonBool.m_new2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<226>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<226>";
 	c_JsonValue.m_new.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<226>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<226>";
 	pop_err();
 	return this;
 }
@@ -5771,13 +5953,13 @@ c_JsonBool.m__true=null;
 c_JsonBool.m__false=null;
 c_JsonBool.m_Instance=function(t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<242>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<242>";
 	if(t_value){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<242>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<242>";
 		pop_err();
 		return c_JsonBool.m__true;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<243>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<243>";
 	pop_err();
 	return c_JsonBool.m__false;
 }
@@ -5787,16 +5969,16 @@ function c_JsonNull(){
 c_JsonNull.prototype=extend_class(c_JsonValue);
 c_JsonNull.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<210>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<210>";
 	c_JsonValue.m_new.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<210>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<210>";
 	pop_err();
 	return this;
 }
 c_JsonNull.m__instance=null;
 c_JsonNull.m_Instance=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/json.monkey<217>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/json.monkey<217>";
 	pop_err();
 	return c_JsonNull.m__instance;
 }
@@ -5811,20 +5993,20 @@ function c_Node2(){
 }
 c_Node2.m_new=function(t_key,t_value,t_color,t_parent){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<364>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<364>";
 	dbg_object(this).m_key=t_key;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<365>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<365>";
 	dbg_object(this).m_value=t_value;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<366>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<366>";
 	dbg_object(this).m_color=t_color;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<367>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<367>";
 	dbg_object(this).m_parent=t_parent;
 	pop_err();
 	return this;
 }
 c_Node2.m_new2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<361>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<361>";
 	pop_err();
 	return this;
 }
@@ -5835,70 +6017,87 @@ function c_Game(){
 	this.m_particles=null;
 	this.m_types=null;
 	this.m_id="";
+	this.m_player_state="";
 }
 c_Game.m_new=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<277>";
-	dbg_object(this).m_units=c_StringMap2.m_new.call(new c_StringMap2);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<278>";
-	dbg_object(this).m_opponents=c_List.m_new.call(new c_List);
+	dbg_object(this).m_units=c_StringMap2.m_new.call(new c_StringMap2);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<279>";
-	dbg_object(this).m_particles=c_List2.m_new.call(new c_List2);
+	dbg_object(this).m_opponents=c_List.m_new.call(new c_List);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<280>";
+	dbg_object(this).m_particles=c_List2.m_new.call(new c_List2);
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<281>";
 	dbg_object(this).m_types=c_StringMap3.m_new.call(new c_StringMap3);
 	pop_err();
 	return this;
 }
-c_Game.prototype.p_LoadFromJson=function(t_game_json){
+c_Game.prototype.p_LoadFromJson=function(t_game_json,t_player_id){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<284>";
-	dbg_object(this).m_id=t_game_json.p_GetString("id","");
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<285>";
-	var t_unit_list=object_downcast((t_game_json.p_Get("units",null)),c_JsonArray);
+	dbg_object(this).m_id=t_game_json.p_GetString("id","");
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<286>";
-	var t_types_list=object_downcast((t_game_json.p_Get("types",null)),c_JsonArray);
+	var t_unit_list=object_downcast((t_game_json.p_Get("units",null)),c_JsonArray);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<287>";
+	var t_types_list=object_downcast((t_game_json.p_Get("types",null)),c_JsonArray);
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<288>";
 	var t_player_list=object_downcast((t_game_json.p_Get("players",null)),c_JsonArray);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<289>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<290>";
 	for(var t_i=0;t_i<t_types_list.p_Length();t_i=t_i+1){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<290>";
-		var t_type_json=object_downcast((t_types_list.p_Get3(t_i)),c_JsonObject);
 		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<291>";
-		var t_new_type=c_UnitType.m_new.call(new c_UnitType,t_type_json);
+		var t_type_json=object_downcast((t_types_list.p_Get3(t_i)),c_JsonObject);
 		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<292>";
+		var t_new_type=c_UnitType.m_new.call(new c_UnitType,t_type_json);
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<293>";
 		dbg_object(this).m_types.p_Add2(dbg_object(t_new_type).m_name,t_new_type);
 	}
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<295>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<296>";
 	for(var t_i2=0;t_i2<t_unit_list.p_Length();t_i2=t_i2+1){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<296>";
-		var t_unit_json=object_downcast((t_unit_list.p_Get3(t_i2)),c_JsonObject);
 		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<297>";
-		var t_type_name=t_unit_json.p_GetString("type","");
+		var t_unit_json=object_downcast((t_unit_list.p_Get3(t_i2)),c_JsonObject);
 		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<298>";
+		var t_type_name=t_unit_json.p_GetString("type","");
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<299>";
 		var t_unit_type=dbg_object(this).m_types.p_Get2(t_type_name);
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<306>";
-		var t_new_unit=c_Unit.m_new.call(new c_Unit,parseInt((t_unit_json.p_GetString("id","")),10),parseFloat(t_unit_json.p_GetString("x","")),parseFloat(t_unit_json.p_GetString("y","")),parseFloat(t_unit_json.p_GetString("heading","")),t_unit_type,String(parseInt((t_unit_json.p_GetString("player_id","")),10)),parseInt((t_unit_json.p_GetString("player_id","")),10));
 		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<307>";
+		var t_new_unit=c_Unit.m_new.call(new c_Unit,parseInt((t_unit_json.p_GetString("id","")),10),parseFloat(t_unit_json.p_GetString("x","")),parseFloat(t_unit_json.p_GetString("y","")),parseFloat(t_unit_json.p_GetString("heading","")),t_unit_type,String(parseInt((t_unit_json.p_GetString("player_id","")),10)),parseInt((t_unit_json.p_GetString("player_id","")),10));
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<308>";
 		dbg_object(this).m_units.p_Add(String(dbg_object(t_new_unit).m_unit_id),t_new_unit);
+	}
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<311>";
+	for(var t_i3=0;t_i3<t_player_list.p_Length();t_i3=t_i3+1){
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<312>";
+		var t_player_json=object_downcast((t_player_list.p_Get3(t_i3)),c_JsonObject);
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<313>";
+		var t_current_player_id=t_player_json.p_GetString("player_id","");
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<314>";
+		var t_current_player_state=t_player_json.p_GetString("player_state","");
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<315>";
+		if(t_current_player_id==t_player_id){
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<316>";
+			dbg_object(this).m_player_state=t_current_player_state;
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<317>";
+			break;
+		}
 	}
 	pop_err();
 	return 0;
 }
 c_Game.prototype.p_LoadServerMoves=function(t_game_json){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<313>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<324>";
 	var t_unit_list=object_downcast((t_game_json.p_Get("units",null)),c_JsonArray);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<314>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<325>";
 	for(var t_i=0;t_i<t_unit_list.p_Length();t_i=t_i+1){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<315>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<326>";
 		var t_unit_json=object_downcast((t_unit_list.p_Get3(t_i)),c_JsonObject);
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<316>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<327>";
 		var t_current_unit=dbg_object(this).m_units.p_Get2(t_unit_json.p_GetString("id",""));
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<317>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<328>";
 		dbg_object(t_current_unit).m_position.p_Set3(parseFloat(t_unit_json.p_GetString("x","")),parseFloat(t_unit_json.p_GetString("y","")),0.0);
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<318>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<329>";
 		dbg_object(t_current_unit).m_heading=parseFloat(t_unit_json.p_GetString("heading",""));
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<319>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<330>";
 		t_current_unit.p_SetServerControl(parseFloat(t_unit_json.p_GetString("control_x","")),parseFloat(t_unit_json.p_GetString("control_y","")),parseFloat(t_unit_json.p_GetString("control_heading","")));
 	}
 	pop_err();
@@ -6128,7 +6327,7 @@ function c_Map3(){
 }
 c_Map3.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<7>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<7>";
 	pop_err();
 	return this;
 }
@@ -6136,227 +6335,227 @@ c_Map3.prototype.p_Compare2=function(t_lhs,t_rhs){
 }
 c_Map3.prototype.p_RotateLeft3=function(t_node){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<251>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<251>";
 	var t_child=dbg_object(t_node).m_right;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<252>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<252>";
 	dbg_object(t_node).m_right=dbg_object(t_child).m_left;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<253>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<253>";
 	if((dbg_object(t_child).m_left)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<254>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<254>";
 		dbg_object(dbg_object(t_child).m_left).m_parent=t_node;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<256>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<256>";
 	dbg_object(t_child).m_parent=dbg_object(t_node).m_parent;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<257>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<257>";
 	if((dbg_object(t_node).m_parent)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<258>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<258>";
 		if(t_node==dbg_object(dbg_object(t_node).m_parent).m_left){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<259>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<259>";
 			dbg_object(dbg_object(t_node).m_parent).m_left=t_child;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<261>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<261>";
 			dbg_object(dbg_object(t_node).m_parent).m_right=t_child;
 		}
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<264>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<264>";
 		this.m_root=t_child;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<266>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<266>";
 	dbg_object(t_child).m_left=t_node;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<267>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<267>";
 	dbg_object(t_node).m_parent=t_child;
 	pop_err();
 	return 0;
 }
 c_Map3.prototype.p_RotateRight3=function(t_node){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<271>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<271>";
 	var t_child=dbg_object(t_node).m_left;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<272>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<272>";
 	dbg_object(t_node).m_left=dbg_object(t_child).m_right;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<273>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<273>";
 	if((dbg_object(t_child).m_right)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<274>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<274>";
 		dbg_object(dbg_object(t_child).m_right).m_parent=t_node;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<276>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<276>";
 	dbg_object(t_child).m_parent=dbg_object(t_node).m_parent;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<277>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<277>";
 	if((dbg_object(t_node).m_parent)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<278>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<278>";
 		if(t_node==dbg_object(dbg_object(t_node).m_parent).m_right){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<279>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<279>";
 			dbg_object(dbg_object(t_node).m_parent).m_right=t_child;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<281>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<281>";
 			dbg_object(dbg_object(t_node).m_parent).m_left=t_child;
 		}
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<284>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<284>";
 		this.m_root=t_child;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<286>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<286>";
 	dbg_object(t_child).m_right=t_node;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<287>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<287>";
 	dbg_object(t_node).m_parent=t_child;
 	pop_err();
 	return 0;
 }
 c_Map3.prototype.p_InsertFixup3=function(t_node){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<212>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<212>";
 	while(((dbg_object(t_node).m_parent)!=null) && dbg_object(dbg_object(t_node).m_parent).m_color==-1 && ((dbg_object(dbg_object(t_node).m_parent).m_parent)!=null)){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<213>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<213>";
 		if(dbg_object(t_node).m_parent==dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_left){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<214>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<214>";
 			var t_uncle=dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_right;
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<215>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<215>";
 			if(((t_uncle)!=null) && dbg_object(t_uncle).m_color==-1){
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<216>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<216>";
 				dbg_object(dbg_object(t_node).m_parent).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<217>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<217>";
 				dbg_object(t_uncle).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<218>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<218>";
 				dbg_object(dbg_object(t_uncle).m_parent).m_color=-1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<219>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<219>";
 				t_node=dbg_object(t_uncle).m_parent;
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<221>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<221>";
 				if(t_node==dbg_object(dbg_object(t_node).m_parent).m_right){
-					err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<222>";
+					err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<222>";
 					t_node=dbg_object(t_node).m_parent;
-					err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<223>";
+					err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<223>";
 					this.p_RotateLeft3(t_node);
 				}
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<225>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<225>";
 				dbg_object(dbg_object(t_node).m_parent).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<226>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<226>";
 				dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_color=-1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<227>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<227>";
 				this.p_RotateRight3(dbg_object(dbg_object(t_node).m_parent).m_parent);
 			}
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<230>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<230>";
 			var t_uncle2=dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_left;
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<231>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<231>";
 			if(((t_uncle2)!=null) && dbg_object(t_uncle2).m_color==-1){
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<232>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<232>";
 				dbg_object(dbg_object(t_node).m_parent).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<233>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<233>";
 				dbg_object(t_uncle2).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<234>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<234>";
 				dbg_object(dbg_object(t_uncle2).m_parent).m_color=-1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<235>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<235>";
 				t_node=dbg_object(t_uncle2).m_parent;
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<237>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<237>";
 				if(t_node==dbg_object(dbg_object(t_node).m_parent).m_left){
-					err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<238>";
+					err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<238>";
 					t_node=dbg_object(t_node).m_parent;
-					err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<239>";
+					err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<239>";
 					this.p_RotateRight3(t_node);
 				}
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<241>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<241>";
 				dbg_object(dbg_object(t_node).m_parent).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<242>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<242>";
 				dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_color=-1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<243>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<243>";
 				this.p_RotateLeft3(dbg_object(dbg_object(t_node).m_parent).m_parent);
 			}
 		}
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<247>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<247>";
 	dbg_object(this.m_root).m_color=1;
 	pop_err();
 	return 0;
 }
 c_Map3.prototype.p_Add=function(t_key,t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<61>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<61>";
 	var t_node=this.m_root;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<62>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<62>";
 	var t_parent=null;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<62>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<62>";
 	var t_cmp=0;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<64>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<64>";
 	while((t_node)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<65>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<65>";
 		t_parent=t_node;
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<66>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<66>";
 		t_cmp=this.p_Compare2(t_key,dbg_object(t_node).m_key);
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<67>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<67>";
 		if(t_cmp>0){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<68>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<68>";
 			t_node=dbg_object(t_node).m_right;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<69>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<69>";
 			if(t_cmp<0){
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<70>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<70>";
 				t_node=dbg_object(t_node).m_left;
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<72>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<72>";
 				pop_err();
 				return false;
 			}
 		}
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<76>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<76>";
 	t_node=c_Node7.m_new.call(new c_Node7,t_key,t_value,-1,t_parent);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<78>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<78>";
 	if((t_parent)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<79>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<79>";
 		if(t_cmp>0){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<80>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<80>";
 			dbg_object(t_parent).m_right=t_node;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<82>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<82>";
 			dbg_object(t_parent).m_left=t_node;
 		}
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<84>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<84>";
 		this.p_InsertFixup3(t_node);
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<86>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<86>";
 		this.m_root=t_node;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<88>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<88>";
 	pop_err();
 	return true;
 }
 c_Map3.prototype.p_FindNode2=function(t_key){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<157>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<157>";
 	var t_node=this.m_root;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<159>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<159>";
 	while((t_node)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<160>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<160>";
 		var t_cmp=this.p_Compare2(t_key,dbg_object(t_node).m_key);
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<161>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<161>";
 		if(t_cmp>0){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<162>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<162>";
 			t_node=dbg_object(t_node).m_right;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<163>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<163>";
 			if(t_cmp<0){
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<164>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<164>";
 				t_node=dbg_object(t_node).m_left;
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<166>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<166>";
 				pop_err();
 				return t_node;
 			}
 		}
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<169>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<169>";
 	pop_err();
 	return t_node;
 }
 c_Map3.prototype.p_Get2=function(t_key){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<101>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<101>";
 	var t_node=this.p_FindNode2(t_key);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<102>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<102>";
 	if((t_node)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<102>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<102>";
 		pop_err();
 		return dbg_object(t_node).m_value;
 	}
@@ -6365,27 +6564,27 @@ c_Map3.prototype.p_Get2=function(t_key){
 }
 c_Map3.prototype.p_Keys=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<113>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<113>";
 	var t_=c_MapKeys.m_new.call(new c_MapKeys,this);
 	pop_err();
 	return t_;
 }
 c_Map3.prototype.p_FirstNode=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<125>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<125>";
 	if(!((this.m_root)!=null)){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<125>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<125>";
 		pop_err();
 		return null;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<127>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<127>";
 	var t_node=this.m_root;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<128>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<128>";
 	while((dbg_object(t_node).m_left)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<129>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<129>";
 		t_node=dbg_object(t_node).m_left;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<131>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<131>";
 	pop_err();
 	return t_node;
 }
@@ -6395,15 +6594,15 @@ function c_StringMap2(){
 c_StringMap2.prototype=extend_class(c_Map3);
 c_StringMap2.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<551>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<551>";
 	c_Map3.m_new.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<551>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<551>";
 	pop_err();
 	return this;
 }
 c_StringMap2.prototype.p_Compare2=function(t_lhs,t_rhs){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<554>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<554>";
 	var t_=string_compare(t_lhs,t_rhs);
 	pop_err();
 	return t_;
@@ -6419,25 +6618,25 @@ c_List.m_new=function(){
 }
 c_List.prototype.p_AddLast=function(t_data){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<108>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<108>";
 	var t_=c_Node3.m_new.call(new c_Node3,this.m__head,dbg_object(this.m__head).m__pred,t_data);
 	pop_err();
 	return t_;
 }
 c_List.m_new2=function(t_data){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<13>";
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<13>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 	var t_=t_data;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<13>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 	var t_2=0;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<13>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 	while(t_2<t_.length){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<13>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 		var t_t=dbg_array(t_,t_2)[dbg_index];
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<13>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 		t_2=t_2+1;
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<14>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<14>";
 		this.p_AddLast(t_t);
 	}
 	pop_err();
@@ -6445,7 +6644,7 @@ c_List.m_new2=function(t_data){
 }
 c_List.prototype.p_ObjectEnumerator=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<186>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<186>";
 	var t_=c_Enumerator2.m_new.call(new c_Enumerator2,this);
 	pop_err();
 	return t_;
@@ -6458,22 +6657,22 @@ function c_Node3(){
 }
 c_Node3.m_new=function(t_succ,t_pred,t_data){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<261>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<261>";
 	this.m__succ=t_succ;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<262>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<262>";
 	this.m__pred=t_pred;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<263>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<263>";
 	dbg_object(this.m__succ).m__pred=this;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<264>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<264>";
 	dbg_object(this.m__pred).m__succ=this;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<265>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<265>";
 	this.m__data=t_data;
 	pop_err();
 	return this;
 }
 c_Node3.m_new2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<258>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<258>";
 	pop_err();
 	return this;
 }
@@ -6483,11 +6682,11 @@ function c_HeadNode(){
 c_HeadNode.prototype=extend_class(c_Node3);
 c_HeadNode.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<310>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<310>";
 	c_Node3.m_new2.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<311>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<311>";
 	this.m__succ=(this);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<312>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<312>";
 	this.m__pred=(this);
 	pop_err();
 	return this;
@@ -6571,25 +6770,25 @@ c_List2.m_new=function(){
 }
 c_List2.prototype.p_AddLast2=function(t_data){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<108>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<108>";
 	var t_=c_Node4.m_new.call(new c_Node4,this.m__head,dbg_object(this.m__head).m__pred,t_data);
 	pop_err();
 	return t_;
 }
 c_List2.m_new2=function(t_data){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<13>";
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<13>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 	var t_=t_data;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<13>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 	var t_2=0;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<13>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 	while(t_2<t_.length){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<13>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 		var t_t=dbg_array(t_,t_2)[dbg_index];
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<13>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 		t_2=t_2+1;
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<14>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<14>";
 		this.p_AddLast2(t_t);
 	}
 	pop_err();
@@ -6597,32 +6796,32 @@ c_List2.m_new2=function(t_data){
 }
 c_List2.prototype.p_ObjectEnumerator=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<186>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<186>";
 	var t_=c_Enumerator3.m_new.call(new c_Enumerator3,this);
 	pop_err();
 	return t_;
 }
 c_List2.prototype.p_Equals=function(t_lhs,t_rhs){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<28>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<28>";
 	var t_=t_lhs==t_rhs;
 	pop_err();
 	return t_;
 }
 c_List2.prototype.p_RemoveEach=function(t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<151>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<151>";
 	var t_node=dbg_object(this.m__head).m__succ;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<152>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<152>";
 	while(t_node!=this.m__head){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<153>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<153>";
 		var t_succ=dbg_object(t_node).m__succ;
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<154>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<154>";
 		if(this.p_Equals(dbg_object(t_node).m__data,t_value)){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<154>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<154>";
 			t_node.p_Remove2();
 		}
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<155>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<155>";
 		t_node=t_succ;
 	}
 	pop_err();
@@ -6630,7 +6829,7 @@ c_List2.prototype.p_RemoveEach=function(t_value){
 }
 c_List2.prototype.p_Remove=function(t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<137>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<137>";
 	this.p_RemoveEach(t_value);
 	pop_err();
 }
@@ -6642,35 +6841,35 @@ function c_Node4(){
 }
 c_Node4.m_new=function(t_succ,t_pred,t_data){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<261>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<261>";
 	this.m__succ=t_succ;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<262>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<262>";
 	this.m__pred=t_pred;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<263>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<263>";
 	dbg_object(this.m__succ).m__pred=this;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<264>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<264>";
 	dbg_object(this.m__pred).m__succ=this;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<265>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<265>";
 	this.m__data=t_data;
 	pop_err();
 	return this;
 }
 c_Node4.m_new2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<258>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<258>";
 	pop_err();
 	return this;
 }
 c_Node4.prototype.p_Remove2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<274>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<274>";
 	if(dbg_object(this.m__succ).m__pred!=this){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<274>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<274>";
 		error("Illegal operation on removed node");
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<276>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<276>";
 	dbg_object(this.m__succ).m__pred=this.m__pred;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<277>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<277>";
 	dbg_object(this.m__pred).m__succ=this.m__succ;
 	pop_err();
 	return 0;
@@ -6681,11 +6880,11 @@ function c_HeadNode2(){
 c_HeadNode2.prototype=extend_class(c_Node4);
 c_HeadNode2.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<310>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<310>";
 	c_Node4.m_new2.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<311>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<311>";
 	this.m__succ=(this);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<312>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<312>";
 	this.m__pred=(this);
 	pop_err();
 	return this;
@@ -6733,7 +6932,7 @@ function c_Map4(){
 }
 c_Map4.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<7>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<7>";
 	pop_err();
 	return this;
 }
@@ -6741,227 +6940,227 @@ c_Map4.prototype.p_Compare2=function(t_lhs,t_rhs){
 }
 c_Map4.prototype.p_RotateLeft4=function(t_node){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<251>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<251>";
 	var t_child=dbg_object(t_node).m_right;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<252>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<252>";
 	dbg_object(t_node).m_right=dbg_object(t_child).m_left;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<253>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<253>";
 	if((dbg_object(t_child).m_left)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<254>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<254>";
 		dbg_object(dbg_object(t_child).m_left).m_parent=t_node;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<256>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<256>";
 	dbg_object(t_child).m_parent=dbg_object(t_node).m_parent;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<257>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<257>";
 	if((dbg_object(t_node).m_parent)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<258>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<258>";
 		if(t_node==dbg_object(dbg_object(t_node).m_parent).m_left){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<259>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<259>";
 			dbg_object(dbg_object(t_node).m_parent).m_left=t_child;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<261>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<261>";
 			dbg_object(dbg_object(t_node).m_parent).m_right=t_child;
 		}
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<264>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<264>";
 		this.m_root=t_child;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<266>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<266>";
 	dbg_object(t_child).m_left=t_node;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<267>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<267>";
 	dbg_object(t_node).m_parent=t_child;
 	pop_err();
 	return 0;
 }
 c_Map4.prototype.p_RotateRight4=function(t_node){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<271>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<271>";
 	var t_child=dbg_object(t_node).m_left;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<272>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<272>";
 	dbg_object(t_node).m_left=dbg_object(t_child).m_right;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<273>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<273>";
 	if((dbg_object(t_child).m_right)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<274>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<274>";
 		dbg_object(dbg_object(t_child).m_right).m_parent=t_node;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<276>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<276>";
 	dbg_object(t_child).m_parent=dbg_object(t_node).m_parent;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<277>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<277>";
 	if((dbg_object(t_node).m_parent)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<278>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<278>";
 		if(t_node==dbg_object(dbg_object(t_node).m_parent).m_right){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<279>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<279>";
 			dbg_object(dbg_object(t_node).m_parent).m_right=t_child;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<281>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<281>";
 			dbg_object(dbg_object(t_node).m_parent).m_left=t_child;
 		}
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<284>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<284>";
 		this.m_root=t_child;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<286>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<286>";
 	dbg_object(t_child).m_right=t_node;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<287>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<287>";
 	dbg_object(t_node).m_parent=t_child;
 	pop_err();
 	return 0;
 }
 c_Map4.prototype.p_InsertFixup4=function(t_node){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<212>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<212>";
 	while(((dbg_object(t_node).m_parent)!=null) && dbg_object(dbg_object(t_node).m_parent).m_color==-1 && ((dbg_object(dbg_object(t_node).m_parent).m_parent)!=null)){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<213>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<213>";
 		if(dbg_object(t_node).m_parent==dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_left){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<214>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<214>";
 			var t_uncle=dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_right;
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<215>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<215>";
 			if(((t_uncle)!=null) && dbg_object(t_uncle).m_color==-1){
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<216>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<216>";
 				dbg_object(dbg_object(t_node).m_parent).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<217>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<217>";
 				dbg_object(t_uncle).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<218>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<218>";
 				dbg_object(dbg_object(t_uncle).m_parent).m_color=-1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<219>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<219>";
 				t_node=dbg_object(t_uncle).m_parent;
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<221>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<221>";
 				if(t_node==dbg_object(dbg_object(t_node).m_parent).m_right){
-					err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<222>";
+					err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<222>";
 					t_node=dbg_object(t_node).m_parent;
-					err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<223>";
+					err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<223>";
 					this.p_RotateLeft4(t_node);
 				}
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<225>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<225>";
 				dbg_object(dbg_object(t_node).m_parent).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<226>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<226>";
 				dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_color=-1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<227>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<227>";
 				this.p_RotateRight4(dbg_object(dbg_object(t_node).m_parent).m_parent);
 			}
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<230>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<230>";
 			var t_uncle2=dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_left;
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<231>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<231>";
 			if(((t_uncle2)!=null) && dbg_object(t_uncle2).m_color==-1){
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<232>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<232>";
 				dbg_object(dbg_object(t_node).m_parent).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<233>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<233>";
 				dbg_object(t_uncle2).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<234>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<234>";
 				dbg_object(dbg_object(t_uncle2).m_parent).m_color=-1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<235>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<235>";
 				t_node=dbg_object(t_uncle2).m_parent;
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<237>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<237>";
 				if(t_node==dbg_object(dbg_object(t_node).m_parent).m_left){
-					err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<238>";
+					err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<238>";
 					t_node=dbg_object(t_node).m_parent;
-					err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<239>";
+					err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<239>";
 					this.p_RotateRight4(t_node);
 				}
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<241>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<241>";
 				dbg_object(dbg_object(t_node).m_parent).m_color=1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<242>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<242>";
 				dbg_object(dbg_object(dbg_object(t_node).m_parent).m_parent).m_color=-1;
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<243>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<243>";
 				this.p_RotateLeft4(dbg_object(dbg_object(t_node).m_parent).m_parent);
 			}
 		}
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<247>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<247>";
 	dbg_object(this.m_root).m_color=1;
 	pop_err();
 	return 0;
 }
 c_Map4.prototype.p_Add2=function(t_key,t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<61>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<61>";
 	var t_node=this.m_root;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<62>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<62>";
 	var t_parent=null;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<62>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<62>";
 	var t_cmp=0;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<64>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<64>";
 	while((t_node)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<65>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<65>";
 		t_parent=t_node;
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<66>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<66>";
 		t_cmp=this.p_Compare2(t_key,dbg_object(t_node).m_key);
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<67>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<67>";
 		if(t_cmp>0){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<68>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<68>";
 			t_node=dbg_object(t_node).m_right;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<69>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<69>";
 			if(t_cmp<0){
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<70>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<70>";
 				t_node=dbg_object(t_node).m_left;
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<72>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<72>";
 				pop_err();
 				return false;
 			}
 		}
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<76>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<76>";
 	t_node=c_Node6.m_new.call(new c_Node6,t_key,t_value,-1,t_parent);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<78>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<78>";
 	if((t_parent)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<79>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<79>";
 		if(t_cmp>0){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<80>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<80>";
 			dbg_object(t_parent).m_right=t_node;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<82>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<82>";
 			dbg_object(t_parent).m_left=t_node;
 		}
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<84>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<84>";
 		this.p_InsertFixup4(t_node);
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<86>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<86>";
 		this.m_root=t_node;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<88>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<88>";
 	pop_err();
 	return true;
 }
 c_Map4.prototype.p_FindNode2=function(t_key){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<157>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<157>";
 	var t_node=this.m_root;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<159>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<159>";
 	while((t_node)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<160>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<160>";
 		var t_cmp=this.p_Compare2(t_key,dbg_object(t_node).m_key);
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<161>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<161>";
 		if(t_cmp>0){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<162>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<162>";
 			t_node=dbg_object(t_node).m_right;
 		}else{
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<163>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<163>";
 			if(t_cmp<0){
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<164>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<164>";
 				t_node=dbg_object(t_node).m_left;
 			}else{
-				err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<166>";
+				err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<166>";
 				pop_err();
 				return t_node;
 			}
 		}
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<169>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<169>";
 	pop_err();
 	return t_node;
 }
 c_Map4.prototype.p_Get2=function(t_key){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<101>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<101>";
 	var t_node=this.p_FindNode2(t_key);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<102>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<102>";
 	if((t_node)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<102>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<102>";
 		pop_err();
 		return dbg_object(t_node).m_value;
 	}
@@ -6974,15 +7173,15 @@ function c_StringMap3(){
 c_StringMap3.prototype=extend_class(c_Map4);
 c_StringMap3.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<551>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<551>";
 	c_Map4.m_new.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<551>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<551>";
 	pop_err();
 	return this;
 }
 c_StringMap3.prototype.p_Compare2=function(t_lhs,t_rhs){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<554>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<554>";
 	var t_=string_compare(t_lhs,t_rhs);
 	pop_err();
 	return t_;
@@ -7086,42 +7285,42 @@ c_TouchBox.prototype.p_Selected2=function(t_touch_x,t_touch_y){
 }
 function bb_input_EnableKeyboard(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/input.monkey<32>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/input.monkey<32>";
 	var t_=bb_input_device.p_SetKeyboardEnabled(true);
 	pop_err();
 	return t_;
 }
 function bb_input_GetChar(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/input.monkey<48>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/input.monkey<48>";
 	var t_=bb_input_device.p_GetChar();
 	pop_err();
 	return t_;
 }
 function bb_input_DisableKeyboard(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/input.monkey<36>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/input.monkey<36>";
 	var t_=bb_input_device.p_SetKeyboardEnabled(false);
 	pop_err();
 	return t_;
 }
 function bb_input_TouchDown(t_index){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/input.monkey<84>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/input.monkey<84>";
 	var t_=((bb_input_device.p_KeyDown(384+t_index))?1:0);
 	pop_err();
 	return t_;
 }
 function bb_input_TouchX(t_index){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/input.monkey<76>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/input.monkey<76>";
 	var t_=bb_input_device.p_TouchX(t_index);
 	pop_err();
 	return t_;
 }
 function bb_input_TouchY(t_index){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/input.monkey<80>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/input.monkey<80>";
 	var t_=bb_input_device.p_TouchY(t_index);
 	pop_err();
 	return t_;
@@ -7178,89 +7377,89 @@ c_Deque.m_new=function(){
 }
 c_Deque.m_new2=function(t_arr){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<8>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<8>";
 	this.m__data=t_arr.slice(0);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<9>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<9>";
 	this.m__capacity=this.m__data.length;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<10>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<10>";
 	this.m__last=this.m__capacity;
 	pop_err();
 	return this;
 }
 c_Deque.prototype.p_Length=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<31>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<31>";
 	if(this.m__last>=this.m__first){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<31>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<31>";
 		var t_=this.m__last-this.m__first;
 		pop_err();
 		return t_;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<32>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<32>";
 	var t_2=this.m__capacity-this.m__first+this.m__last;
 	pop_err();
 	return t_2;
 }
 c_Deque.prototype.p_Grow=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<135>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<135>";
 	var t_data=new_object_array(this.m__capacity*2+10);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<136>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<136>";
 	if(this.m__first<=this.m__last){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<137>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<137>";
 		for(var t_i=this.m__first;t_i<this.m__last;t_i=t_i+1){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<138>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<138>";
 			dbg_array(t_data,t_i-this.m__first)[dbg_index]=dbg_array(this.m__data,t_i)[dbg_index];
 		}
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<140>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<140>";
 		this.m__last-=this.m__first;
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<141>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<141>";
 		this.m__first=0;
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<143>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<143>";
 		var t_n=this.m__capacity-this.m__first;
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<144>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<144>";
 		for(var t_i2=0;t_i2<t_n;t_i2=t_i2+1){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<145>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<145>";
 			dbg_array(t_data,t_i2)[dbg_index]=dbg_array(this.m__data,this.m__first+t_i2)[dbg_index];
 		}
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<147>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<147>";
 		for(var t_i3=0;t_i3<this.m__last;t_i3=t_i3+1){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<148>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<148>";
 			dbg_array(t_data,t_n+t_i3)[dbg_index]=dbg_array(this.m__data,t_i3)[dbg_index];
 		}
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<150>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<150>";
 		this.m__last+=t_n;
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<151>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<151>";
 		this.m__first=0;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<153>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<153>";
 	this.m__capacity=t_data.length;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<154>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<154>";
 	this.m__data=t_data;
 	pop_err();
 }
 c_Deque.prototype.p_PushLast=function(t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<83>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<83>";
 	if(this.p_Length()+1>=this.m__capacity){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<83>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<83>";
 		this.p_Grow();
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<84>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<84>";
 	dbg_array(this.m__data,this.m__last)[dbg_index]=t_value;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<85>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<85>";
 	this.m__last+=1;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<86>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<86>";
 	if(this.m__last==this.m__capacity){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<86>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<86>";
 		this.m__last=0;
 	}
 	pop_err();
 }
 c_Deque.prototype.p_IsEmpty=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<36>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<36>";
 	var t_=this.m__first==this.m__last;
 	pop_err();
 	return t_;
@@ -7268,84 +7467,84 @@ c_Deque.prototype.p_IsEmpty=function(){
 c_Deque.m_NIL=null;
 c_Deque.prototype.p_PopFirst=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<91>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<91>";
 	if(this.p_IsEmpty()){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<91>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<91>";
 		error("Illegal operation on empty deque");
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<93>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<93>";
 	var t_v=dbg_array(this.m__data,this.m__first)[dbg_index];
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<94>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<94>";
 	dbg_array(this.m__data,this.m__first)[dbg_index]=c_Deque.m_NIL;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<95>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<95>";
 	this.m__first+=1;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<96>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<96>";
 	if(this.m__first==this.m__capacity){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<96>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<96>";
 		this.m__first=0;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<97>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<97>";
 	pop_err();
 	return t_v;
 }
 c_Deque.prototype.p_Get3=function(t_index){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<63>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<63>";
 	if(t_index<0 || t_index>=this.p_Length()){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<63>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<63>";
 		error("Illegal deque index");
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/deque.monkey<65>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<65>";
 	var t_=dbg_array(this.m__data,(t_index+this.m__first) % this.m__capacity)[dbg_index];
 	pop_err();
 	return t_;
 }
 function bb_math2_Min(t_x,t_y){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/math.monkey<51>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<51>";
 	if(t_x<t_y){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/math.monkey<51>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<51>";
 		pop_err();
 		return t_x;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/math.monkey<52>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<52>";
 	pop_err();
 	return t_y;
 }
 function bb_math2_Min2(t_x,t_y){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/math.monkey<78>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<78>";
 	if(t_x<t_y){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/math.monkey<78>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<78>";
 		pop_err();
 		return t_x;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/math.monkey<79>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<79>";
 	pop_err();
 	return t_y;
 }
 function bb_math2_Abs(t_x){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/math.monkey<46>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<46>";
 	if(t_x>=0){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/math.monkey<46>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<46>";
 		pop_err();
 		return t_x;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/math.monkey<47>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<47>";
 	var t_=-t_x;
 	pop_err();
 	return t_;
 }
 function bb_math2_Abs2(t_x){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/math.monkey<73>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<73>";
 	if(t_x>=0.0){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/math.monkey<73>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<73>";
 		pop_err();
 		return t_x;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/math.monkey<74>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<74>";
 	var t_=-t_x;
 	pop_err();
 	return t_;
@@ -7408,23 +7607,23 @@ function bb_dronetournament_NewPoint(t_start_point,t_start_angle,t_goal_angle,t_
 var bb_random_Seed=0;
 function bb_random_Rnd(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/random.monkey<21>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/random.monkey<21>";
 	bb_random_Seed=bb_random_Seed*1664525+1013904223|0;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/random.monkey<22>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/random.monkey<22>";
 	var t_=(bb_random_Seed>>8&16777215)/16777216.0;
 	pop_err();
 	return t_;
 }
 function bb_random_Rnd2(t_low,t_high){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/random.monkey<30>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/random.monkey<30>";
 	var t_=bb_random_Rnd3(t_high-t_low)+t_low;
 	pop_err();
 	return t_;
 }
 function bb_random_Rnd3(t_range){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/random.monkey<26>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/random.monkey<26>";
 	var t_=bb_random_Rnd()*t_range;
 	pop_err();
 	return t_;
@@ -7442,100 +7641,100 @@ c_HttpRequest.m_new=function(){
 }
 c_HttpRequest.prototype.p_Open=function(t_req,t_url,t_onComplete){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<38>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<38>";
 	if(((this.m__req)!=null) && this.m__req.IsRunning()){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<38>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<38>";
 		error("HttpRequest in progress");
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<40>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<40>";
 	this.m__req=(new BBHttpRequest);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<41>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<41>";
 	this.m__onComplete=t_onComplete;
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<43>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<43>";
 	this.m__req.Open(t_req,t_url);
 	pop_err();
 }
 c_HttpRequest.m_new2=function(t_req,t_url,t_onComplete){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<34>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<34>";
 	this.p_Open(t_req,t_url,t_onComplete);
 	pop_err();
 	return this;
 }
 c_HttpRequest.prototype.p_Send=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<54>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<54>";
 	if(!((this.m__req)!=null)){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<54>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<54>";
 		error("HttpRequest not open");
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<55>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<55>";
 	if(this.m__req.IsRunning()){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<55>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<55>";
 		error("HttpRequest in progress");
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<57>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<57>";
 	bb_asyncevent_AddAsyncEventSource(this);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<58>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<58>";
 	this.m__req.Send();
 	pop_err();
 }
 c_HttpRequest.prototype.p_Send2=function(t_data,t_mimeType,t_encoding){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<62>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<62>";
 	if(!((this.m__req)!=null)){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<62>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<62>";
 		error("HttpRequest not open");
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<63>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<63>";
 	if(this.m__req.IsRunning()){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<63>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<63>";
 		error("HttpRequest in progress");
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<65>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<65>";
 	if((t_mimeType).length!=0){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<65>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<65>";
 		this.m__req.SetHeader("Content-Type",t_mimeType);
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<67>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<67>";
 	bb_asyncevent_AddAsyncEventSource(this);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<68>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<68>";
 	this.m__req.SendText(t_data,t_encoding);
 	pop_err();
 }
 c_HttpRequest.prototype.p_UpdateAsyncEvents=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<92>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<92>";
 	if(this.m__req.IsRunning()){
 		pop_err();
 		return;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<93>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<93>";
 	bb_asyncevent_RemoveAsyncEventSource(this);
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<94>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<94>";
 	this.m__onComplete.p_OnHttpRequestComplete(this);
 	pop_err();
 }
 c_HttpRequest.prototype.p_ResponseText=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<77>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<77>";
 	if(!((this.m__req)!=null)){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<77>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<77>";
 		error("HttpRequest not open");
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<78>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<78>";
 	var t_=this.m__req.ResponseText();
 	pop_err();
 	return t_;
 }
 c_HttpRequest.prototype.p_Status=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<72>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<72>";
 	if(!((this.m__req)!=null)){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<72>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<72>";
 		error("HttpRequest not open");
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/httprequest.monkey<73>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<73>";
 	var t_=this.m__req.Status();
 	pop_err();
 	return t_;
@@ -7552,141 +7751,141 @@ c_Stack4.m_new=function(){
 }
 c_Stack4.m_new2=function(t_data){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<13>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<13>";
 	dbg_object(this).m_data=t_data.slice(0);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<14>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<14>";
 	dbg_object(this).m_length=t_data.length;
 	pop_err();
 	return this;
 }
 c_Stack4.prototype.p_Equals2=function(t_lhs,t_rhs){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<26>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<26>";
 	var t_=t_lhs==t_rhs;
 	pop_err();
 	return t_;
 }
 c_Stack4.prototype.p_Contains3=function(t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<64>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<64>";
 	for(var t_i=0;t_i<this.m_length;t_i=t_i+1){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<65>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<65>";
 		if(this.p_Equals2(dbg_array(this.m_data,t_i)[dbg_index],t_value)){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<65>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<65>";
 			pop_err();
 			return true;
 		}
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<67>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<67>";
 	pop_err();
 	return false;
 }
 c_Stack4.prototype.p_Push10=function(t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<71>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<71>";
 	if(this.m_length==this.m_data.length){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<72>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<72>";
 		this.m_data=resize_object_array(this.m_data,this.m_length*2+10);
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<74>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<74>";
 	dbg_array(this.m_data,this.m_length)[dbg_index]=t_value;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<75>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<75>";
 	this.m_length+=1;
 	pop_err();
 }
 c_Stack4.prototype.p_Push11=function(t_values,t_offset,t_count){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<83>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<83>";
 	for(var t_i=0;t_i<t_count;t_i=t_i+1){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<84>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<84>";
 		this.p_Push10(dbg_array(t_values,t_offset+t_i)[dbg_index]);
 	}
 	pop_err();
 }
 c_Stack4.prototype.p_Push12=function(t_values,t_offset){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<79>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<79>";
 	this.p_Push11(t_values,t_offset,t_values.length-t_offset);
 	pop_err();
 }
 c_Stack4.m_NIL=null;
 c_Stack4.prototype.p_Length2=function(t_newlength){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<45>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<45>";
 	if(t_newlength<this.m_length){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<46>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<46>";
 		for(var t_i=t_newlength;t_i<this.m_length;t_i=t_i+1){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<47>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<47>";
 			dbg_array(this.m_data,t_i)[dbg_index]=c_Stack4.m_NIL;
 		}
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<49>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<49>";
 		if(t_newlength>this.m_data.length){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<50>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<50>";
 			this.m_data=resize_object_array(this.m_data,bb_math2_Max(this.m_length*2+10,t_newlength));
 		}
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<52>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<52>";
 	this.m_length=t_newlength;
 	pop_err();
 }
 c_Stack4.prototype.p_Length=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<56>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<56>";
 	pop_err();
 	return this.m_length;
 }
 c_Stack4.prototype.p_Get3=function(t_index){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<104>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<104>";
 	pop_err();
 	return dbg_array(this.m_data,t_index)[dbg_index];
 }
 c_Stack4.prototype.p_RemoveEach2=function(t_value){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<155>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<155>";
 	var t_i=0;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<155>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<155>";
 	var t_j=this.m_length;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<156>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<156>";
 	while(t_i<this.m_length){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<157>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<157>";
 		if(!this.p_Equals2(dbg_array(this.m_data,t_i)[dbg_index],t_value)){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<158>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<158>";
 			t_i+=1;
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<159>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<159>";
 			continue;
 		}
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<161>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<161>";
 		var t_b=t_i;
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<161>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<161>";
 		var t_e=t_i+1;
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<162>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<162>";
 		while(t_e<this.m_length && this.p_Equals2(dbg_array(this.m_data,t_e)[dbg_index],t_value)){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<163>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<163>";
 			t_e+=1;
 		}
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<165>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<165>";
 		while(t_e<this.m_length){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<166>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<166>";
 			dbg_array(this.m_data,t_b)[dbg_index]=dbg_array(this.m_data,t_e)[dbg_index];
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<167>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<167>";
 			t_b+=1;
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<168>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<168>";
 			t_e+=1;
 		}
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<170>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<170>";
 		this.m_length-=t_e-t_b;
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<171>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<171>";
 		t_i+=1;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<173>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<173>";
 	t_i=this.m_length;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<174>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<174>";
 	while(t_i<t_j){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<175>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<175>";
 		dbg_array(this.m_data,t_i)[dbg_index]=c_Stack4.m_NIL;
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/stack.monkey<176>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<176>";
 		t_i+=1;
 	}
 	pop_err();
@@ -7694,12 +7893,12 @@ c_Stack4.prototype.p_RemoveEach2=function(t_value){
 var bb_asyncevent__sources=null;
 function bb_asyncevent_AddAsyncEventSource(t_source){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/asyncevent.monkey<14>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<14>";
 	if(bb_asyncevent__sources.p_Contains3(t_source)){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/asyncevent.monkey<14>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<14>";
 		error("Async event source is already active");
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/asyncevent.monkey<15>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<15>";
 	bb_asyncevent__sources.p_Push10(t_source);
 	pop_err();
 }
@@ -7737,11 +7936,9 @@ c_GameSelect.prototype.p_Draw=function(){
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<81>";
 	bb_graphics_DrawRect(dbg_object(dbg_object(dbg_object(this).m_touch_box).m_position).m_x,dbg_object(dbg_object(dbg_object(this).m_touch_box).m_position).m_y,dbg_object(dbg_object(this).m_touch_box).m_width,dbg_object(dbg_object(this).m_touch_box).m_height);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<82>";
-	bb_graphics_SetColor(0.0,0.0,200.0);
+	bb_graphics_SetColor(255.0,255.0,255.0);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<83>";
 	bb_graphics_DrawText(dbg_object(this).m_game_id,dbg_object(dbg_object(dbg_object(this).m_touch_box).m_position).m_x+5.0,dbg_object(dbg_object(dbg_object(this).m_touch_box).m_position).m_y+5.0,0.0,0.0);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<84>";
-	bb_graphics_SetColor(128.0,128.0,128.0);
 	pop_err();
 	return 0;
 }
@@ -7756,25 +7953,25 @@ c_List3.m_new=function(){
 }
 c_List3.prototype.p_AddLast3=function(t_data){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<108>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<108>";
 	var t_=c_Node5.m_new.call(new c_Node5,this.m__head,dbg_object(this.m__head).m__pred,t_data);
 	pop_err();
 	return t_;
 }
 c_List3.m_new2=function(t_data){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<13>";
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<13>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 	var t_=t_data;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<13>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 	var t_2=0;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<13>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 	while(t_2<t_.length){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<13>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 		var t_t=dbg_array(t_,t_2)[dbg_index];
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<13>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 		t_2=t_2+1;
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<14>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<14>";
 		this.p_AddLast3(t_t);
 	}
 	pop_err();
@@ -7782,7 +7979,7 @@ c_List3.m_new2=function(t_data){
 }
 c_List3.prototype.p_ObjectEnumerator=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<186>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<186>";
 	var t_=c_Enumerator.m_new.call(new c_Enumerator,this);
 	pop_err();
 	return t_;
@@ -7795,22 +7992,22 @@ function c_Node5(){
 }
 c_Node5.m_new=function(t_succ,t_pred,t_data){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<261>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<261>";
 	this.m__succ=t_succ;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<262>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<262>";
 	this.m__pred=t_pred;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<263>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<263>";
 	dbg_object(this.m__succ).m__pred=this;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<264>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<264>";
 	dbg_object(this.m__pred).m__succ=this;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<265>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<265>";
 	this.m__data=t_data;
 	pop_err();
 	return this;
 }
 c_Node5.m_new2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<258>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<258>";
 	pop_err();
 	return this;
 }
@@ -7820,11 +8017,11 @@ function c_HeadNode3(){
 c_HeadNode3.prototype=extend_class(c_Node5);
 c_HeadNode3.m_new=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<310>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<310>";
 	c_Node5.m_new2.call(this);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<311>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<311>";
 	this.m__succ=(this);
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<312>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<312>";
 	this.m__pred=(this);
 	pop_err();
 	return this;
@@ -7840,20 +8037,20 @@ function c_Node6(){
 }
 c_Node6.m_new=function(t_key,t_value,t_color,t_parent){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<364>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<364>";
 	dbg_object(this).m_key=t_key;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<365>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<365>";
 	dbg_object(this).m_value=t_value;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<366>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<366>";
 	dbg_object(this).m_color=t_color;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<367>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<367>";
 	dbg_object(this).m_parent=t_parent;
 	pop_err();
 	return this;
 }
 c_Node6.m_new2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<361>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<361>";
 	pop_err();
 	return this;
 }
@@ -7868,58 +8065,58 @@ function c_Node7(){
 }
 c_Node7.m_new=function(t_key,t_value,t_color,t_parent){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<364>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<364>";
 	dbg_object(this).m_key=t_key;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<365>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<365>";
 	dbg_object(this).m_value=t_value;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<366>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<366>";
 	dbg_object(this).m_color=t_color;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<367>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<367>";
 	dbg_object(this).m_parent=t_parent;
 	pop_err();
 	return this;
 }
 c_Node7.m_new2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<361>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<361>";
 	pop_err();
 	return this;
 }
 c_Node7.prototype.p_NextNode=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<385>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<385>";
 	var t_node=null;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<386>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<386>";
 	if((this.m_right)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<387>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<387>";
 		t_node=this.m_right;
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<388>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<388>";
 		while((dbg_object(t_node).m_left)!=null){
-			err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<389>";
+			err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<389>";
 			t_node=dbg_object(t_node).m_left;
 		}
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<391>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<391>";
 		pop_err();
 		return t_node;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<393>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<393>";
 	t_node=this;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<394>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<394>";
 	var t_parent=dbg_object(this).m_parent;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<395>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<395>";
 	while(((t_parent)!=null) && t_node==dbg_object(t_parent).m_right){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<396>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<396>";
 		t_node=t_parent;
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<397>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<397>";
 		t_parent=dbg_object(t_parent).m_parent;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<399>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<399>";
 	pop_err();
 	return t_parent;
 }
 function bb_app_Millisecs(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/app.monkey<233>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<233>";
 	var t_=bb_app__game.Millisecs();
 	pop_err();
 	return t_;
@@ -7931,38 +8128,38 @@ function c_Enumerator(){
 }
 c_Enumerator.m_new=function(t_list){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<326>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<326>";
 	this.m__list=t_list;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<327>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<327>";
 	this.m__curr=dbg_object(dbg_object(t_list).m__head).m__succ;
 	pop_err();
 	return this;
 }
 c_Enumerator.m_new2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<323>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<323>";
 	pop_err();
 	return this;
 }
 c_Enumerator.prototype.p_HasNext=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<331>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<331>";
 	while(dbg_object(dbg_object(this.m__curr).m__succ).m__pred!=this.m__curr){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<332>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<332>";
 		this.m__curr=dbg_object(this.m__curr).m__succ;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<334>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<334>";
 	var t_=this.m__curr!=dbg_object(this.m__list).m__head;
 	pop_err();
 	return t_;
 }
 c_Enumerator.prototype.p_NextObject=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<338>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<338>";
 	var t_data=dbg_object(this.m__curr).m__data;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<339>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<339>";
 	this.m__curr=dbg_object(this.m__curr).m__succ;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<340>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<340>";
 	pop_err();
 	return t_data;
 }
@@ -7973,44 +8170,44 @@ function c_Enumerator2(){
 }
 c_Enumerator2.m_new=function(t_list){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<326>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<326>";
 	this.m__list=t_list;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<327>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<327>";
 	this.m__curr=dbg_object(dbg_object(t_list).m__head).m__succ;
 	pop_err();
 	return this;
 }
 c_Enumerator2.m_new2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<323>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<323>";
 	pop_err();
 	return this;
 }
 c_Enumerator2.prototype.p_HasNext=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<331>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<331>";
 	while(dbg_object(dbg_object(this.m__curr).m__succ).m__pred!=this.m__curr){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<332>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<332>";
 		this.m__curr=dbg_object(this.m__curr).m__succ;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<334>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<334>";
 	var t_=this.m__curr!=dbg_object(this.m__list).m__head;
 	pop_err();
 	return t_;
 }
 c_Enumerator2.prototype.p_NextObject=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<338>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<338>";
 	var t_data=dbg_object(this.m__curr).m__data;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<339>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<339>";
 	this.m__curr=dbg_object(this.m__curr).m__succ;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<340>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<340>";
 	pop_err();
 	return t_data;
 }
 function bb_input_KeyHit(t_key){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/input.monkey<44>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/input.monkey<44>";
 	var t_=bb_input_device.p_KeyHit(t_key);
 	pop_err();
 	return t_;
@@ -8022,86 +8219,86 @@ function c_Enumerator3(){
 }
 c_Enumerator3.m_new=function(t_list){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<326>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<326>";
 	this.m__list=t_list;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<327>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<327>";
 	this.m__curr=dbg_object(dbg_object(t_list).m__head).m__succ;
 	pop_err();
 	return this;
 }
 c_Enumerator3.m_new2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<323>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<323>";
 	pop_err();
 	return this;
 }
 c_Enumerator3.prototype.p_HasNext=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<331>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<331>";
 	while(dbg_object(dbg_object(this.m__curr).m__succ).m__pred!=this.m__curr){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<332>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<332>";
 		this.m__curr=dbg_object(this.m__curr).m__succ;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<334>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<334>";
 	var t_=this.m__curr!=dbg_object(this.m__list).m__head;
 	pop_err();
 	return t_;
 }
 c_Enumerator3.prototype.p_NextObject=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<338>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<338>";
 	var t_data=dbg_object(this.m__curr).m__data;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<339>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<339>";
 	this.m__curr=dbg_object(this.m__curr).m__succ;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/list.monkey<340>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<340>";
 	pop_err();
 	return t_data;
 }
 function bb_main_CounterClockwise(t_pointOne,t_pointTwo,t_pointThree){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<455>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<465>";
 	var t_=(dbg_object(t_pointThree).m_y-dbg_object(t_pointOne).m_y)*(dbg_object(t_pointTwo).m_x-dbg_object(t_pointOne).m_x)>(dbg_object(t_pointTwo).m_y-dbg_object(t_pointOne).m_y)*(dbg_object(t_pointThree).m_x-dbg_object(t_pointOne).m_x);
 	pop_err();
 	return t_;
 }
 function bb_main_LinesIntersect(t_pointA,t_pointB,t_pointC,t_pointD){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<461>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<471>";
 	var t_abc=bb_main_CounterClockwise(t_pointA,t_pointB,t_pointC);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<462>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<472>";
 	var t_abd=bb_main_CounterClockwise(t_pointA,t_pointB,t_pointD);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<463>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<473>";
 	var t_cda=bb_main_CounterClockwise(t_pointC,t_pointD,t_pointA);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<464>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<474>";
 	var t_cdb=bb_main_CounterClockwise(t_pointC,t_pointD,t_pointB);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<466>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<476>";
 	var t_=t_abc!=t_abd && t_cda!=t_cdb;
 	pop_err();
 	return t_;
 }
 function bb_main_Collided(t_particle,t_unit){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<470>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<480>";
 	if(dbg_object(t_particle).m_friendly==dbg_object(t_unit).m_friendly){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<471>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<481>";
 		pop_err();
 		return 0;
 	}
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<474>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<484>";
 	var t_top_left=c_Vec2D.m_new.call(new c_Vec2D,dbg_object(dbg_object(t_unit).m_position).m_x-10.0,dbg_object(dbg_object(t_unit).m_position).m_y-10.0,0.0);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<475>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<485>";
 	var t_top_right=c_Vec2D.m_new.call(new c_Vec2D,dbg_object(dbg_object(t_unit).m_position).m_x+10.0,dbg_object(dbg_object(t_unit).m_position).m_y-10.0,0.0);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<476>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<486>";
 	var t_bottom_left=c_Vec2D.m_new.call(new c_Vec2D,dbg_object(dbg_object(t_unit).m_position).m_x-10.0,dbg_object(dbg_object(t_unit).m_position).m_y+10.0,0.0);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<477>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<487>";
 	var t_bottom_right=c_Vec2D.m_new.call(new c_Vec2D,dbg_object(dbg_object(t_unit).m_position).m_x+10.0,dbg_object(dbg_object(t_unit).m_position).m_y+10.0,0.0);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<481>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<491>";
 	if(bb_main_LinesIntersect(dbg_object(t_particle).m_past_position,dbg_object(t_particle).m_position,t_top_left,t_top_right) || bb_main_LinesIntersect(dbg_object(t_particle).m_past_position,dbg_object(t_particle).m_position,t_top_left,t_bottom_left) || bb_main_LinesIntersect(dbg_object(t_particle).m_past_position,dbg_object(t_particle).m_position,t_top_right,t_bottom_right) || bb_main_LinesIntersect(dbg_object(t_particle).m_past_position,dbg_object(t_particle).m_position,t_bottom_right,t_bottom_left)){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<483>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<493>";
 		pop_err();
 		return 1;
 	}else{
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<485>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<495>";
 		pop_err();
 		return 0;
 	}
@@ -8112,20 +8309,20 @@ function c_MapKeys(){
 }
 c_MapKeys.m_new=function(t_map){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<503>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<503>";
 	dbg_object(this).m_map=t_map;
 	pop_err();
 	return this;
 }
 c_MapKeys.m_new2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<500>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<500>";
 	pop_err();
 	return this;
 }
 c_MapKeys.prototype.p_ObjectEnumerator=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<507>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<507>";
 	var t_=c_KeyEnumerator.m_new.call(new c_KeyEnumerator,this.m_map.p_FirstNode());
 	pop_err();
 	return t_;
@@ -8136,91 +8333,91 @@ function c_KeyEnumerator(){
 }
 c_KeyEnumerator.m_new=function(t_node){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<459>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<459>";
 	dbg_object(this).m_node=t_node;
 	pop_err();
 	return this;
 }
 c_KeyEnumerator.m_new2=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<456>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<456>";
 	pop_err();
 	return this;
 }
 c_KeyEnumerator.prototype.p_HasNext=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<463>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<463>";
 	var t_=this.m_node!=null;
 	pop_err();
 	return t_;
 }
 c_KeyEnumerator.prototype.p_NextObject=function(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<467>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<467>";
 	var t_t=this.m_node;
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<468>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<468>";
 	this.m_node=this.m_node.p_NextNode();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/map.monkey<469>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<469>";
 	pop_err();
 	return dbg_object(t_t).m_key;
 }
 var bb_asyncevent__current=null;
 function bb_math2_Max(t_x,t_y){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/math.monkey<56>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<56>";
 	if(t_x>t_y){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/math.monkey<56>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<56>";
 		pop_err();
 		return t_x;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/math.monkey<57>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<57>";
 	pop_err();
 	return t_y;
 }
 function bb_math2_Max2(t_x,t_y){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/math.monkey<83>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<83>";
 	if(t_x>t_y){
-		err_info="/Applications/MonkeyXFree84f/modules/monkey/math.monkey<83>";
+		err_info="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<83>";
 		pop_err();
 		return t_x;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/monkey/math.monkey<84>";
+	err_info="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<84>";
 	pop_err();
 	return t_y;
 }
 function bb_asyncevent_UpdateAsyncEvents(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/asyncevent.monkey<24>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<24>";
 	if((bb_asyncevent__current)!=null){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/asyncevent.monkey<24>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<24>";
 		pop_err();
 		return 0;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/asyncevent.monkey<25>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<25>";
 	var t_i=0;
-	err_info="/Applications/MonkeyXFree84f/modules/brl/asyncevent.monkey<26>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<26>";
 	while(t_i<bb_asyncevent__sources.p_Length()){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/asyncevent.monkey<27>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<27>";
 		bb_asyncevent__current=bb_asyncevent__sources.p_Get3(t_i);
-		err_info="/Applications/MonkeyXFree84f/modules/brl/asyncevent.monkey<28>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<28>";
 		bb_asyncevent__current.p_UpdateAsyncEvents();
-		err_info="/Applications/MonkeyXFree84f/modules/brl/asyncevent.monkey<29>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<29>";
 		if((bb_asyncevent__current)!=null){
-			err_info="/Applications/MonkeyXFree84f/modules/brl/asyncevent.monkey<29>";
+			err_info="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<29>";
 			t_i+=1;
 		}
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/asyncevent.monkey<31>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<31>";
 	bb_asyncevent__current=null;
 	pop_err();
 	return 0;
 }
 function bb_graphics_DebugRenderDevice(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<53>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<53>";
 	if(!((bb_graphics_renderDevice)!=null)){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<53>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<53>";
 		error("Rendering operations can only be performed inside OnRender");
 	}
 	pop_err();
@@ -8228,32 +8425,32 @@ function bb_graphics_DebugRenderDevice(){
 }
 function bb_graphics_Cls(t_r,t_g,t_b){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<378>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<378>";
 	bb_graphics_DebugRenderDevice();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<380>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<380>";
 	bb_graphics_renderDevice.Cls(t_r,t_g,t_b);
 	pop_err();
 	return 0;
 }
 function bb_graphics_DrawImage(t_image,t_x,t_y,t_frame){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<452>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<452>";
 	bb_graphics_DebugRenderDevice();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<453>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<453>";
 	if(t_frame<0 || t_frame>=dbg_object(t_image).m_frames.length){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<453>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<453>";
 		error("Invalid image frame");
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<456>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<456>";
 	var t_f=dbg_array(dbg_object(t_image).m_frames,t_frame)[dbg_index];
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<458>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<458>";
 	bb_graphics_context.p_Validate();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<460>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<460>";
 	if((dbg_object(t_image).m_flags&65536)!=0){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<461>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<461>";
 		bb_graphics_renderDevice.DrawSurface(dbg_object(t_image).m_surface,t_x-dbg_object(t_image).m_tx,t_y-dbg_object(t_image).m_ty);
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<463>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<463>";
 		bb_graphics_renderDevice.DrawSurface2(dbg_object(t_image).m_surface,t_x-dbg_object(t_image).m_tx,t_y-dbg_object(t_image).m_ty,dbg_object(t_f).m_x,dbg_object(t_f).m_y,dbg_object(t_image).m_width,dbg_object(t_image).m_height);
 	}
 	pop_err();
@@ -8261,149 +8458,149 @@ function bb_graphics_DrawImage(t_image,t_x,t_y,t_frame){
 }
 function bb_graphics_PushMatrix(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<333>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<333>";
 	var t_sp=dbg_object(bb_graphics_context).m_matrixSp;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<334>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<334>";
 	if(t_sp==dbg_object(bb_graphics_context).m_matrixStack.length){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<334>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<334>";
 		dbg_object(bb_graphics_context).m_matrixStack=resize_number_array(dbg_object(bb_graphics_context).m_matrixStack,t_sp*2);
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<335>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<335>";
 	dbg_array(dbg_object(bb_graphics_context).m_matrixStack,t_sp+0)[dbg_index]=dbg_object(bb_graphics_context).m_ix;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<336>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<336>";
 	dbg_array(dbg_object(bb_graphics_context).m_matrixStack,t_sp+1)[dbg_index]=dbg_object(bb_graphics_context).m_iy;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<337>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<337>";
 	dbg_array(dbg_object(bb_graphics_context).m_matrixStack,t_sp+2)[dbg_index]=dbg_object(bb_graphics_context).m_jx;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<338>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<338>";
 	dbg_array(dbg_object(bb_graphics_context).m_matrixStack,t_sp+3)[dbg_index]=dbg_object(bb_graphics_context).m_jy;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<339>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<339>";
 	dbg_array(dbg_object(bb_graphics_context).m_matrixStack,t_sp+4)[dbg_index]=dbg_object(bb_graphics_context).m_tx;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<340>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<340>";
 	dbg_array(dbg_object(bb_graphics_context).m_matrixStack,t_sp+5)[dbg_index]=dbg_object(bb_graphics_context).m_ty;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<341>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<341>";
 	dbg_object(bb_graphics_context).m_matrixSp=t_sp+6;
 	pop_err();
 	return 0;
 }
 function bb_graphics_Transform(t_ix,t_iy,t_jx,t_jy,t_tx,t_ty){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<355>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<355>";
 	var t_ix2=t_ix*dbg_object(bb_graphics_context).m_ix+t_iy*dbg_object(bb_graphics_context).m_jx;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<356>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<356>";
 	var t_iy2=t_ix*dbg_object(bb_graphics_context).m_iy+t_iy*dbg_object(bb_graphics_context).m_jy;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<357>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<357>";
 	var t_jx2=t_jx*dbg_object(bb_graphics_context).m_ix+t_jy*dbg_object(bb_graphics_context).m_jx;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<358>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<358>";
 	var t_jy2=t_jx*dbg_object(bb_graphics_context).m_iy+t_jy*dbg_object(bb_graphics_context).m_jy;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<359>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<359>";
 	var t_tx2=t_tx*dbg_object(bb_graphics_context).m_ix+t_ty*dbg_object(bb_graphics_context).m_jx+dbg_object(bb_graphics_context).m_tx;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<360>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<360>";
 	var t_ty2=t_tx*dbg_object(bb_graphics_context).m_iy+t_ty*dbg_object(bb_graphics_context).m_jy+dbg_object(bb_graphics_context).m_ty;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<361>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<361>";
 	bb_graphics_SetMatrix(t_ix2,t_iy2,t_jx2,t_jy2,t_tx2,t_ty2);
 	pop_err();
 	return 0;
 }
 function bb_graphics_Transform2(t_m){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<351>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<351>";
 	bb_graphics_Transform(dbg_array(t_m,0)[dbg_index],dbg_array(t_m,1)[dbg_index],dbg_array(t_m,2)[dbg_index],dbg_array(t_m,3)[dbg_index],dbg_array(t_m,4)[dbg_index],dbg_array(t_m,5)[dbg_index]);
 	pop_err();
 	return 0;
 }
 function bb_graphics_Translate(t_x,t_y){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<365>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<365>";
 	bb_graphics_Transform(1.0,0.0,0.0,1.0,t_x,t_y);
 	pop_err();
 	return 0;
 }
 function bb_graphics_Rotate(t_angle){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<373>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<373>";
 	bb_graphics_Transform(Math.cos((t_angle)*D2R),-Math.sin((t_angle)*D2R),Math.sin((t_angle)*D2R),Math.cos((t_angle)*D2R),0.0,0.0);
 	pop_err();
 	return 0;
 }
 function bb_graphics_Scale(t_x,t_y){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<369>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<369>";
 	bb_graphics_Transform(t_x,0.0,0.0,t_y,0.0,0.0);
 	pop_err();
 	return 0;
 }
 function bb_graphics_PopMatrix(){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<345>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<345>";
 	var t_sp=dbg_object(bb_graphics_context).m_matrixSp-6;
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<346>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<346>";
 	bb_graphics_SetMatrix(dbg_array(dbg_object(bb_graphics_context).m_matrixStack,t_sp+0)[dbg_index],dbg_array(dbg_object(bb_graphics_context).m_matrixStack,t_sp+1)[dbg_index],dbg_array(dbg_object(bb_graphics_context).m_matrixStack,t_sp+2)[dbg_index],dbg_array(dbg_object(bb_graphics_context).m_matrixStack,t_sp+3)[dbg_index],dbg_array(dbg_object(bb_graphics_context).m_matrixStack,t_sp+4)[dbg_index],dbg_array(dbg_object(bb_graphics_context).m_matrixStack,t_sp+5)[dbg_index]);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<347>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<347>";
 	dbg_object(bb_graphics_context).m_matrixSp=t_sp;
 	pop_err();
 	return 0;
 }
 function bb_graphics_DrawImage2(t_image,t_x,t_y,t_rotation,t_scaleX,t_scaleY,t_frame){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<470>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<470>";
 	bb_graphics_DebugRenderDevice();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<471>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<471>";
 	if(t_frame<0 || t_frame>=dbg_object(t_image).m_frames.length){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<471>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<471>";
 		error("Invalid image frame");
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<474>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<474>";
 	var t_f=dbg_array(dbg_object(t_image).m_frames,t_frame)[dbg_index];
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<476>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<476>";
 	bb_graphics_PushMatrix();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<478>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<478>";
 	bb_graphics_Translate(t_x,t_y);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<479>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<479>";
 	bb_graphics_Rotate(t_rotation);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<480>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<480>";
 	bb_graphics_Scale(t_scaleX,t_scaleY);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<482>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<482>";
 	bb_graphics_Translate(-dbg_object(t_image).m_tx,-dbg_object(t_image).m_ty);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<484>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<484>";
 	bb_graphics_context.p_Validate();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<486>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<486>";
 	if((dbg_object(t_image).m_flags&65536)!=0){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<487>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<487>";
 		bb_graphics_renderDevice.DrawSurface(dbg_object(t_image).m_surface,0.0,0.0);
 	}else{
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<489>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<489>";
 		bb_graphics_renderDevice.DrawSurface2(dbg_object(t_image).m_surface,0.0,0.0,dbg_object(t_f).m_x,dbg_object(t_f).m_y,dbg_object(t_image).m_width,dbg_object(t_image).m_height);
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<492>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<492>";
 	bb_graphics_PopMatrix();
 	pop_err();
 	return 0;
 }
 function bb_graphics_DrawText(t_text,t_x,t_y,t_xalign,t_yalign){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<577>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<577>";
 	bb_graphics_DebugRenderDevice();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<579>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<579>";
 	if(!((dbg_object(bb_graphics_context).m_font)!=null)){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<579>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<579>";
 		pop_err();
 		return 0;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<581>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<581>";
 	var t_w=dbg_object(bb_graphics_context).m_font.p_Width();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<582>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<582>";
 	var t_h=dbg_object(bb_graphics_context).m_font.p_Height();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<584>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<584>";
 	t_x-=Math.floor((t_w*t_text.length)*t_xalign);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<585>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<585>";
 	t_y-=Math.floor((t_h)*t_yalign);
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<587>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<587>";
 	for(var t_i=0;t_i<t_text.length;t_i=t_i+1){
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<588>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<588>";
 		var t_ch=dbg_charCodeAt(t_text,t_i)-dbg_object(bb_graphics_context).m_firstChar;
-		err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<589>";
+		err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<589>";
 		if(t_ch>=0 && t_ch<dbg_object(bb_graphics_context).m_font.p_Frames()){
-			err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<590>";
+			err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<590>";
 			bb_graphics_DrawImage(dbg_object(bb_graphics_context).m_font,t_x+(t_i*t_w),t_y,t_ch);
 		}
 	}
@@ -8412,56 +8609,56 @@ function bb_graphics_DrawText(t_text,t_x,t_y,t_xalign,t_yalign){
 }
 function bb_graphics_DrawRect(t_x,t_y,t_w,t_h){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<393>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<393>";
 	bb_graphics_DebugRenderDevice();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<395>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<395>";
 	bb_graphics_context.p_Validate();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<396>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<396>";
 	bb_graphics_renderDevice.DrawRect(t_x,t_y,t_w,t_h);
 	pop_err();
 	return 0;
 }
 function bb_graphics_DrawPoint(t_x,t_y){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<385>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<385>";
 	bb_graphics_DebugRenderDevice();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<387>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<387>";
 	bb_graphics_context.p_Validate();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<388>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<388>";
 	bb_graphics_renderDevice.DrawPoint(t_x,t_y);
 	pop_err();
 	return 0;
 }
 function bb_graphics_DrawCircle(t_x,t_y,t_r){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<417>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<417>";
 	bb_graphics_DebugRenderDevice();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<419>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<419>";
 	bb_graphics_context.p_Validate();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<420>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<420>";
 	bb_graphics_renderDevice.DrawOval(t_x-t_r,t_y-t_r,t_r*2.0,t_r*2.0);
 	pop_err();
 	return 0;
 }
 function bb_graphics_DrawLine(t_x1,t_y1,t_x2,t_y2){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<401>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<401>";
 	bb_graphics_DebugRenderDevice();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<403>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<403>";
 	bb_graphics_context.p_Validate();
-	err_info="/Applications/MonkeyXFree84f/modules/mojo/graphics.monkey<404>";
+	err_info="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<404>";
 	bb_graphics_renderDevice.DrawLine(t_x1,t_y1,t_x2,t_y2);
 	pop_err();
 	return 0;
 }
 function bb_asyncevent_RemoveAsyncEventSource(t_source){
 	push_err();
-	err_info="/Applications/MonkeyXFree84f/modules/brl/asyncevent.monkey<19>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<19>";
 	if(t_source==bb_asyncevent__current){
-		err_info="/Applications/MonkeyXFree84f/modules/brl/asyncevent.monkey<19>";
+		err_info="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<19>";
 		bb_asyncevent__current=null;
 	}
-	err_info="/Applications/MonkeyXFree84f/modules/brl/asyncevent.monkey<20>";
+	err_info="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<20>";
 	bb_asyncevent__sources.p_RemoveEach2(t_source);
 	pop_err();
 }
