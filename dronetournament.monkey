@@ -236,10 +236,6 @@ Function NewPoint:Vec2D (start_point:Vec2D, start_angle:Float, goal_angle:Float,
 		End	
 	End
 
-	If (Abs(new_angle - start_angle) > max_angle_change)
-		Print("Something went wrong -- New Angle: " + new_angle + " Start Angle: " + start_angle)
-	End
-
 	Return New Vec2D(start_point.x + distance * Cosr(new_angle * (PI/180)), start_point.y + distance * Sinr(new_angle * (PI/180)), new_angle)
 
 End
@@ -286,6 +282,7 @@ Class Game
 		Local unit_list:JsonArray = JsonArray(game_json.Get("units"))
 		Local types_list:JsonArray = JsonArray(game_json.Get("types"))
 		Local player_list:JsonArray = JsonArray(game_json.Get("players"))
+		Local particle_list:JsonArray = JsonArray(game_json.Get("particles"))
 		
 		For Local i:Int = 0 Until types_list.Length
 			Local type_json:JsonObject = JsonObject(types_list.Get(i))
@@ -318,6 +315,19 @@ Class Game
 			End
 		End
 		
+		For Local i:Int = 0 Until particle_list.Length
+			Local particle_json:JsonObject = JsonObject(particle_list.Get(i))
+			Local current_particle_id:String = particle_json.GetString("id")
+			
+			Local new_particle:Particle = New Particle(New Vec2D( Float(particle_json.GetString("x")), Float(particle_json.GetString("y")) ),
+													    2.5,
+													    Float(particle_json.GetString("power")),
+													    Float(particle_json.GetString("heading")),
+													    Float(particle_json.GetString("speed")),
+													    Int(particle_json.GetString("team")) )
+			Self.particles.AddLast(new_particle)
+		End
+		
 	End
 	
 	Method LoadServerMoves(game_json:JsonObject)
@@ -328,6 +338,7 @@ Class Game
 			current_unit.position.Set(Float(unit_json.GetString("x")), Float(unit_json.GetString("y")))
 			current_unit.heading = Float(unit_json.GetString("heading"))
 			current_unit.SetServerControl(Float(unit_json.GetString("control_x")), Float(unit_json.GetString("control_y")), Float(unit_json.GetString("control_heading")))
+			current_unit.armor = Int(unit_json.GetString("armor"))
 		End
 	End
 	

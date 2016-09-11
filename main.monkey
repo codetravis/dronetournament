@@ -160,7 +160,7 @@ Class DroneTournamentGame Extends App
 			Else If (action = "Ready")
 				Self.moves = 30
 				Self.game.LoadServerMoves(Self.multiplayer_service.response)
-				game_state = "multiplayer_ready"
+				WinLoseOrContinue()
 			Else If (action = "Update Waiting")
 				Self.timer_begin = Millisecs()
 				game_state = "updated"
@@ -168,6 +168,28 @@ Class DroneTournamentGame Extends App
 				game_state = "multiplayer"
 			End
 		End	
+	End
+
+	Method WinLoseOrContinue:Void()
+		Local player_unit_count:Int = 0
+		Local opponent_unit_count:Int = 0
+
+		For Local key:String = Eachin Self.game.units.Keys
+			Local current_unit:Unit = Self.game.units.Get(key)
+			If (current_unit.armor > 0 And current_unit.player_id = Self.user.player_id)
+				player_unit_count += 1
+			Else If (current_unit.armor > 0)
+				opponent_unit_count += 1
+			End
+		End
+		
+		If (player_unit_count = 0)	
+			Self.game_state = "loser"
+		Else If (opponent_unit_count = 0)
+			Self.game_state = "winner"
+		Else
+			Self.game_state = "multiplayer_ready"
+		End
 	End
 
 	Method GetListOfActiveGames:Void()
