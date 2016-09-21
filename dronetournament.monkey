@@ -40,7 +40,7 @@ Class Unit
 		Self.armor = Self.unit_type.maxArmor
 	End
 
-	Method DrawStatic(game_player_id:String)
+	Method DrawStatic(game_player_id:String, game_state:String)
 		If (Self.player_id = game_player_id)
 			SetColor(128, 255, 128)
 		Else
@@ -49,11 +49,11 @@ Class Unit
 		
 		DrawImage(Self.unit_type.image, Self.position.x, Self.position.y, -Self.heading, 1, 1)
 
-		If (Self.player_id = game_player_id)
+		If (Self.player_id = game_player_id And (game_state = "multiplayer" Or game_state = "tutorial"))
 			Self.control.Draw()
 
 			For Local i:Int = 0 Until Self.points.Length - 1
-				If ((Self.currentEnergy + i * Self.unit_type.chargeEnergy) Mod 100 = 0)
+				If ((Self.currentEnergy + i * Self.unit_type.chargeEnergy) Mod Self.unit_type.maxEnergy = 0)
 					SetColor(100, 100, 255)
 				Else
 					SetColor(255, 255, 255)
@@ -70,7 +70,7 @@ Class Unit
 		Self.heading = ATan2((next_point.y - Self.position.y), (next_point.x - Self.position.x))
 		Self.velocity.Set(Self.unit_type.maxVelocity * Cosr(heading * (PI/180)), Self.unit_type.maxVelocity * Sinr(Self.heading * (PI/180)))
 		Self.position = next_point
-		Self.currentEnergy = Min(100.0, Self.currentEnergy + Self.unit_type.chargeEnergy)
+		Self.currentEnergy = Min(Self.unit_type.maxEnergy, Self.currentEnergy + Self.unit_type.chargeEnergy)
 	End
 
 
@@ -107,21 +107,25 @@ Class Unit
 		
 		If (control_pos.x > map_width)
 			control_pos.x = map_width - 10
+			control_pos.heading = 180
 		Else If (control_pos.x < 0)
 			control_pos.x = 10
+			control_pos.heading = 0
 		End
 		
 		If (control_pos.y > map_height)
 			control_pos.y = map_height - 10
+			control_pos.heading = 270
 		Else If (control_pos.y < 0)
 			control_pos.y = 10
+			control_pos.heading = 90
 		End
 		
-		Self.control.position.Set(control_pos.x, control_pos.y)
+		Self.control.position.Set(control_pos.x, control_pos.y, control_pos.heading)
 		Self.control.heading = control_pos.heading
 	End
 	
-	Method SetServerControl(click_x:Float, click_y:Float, click_angle:Float)
+	Method SetServerControl(click_x:Float, click_y:Float, click_angle:Float, map_width:Float, map_height:Float)
 		Local goal_angle:Float = click_angle
 		Local start_angle:Float = Self.heading
 		Local control_pos:Vec2D = New Vec2D(Self.position.x, Self.position.y, Self.heading)
@@ -134,8 +138,24 @@ Class Unit
 			Self.points.PushLast(control_pos)
 		End
 		
-		Self.control.position.Set(control_pos.x, control_pos.y)
-		Self.control.heading = goal_angle
+		'If (control_pos.x > map_width)
+		'	control_pos.x = map_width - 10
+		'	control_pos.heading = 180
+		'Else If (control_pos.x < 0)
+		'	control_pos.x = 10
+		'	control_pos.heading = 0
+		'End
+		
+		'If (control_pos.y > map_height)
+		'	control_pos.y = map_height - 10
+		'	control_pos.heading = 270
+		'Else If (control_pos.y < 0)
+		'	control_pos.y = 10
+		'	control_pos.heading = 90
+		'End
+		
+		'Self.control.position.Set(control_pos.x, control_pos.y, control_pos.heading)
+		'Self.control.heading = control_pos.heading
 	
 	End
 	
@@ -278,6 +298,11 @@ Class Game
 	End
 	
 	Method LoadFromJson(game_json:JsonObject, player_id:String)
+		Self.units.Clear()
+		Self.opponents.Clear()
+		Self.particles.Clear()
+		Self.types.Clear()
+
 		Self.id = game_json.GetString("id")
 		Local unit_list:JsonArray = JsonArray(game_json.Get("units"))
 		Local types_list:JsonArray = JsonArray(game_json.Get("types"))
@@ -311,6 +336,7 @@ Class Game
 			Local current_player_state:String = player_json.GetString("player_state")
 			If (current_player_id = player_id)
 				Self.player_state = current_player_state
+				Print "setting game player state to " + current_player_state
 				Exit
 			End
 		End
@@ -337,7 +363,7 @@ Class Game
 			Local current_unit:Unit = Self.units.Get(unit_json.GetString("id"))
 			current_unit.position.Set(Float(unit_json.GetString("x")), Float(unit_json.GetString("y")))
 			current_unit.heading = Float(unit_json.GetString("heading"))
-			current_unit.SetServerControl(Float(unit_json.GetString("control_x")), Float(unit_json.GetString("control_y")), Float(unit_json.GetString("control_heading")))
+			current_unit.SetServerControl(Float(unit_json.GetString("control_x")), Float(unit_json.GetString("control_y")), Float(unit_json.GetString("control_heading")), SCREEN_WIDTH, SCREEN_HEIGHT)
 			current_unit.armor = Int(unit_json.GetString("armor"))
 		End
 	End

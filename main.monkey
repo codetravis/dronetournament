@@ -17,6 +17,7 @@ Class DroneTournamentGame Extends App
 	Field play_multiplayer_button:Button
 	Field win_button:Image
 	Field lose_button:Image
+	Field join_button_image:Image
 	Field join_button:Button
 
 	Field t_fighter_img:Image
@@ -46,6 +47,7 @@ Class DroneTournamentGame Extends App
 	Method LoadImages()
 		play_tutorial_button_image = LoadImage("images/play_tutorial_button.png")
 		play_multiplayer_button_image = LoadImage("images/play_multiplayer_button.png")
+		join_button_image = LoadImage("images/join_game.png")
 		win_button = LoadImage("images/win_button.png")
 		lose_button = LoadImage("images/lose_button.png")
 		
@@ -56,7 +58,7 @@ Class DroneTournamentGame Extends App
 	Method CreateUIElements()
 		Self.play_tutorial_button = New Button(10, -100, 110, 60, 440, 170, Self.play_tutorial_button_image)
 		Self.play_multiplayer_button = New Button(10, 100, 60, 260, 540, 170, Self.play_multiplayer_button_image)
-		Self.join_button = New Button(10, 100, 60, 260, 540, 170, Self.play_multiplayer_button_image)
+		Self.join_button = New Button(10, 100, 60, 260, 540, 170, Self.join_button_image)
 	End
 	
 	Method OnUpdate()
@@ -165,7 +167,8 @@ Class DroneTournamentGame Extends App
 				Self.timer_begin = Millisecs()
 				game_state = "updated"
 			Else If (action = "Update Ready")
-				game_state = "multiplayer"
+				GetGameInfoFromServer(Self.game.id)
+				'game_state = "multiplayer"
 			End
 		End	
 	End
@@ -230,9 +233,9 @@ Class DroneTournamentGame Extends App
 	End
 	
 	Method OnRender()
-		Cls(100, 100, 100)
-
-		If (game_state = "setup")	
+		Cls(100, 100, 100)		
+		
+		If (Self.game_state = "setup")	
 			DrawText("Enter a username: " + user.username, 50, 200)
 		Else If (game_state = "menu")
 			Self.play_tutorial_button.Draw()
@@ -246,7 +249,7 @@ Class DroneTournamentGame Extends App
 			For Local key:String = Eachin Self.game.units.Keys
 				Local current_unit:Unit = Self.game.units.Get(key)
 				If (current_unit.armor > 0)
-					current_unit.DrawStatic(Self.user.player_id)
+					current_unit.DrawStatic(Self.user.player_id, Self.game_state)
 				End
 			End
 			For Local part:Particle = Eachin Self.game.particles
@@ -258,12 +261,12 @@ Class DroneTournamentGame Extends App
 			DrawImage(win_button, 10, 100)
 		Else If (Self.game_state = "tutorial")
 			If (unit.armor > 0)
-				unit.DrawStatic(1)
+				unit.DrawStatic(1, Self.game_state)
 			End
 			
 			For Local enemy:Unit = Eachin Self.game.opponents
 				If (enemy.armor > 0)
-					enemy.DrawStatic(2)
+					enemy.DrawStatic(2, Self.game_state)
 				End
 			End
 			
@@ -378,11 +381,12 @@ Class DroneTournamentGame Extends App
 
 	Method RunMultiplayer:Void()
 		If (Self.moves > 0)
+
 			For Local unit_id:String = Eachin Self.game.units.Keys
 				Local current_unit:Unit = Self.game.units.Get(unit_id)
 				If (current_unit.armor > 0)
 					current_unit.Update()
-					If (current_unit.currentEnergy = 100)
+					If (current_unit.currentEnergy >= current_unit.unit_type.maxEnergy)
 						game.particles.AddLast(New Particle(current_unit.position, 2.5, 1, current_unit.heading, 20, current_unit.friendly))
 						current_unit.FireWeapon()
 					End
@@ -391,6 +395,7 @@ Class DroneTournamentGame Extends App
 					End
 				End
 			End
+
 			For Local particle:Particle = Eachin Self.game.particles
 				particle.Update()
 				For Local unit_id:String = Eachin Self.game.units.Keys
@@ -499,7 +504,10 @@ Function LinesIntersect:Bool(pointA:Vec2D, pointB:Vec2D, pointC:Vec2D, pointD:Ve
 End
 
 Function Collided(particle:Particle, unit:Unit)
-	If (particle.friendly = unit.friendly)
+
+	If (unit.armor <= 0)
+		Return False
+	Else If (particle.friendly = unit.friendly)
 		Return False
 	End
 
