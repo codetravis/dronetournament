@@ -122,7 +122,6 @@ Class Unit
 		End
 		
 		Self.control.position.Set(control_pos.x, control_pos.y, control_pos.heading)
-		Self.control.heading = control_pos.heading
 	End
 	
 	Method SetServerControl(click_x:Float, click_y:Float, click_angle:Float, map_width:Float, map_height:Float)
@@ -368,5 +367,23 @@ Class Game
 		End
 	End
 	
+	Method SetUnitPathsToServerSimulation(server_json:JsonObject, player_id:String)
+		Local moves_json:JsonObject = JsonObject(server_json.Get("move_points"))
+		For Local key:String = Eachin Self.units.Keys
+			Local current_unit:Unit = Self.units.Get(key)
+			If (current_unit.player_id = player_id)
+				current_unit.points = New Deque<Vec2D>
+				Local moves_array:JsonArray = JsonArray(moves_json.Get(key))
+				For Local i:Int = 0 Until moves_array.Length
+					Local move_json:JsonObject = JsonObject(moves_array.Get(i))
+					Local move:Vec2D = New Vec2D(Float(move_json.GetFloat("x")), Float(move_json.GetFloat("y")), Float(move_json.GetFloat("heading")))
+					
+					current_unit.points.PushLast(move)
+				End
+				Local last_point:Vec2D = current_unit.points.Get(current_unit.points.Length - 1)
+				current_unit.control.position.Set(last_point.x, last_point.y, last_point.heading)
+			End
+		End
+	End
 	
 End

@@ -7,7 +7,7 @@ Import user_interface
 Class DroneTournamentGame Extends App
 
 	Field user:User
-	Field unit:Unit
+	Field tutorial_unit:Unit
 	Field moves:Int
 	Field game:Game
 	Field game_state:String
@@ -168,7 +168,10 @@ Class DroneTournamentGame Extends App
 				game_state = "updated"
 			Else If (action = "Update Ready")
 				GetGameInfoFromServer(Self.game.id)
-				'game_state = "multiplayer"
+			Else If (action = "Server Move Points")
+				Self.game.SetUnitPathsToServerSimulation(Self.multiplayer_service.response, Self.user.player_id)
+				Print "where the heck are we"
+				Self.game_state = "multiplayer"
 			End
 		End	
 	End
@@ -260,8 +263,8 @@ Class DroneTournamentGame Extends App
 		Else If (Self.game_state = "winner")
 			DrawImage(win_button, 10, 100)
 		Else If (Self.game_state = "tutorial")
-			If (unit.armor > 0)
-				unit.DrawStatic(1, Self.game_state)
+			If (Self.tutorial_unit.armor > 0)
+				Self.tutorial_unit.DrawStatic(1, Self.game_state)
 			End
 			
 			For Local enemy:Unit = Eachin Self.game.opponents
@@ -289,7 +292,7 @@ Class DroneTournamentGame Extends App
 	Method SetupTutorial:Void() 
 		Local t_type:UnitType = New UnitType(JsonObject("{~qname~q: ~qT-Fighter~q, ~qspeed~q: ~q120~q, ~qturn~q: ~q4~q, ~qarmor~q: ~q5~q, ~qfull_energy~q: ~q100~q, ~qcharge_energy~q: ~q5~q, ~qimage~q: ~qt_fighter.png~q}"))
 		Self.game.opponents = New List<Unit>()
-		Self.unit = New Unit(1, 150.0, 150.0, -30, t_type, 1, 1)
+		Self.tutorial_unit = New Unit(1, 150.0, 150.0, -30, t_type, 1, 1)
 		
 		Local eye_type:UnitType = New UnitType(JsonObject("{~qname~q: ~qEye-Fighter~q, ~qspeed~q: ~q100~q, ~qturn~q: ~q3~q, ~qarmor~q: ~q2~q, ~qfull_energy~q: ~q100~q, ~qcharge_energy~q: ~q5~q, ~qimage~q: ~qeye_fighter.png~q}"))
 		For Local i:Int = 0 To 3
@@ -316,23 +319,23 @@ Class DroneTournamentGame Extends App
 	
 	Method RunTutorial:Void()
 		If (moves < 1)
-			If (unit.armor < 1)
+			If (Self.tutorial_unit.armor < 1)
 				Self.game_state = "loser"
 			Else If (LiveOpponentCount(Self.game.opponents) = 0)
 				Self.game_state = "winner"
 			Else If (TouchDown(0))
-				If (Self.unit.ControlSelected(TouchX(0), TouchY(0)))
-					Self.unit.SetControl(TouchX(0), TouchY(0), 640, 480)
+				If (Self.tutorial_unit.ControlSelected(TouchX(0), TouchY(0)))
+					Self.tutorial_unit.SetControl(TouchX(0), TouchY(0), 640, 480)
 				End
 			Else
-				Self.unit.ControlReleased()
+				Self.tutorial_unit.ControlReleased()
 			End
 				
 			If KeyHit(KEY_ENTER)
 				For Local enemy:Unit = Eachin Self.game.opponents
 					Local xrand = Rnd(-15.0, 15.0)
 					Local yrand = Rnd(-15.0, 15.0)
-					enemy.SetControl(Self.unit.position.x + xrand, Self.unit.position.y + yrand, 640, 480)
+					enemy.SetControl(Self.tutorial_unit.position.x + xrand, Self.tutorial_unit.position.y + yrand, 640, 480)
 				End
 				moves = 30
 			End
@@ -346,17 +349,19 @@ Class DroneTournamentGame Extends App
 					End
 				End
 			End
-			If (Self.unit.armor > 0)
-				Self.unit.Update()
-				If (Self.unit.currentEnergy = 100)
-					Self.game.particles.AddLast(New Particle(Self.unit.position, 2.5, 1, Self.unit.heading, 20, Self.unit.friendly))
-					Self.unit.FireWeapon()
+			
+			If (Self.tutorial_unit.armor > 0)
+				Self.tutorial_unit.Update()
+				If (Self.tutorial_unit.currentEnergy = 100)
+					Self.game.particles.AddLast(New Particle(Self.tutorial_unit.position, 2.5, 1, Self.tutorial_unit.heading, 20, Self.tutorial_unit.friendly))
+					Self.tutorial_unit.FireWeapon()
 				End
 			End
+			
 			For Local particle:Particle = Eachin Self.game.particles
 				particle.Update()
-				If Collided(particle, Self.unit)
-					Self.unit.TakeDamage()
+				If Collided(particle, Self.tutorial_unit)
+					Self.tutorial_unit.TakeDamage()
 					Self.game.particles.Remove(particle)
 				Else
 					For Local opponent:Unit = Eachin Self.game.opponents
@@ -374,7 +379,7 @@ Class DroneTournamentGame Extends App
 			End
 			moves -= 1
 			If (moves < 1)
-				Self.unit.SetControl(Self.unit.position.x + Self.unit.velocity.x, Self.unit.position.y + Self.unit.velocity.y, 640, 480)
+				Self.tutorial_unit.SetControl(Self.tutorial_unit.position.x + Self.tutorial_unit.velocity.x, Self.tutorial_unit.position.y + Self.tutorial_unit.velocity.y, 640, 480)
 			End
 		End
 	End
@@ -385,13 +390,13 @@ Class DroneTournamentGame Extends App
 			For Local unit_id:String = Eachin Self.game.units.Keys
 				Local current_unit:Unit = Self.game.units.Get(unit_id)
 				If (current_unit.armor > 0)
-					current_unit.Update()
+					Self.game.units.Get(unit_id).Update()
 					If (current_unit.currentEnergy >= current_unit.unit_type.maxEnergy)
 						game.particles.AddLast(New Particle(current_unit.position, 2.5, 1, current_unit.heading, 20, current_unit.friendly))
-						current_unit.FireWeapon()
+						Self.game.units.Get(unit_id).FireWeapon()
 					End
 					If (moves = 1)
-						current_unit.SetControl(current_unit.position.x + current_unit.velocity.x, current_unit.position.y + current_unit.velocity.y, 640, 480)
+						Self.game.units.Get(unit_id).SetControl(current_unit.position.x + current_unit.velocity.x, current_unit.position.y + current_unit.velocity.y, 640, 480)
 					End
 				End
 			End
@@ -401,7 +406,7 @@ Class DroneTournamentGame Extends App
 				For Local unit_id:String = Eachin Self.game.units.Keys
 					Local current_unit:Unit = Self.game.units.Get(unit_id)
 					If Collided(particle, current_unit)
-						current_unit.TakeDamage()
+						Self.game.units.Get(unit_id).TakeDamage()
 						Self.game.particles.Remove(particle)
 						Exit
 					End
@@ -422,7 +427,7 @@ Class DroneTournamentGame Extends App
 			For Local unit_id:String = Eachin Self.game.units.Keys
 				Local unit:Unit = Self.game.units.Get(unit_id)
 				If (unit.player_id = user.player_id  And unit.ControlSelected(TouchX(0), TouchY(0)))
-					unit.SetControl(TouchX(0), TouchY(0), 640, 480)
+					Self.game.units.Get(unit_id).SetControl(TouchX(0), TouchY(0), 640, 480)
 					Exit
 				End
 			End
@@ -434,11 +439,19 @@ Class DroneTournamentGame Extends App
 		End
 		
 		If KeyHit(KEY_ENTER)
-			EndTurn()
+			GetServerMoves()
 		End
 	
 	End
 	
+	Method GetServerMoves:Void()
+		If Self.game_state <> "server"
+			Local move_json:String = BuildMoveJson()
+			Self.multiplayer_service.PostJsonRequest("/move_points/" + Self.game.id + "/" + Self.user.player_id + "/30", move_json)
+			Self.game_state = "server"
+		End
+	End
+
 	Method EndTurn:Void()
 		Local move_json:String = BuildMoveJson()
 		Self.multiplayer_service.PostJsonRequest("/end_turn/" + Self.game.id, move_json)
@@ -446,25 +459,26 @@ Class DroneTournamentGame Extends App
 	End
 	
 	Method BuildMoveJson:String()
+		Print "Prepping move json"
 		Local first:Int = 1
 		Local move_json:String = "{ ~qdata~q : { ~qplayer_id~q: " + user.player_id + ", "
 		move_json += "~qmoves~q : [ "
 	
 		For Local unit_id:String = Eachin Self.game.units.Keys
-			Local unit:Unit = Self.game.units.Get(unit_id)
-			If (unit.player_id = user.player_id)
+			
+			If (Self.game.units.Get(unit_id).player_id = Self.user.player_id)
 				If first = 1
 					first = 0
 				Else
 					move_json += ", "
 				End
-				move_json += "{ ~qunit_id~q: " + unit.unit_id + ", "
-				move_json += "~qx~q: " + unit.position.x + ", "
-				move_json += "~qy~q: " + unit.position.y + ", "
-				move_json += "~qcontrol-x~q: " + unit.control.position.x + ", "
-				move_json += "~qcontrol-y~q: " + unit.control.position.y + ", "
-				move_json += "~qcontrol-heading~q: " + unit.control.heading + ", " 
-				move_json += "~qheading~q: " + unit.heading 
+				move_json += "{ ~qunit_id~q: " + Self.game.units.Get(unit_id).unit_id + ", "
+				move_json += "~qx~q: " + Self.game.units.Get(unit_id).position.x + ", "
+				move_json += "~qy~q: " + Self.game.units.Get(unit_id).position.y + ", "
+				move_json += "~qcontrol-x~q: " + Self.game.units.Get(unit_id).control.position.x + ", "
+				move_json += "~qcontrol-y~q: " + Self.game.units.Get(unit_id).control.position.y + ", "
+				move_json += "~qcontrol-heading~q: " + Self.game.units.Get(unit_id).control.position.heading + ", " 
+				move_json += "~qheading~q: " + Self.game.units.Get(unit_id).heading 
 				move_json += " }"
 			End
 		End
