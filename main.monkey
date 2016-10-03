@@ -4,6 +4,9 @@ Import server
 Import brl.json
 Import user_interface
 
+Const SCREEN_WIDTH:Int = 640
+Const SCREEN_HEIGHT:Int = 480
+
 Class DroneTournamentGame Extends App
 
 	Field user:User
@@ -22,6 +25,7 @@ Class DroneTournamentGame Extends App
 
 	Field t_fighter_img:Image
 	Field eye_fighter_img:Image
+	Field single_turret_img:Image
 	Field tournament_server_url:String = "http://localhost:4567/dronetournament" '"https://evolvinggames.herokuapp.com/dronetournament"
 	Field game_id:Int
 	Field multiplayer_service:MultiplayerService
@@ -53,6 +57,7 @@ Class DroneTournamentGame Extends App
 		
 		t_fighter_img = LoadImage("images/t_fighter.png", 1, Image.MidHandle)
 		eye_fighter_img = LoadImage("images/eye_fighter.png", 1, Image.MidHandle)
+		single_turret_img = LoadImage("images/single_turret.png", 1, Image.MidHandle)
 	End
 	
 	Method CreateUIElements()
@@ -170,8 +175,7 @@ Class DroneTournamentGame Extends App
 				GetGameInfoFromServer(Self.game.id)
 			Else If (action = "Server Move Points")
 				Self.game.SetUnitPathsToServerSimulation(Self.multiplayer_service.response, Self.user.player_id)
-				Print "where the heck are we"
-				Self.game_state = "multiplayer"
+				EndTurn()
 			End
 		End	
 	End
@@ -310,7 +314,6 @@ Class DroneTournamentGame Extends App
 		Self.moves = 0
 		Self.game.particles = New List<Particle>()
 	End
-	
 
 	Method CreateNewMultiplayerGame:Void()
 		Self.multiplayer_service.PostRequest("/new_game/" + user.player_id)
@@ -325,7 +328,7 @@ Class DroneTournamentGame Extends App
 				Self.game_state = "winner"
 			Else If (TouchDown(0))
 				If (Self.tutorial_unit.ControlSelected(TouchX(0), TouchY(0)))
-					Self.tutorial_unit.SetControl(TouchX(0), TouchY(0), 640, 480)
+					Self.tutorial_unit.SetControl(TouchX(0), TouchY(0), SCREEN_WIDTH, SCREEN_HEIGHT)
 				End
 			Else
 				Self.tutorial_unit.ControlReleased()
@@ -335,7 +338,7 @@ Class DroneTournamentGame Extends App
 				For Local enemy:Unit = Eachin Self.game.opponents
 					Local xrand = Rnd(-15.0, 15.0)
 					Local yrand = Rnd(-15.0, 15.0)
-					enemy.SetControl(Self.tutorial_unit.position.x + xrand, Self.tutorial_unit.position.y + yrand, 640, 480)
+					enemy.SetControl(Self.tutorial_unit.position.x + xrand, Self.tutorial_unit.position.y + yrand, SCREEN_WIDTH, SCREEN_HEIGHT)
 				End
 				moves = 30
 			End
@@ -344,7 +347,7 @@ Class DroneTournamentGame Extends App
 				If (enemy.armor > 0)
 					enemy.Update()
 					If (enemy.currentEnergy = 100)
-						game.particles.AddLast(New Particle(enemy.position, 2.5, 1, enemy.heading, 20, enemy.friendly))
+						game.particles.AddLast(New Particle(enemy.position, 2.5, 1, enemy.heading, 20, enemy.team))
 						enemy.FireWeapon()
 					End
 				End
@@ -353,7 +356,7 @@ Class DroneTournamentGame Extends App
 			If (Self.tutorial_unit.armor > 0)
 				Self.tutorial_unit.Update()
 				If (Self.tutorial_unit.currentEnergy = 100)
-					Self.game.particles.AddLast(New Particle(Self.tutorial_unit.position, 2.5, 1, Self.tutorial_unit.heading, 20, Self.tutorial_unit.friendly))
+					Self.game.particles.AddLast(New Particle(Self.tutorial_unit.position, 2.5, 1, Self.tutorial_unit.heading, 20, Self.tutorial_unit.team))
 					Self.tutorial_unit.FireWeapon()
 				End
 			End
@@ -379,7 +382,7 @@ Class DroneTournamentGame Extends App
 			End
 			moves -= 1
 			If (moves < 1)
-				Self.tutorial_unit.SetControl(Self.tutorial_unit.position.x + Self.tutorial_unit.velocity.x, Self.tutorial_unit.position.y + Self.tutorial_unit.velocity.y, 640, 480)
+				Self.tutorial_unit.SetControl(Self.tutorial_unit.position.x + Self.tutorial_unit.velocity.x, Self.tutorial_unit.position.y + Self.tutorial_unit.velocity.y, SCREEN_WIDTH, SCREEN_HEIGHT)
 			End
 		End
 	End
@@ -391,12 +394,14 @@ Class DroneTournamentGame Extends App
 				Local current_unit:Unit = Self.game.units.Get(unit_id)
 				If (current_unit.armor > 0)
 					Self.game.units.Get(unit_id).Update()
+					current_unit = Self.game.units.Get(unit_id)
 					If (current_unit.currentEnergy >= current_unit.unit_type.maxEnergy)
-						game.particles.AddLast(New Particle(current_unit.position, 2.5, 1, current_unit.heading, 20, current_unit.friendly))
+						game.particles.AddLast(New Particle(current_unit.position, 2.5, 1, current_unit.heading, 20, current_unit.team))
+						'Print("Client created particle on step: " + Self.moves + " at:" + current_unit.position.x + ", " + current_unit.position.y + " with heading: " + current_unit.heading)
 						Self.game.units.Get(unit_id).FireWeapon()
 					End
 					If (moves = 1)
-						Self.game.units.Get(unit_id).SetControl(current_unit.position.x + current_unit.velocity.x, current_unit.position.y + current_unit.velocity.y, 640, 480)
+						Self.game.units.Get(unit_id).SetControl(current_unit.position.x + current_unit.velocity.x, current_unit.position.y + current_unit.velocity.y, SCREEN_WIDTH, SCREEN_HEIGHT)
 					End
 				End
 			End
@@ -426,15 +431,14 @@ Class DroneTournamentGame Extends App
 		If (TouchDown(0))
 			For Local unit_id:String = Eachin Self.game.units.Keys
 				Local unit:Unit = Self.game.units.Get(unit_id)
-				If (unit.player_id = user.player_id  And unit.ControlSelected(TouchX(0), TouchY(0)))
-					Self.game.units.Get(unit_id).SetControl(TouchX(0), TouchY(0), 640, 480)
+				If (unit.player_id = Self.user.player_id  And Self.game.units.Get(unit_id).ControlSelected(TouchX(0), TouchY(0)))
+					Self.game.units.Get(unit_id).SetControl(TouchX(0), TouchY(0), SCREEN_WIDTH, SCREEN_HEIGHT)
 					Exit
 				End
 			End
 		Else
 			For Local unit_id:String = Eachin Self.game.units.Keys
-				Local unit:Unit = Self.game.units.Get(unit_id)
-				unit.ControlReleased()
+				Self.game.units.Get(unit_id).ControlReleased()
 			End
 		End
 		
@@ -445,11 +449,9 @@ Class DroneTournamentGame Extends App
 	End
 	
 	Method GetServerMoves:Void()
-		If Self.game_state <> "server"
-			Local move_json:String = BuildMoveJson()
-			Self.multiplayer_service.PostJsonRequest("/move_points/" + Self.game.id + "/" + Self.user.player_id + "/30", move_json)
-			Self.game_state = "server"
-		End
+		Local move_json:String = BuildMoveJson()
+		Self.multiplayer_service.PostJsonRequest("/move_points/" + Self.game.id + "/" + Self.user.player_id + "/30", move_json)
+		Self.game_state = "server"
 	End
 
 	Method EndTurn:Void()
@@ -521,7 +523,7 @@ Function Collided(particle:Particle, unit:Unit)
 
 	If (unit.armor <= 0)
 		Return False
-	Else If (particle.friendly = unit.friendly)
+	Else If (particle.team = unit.team)
 		Return False
 	End
 

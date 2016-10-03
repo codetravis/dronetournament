@@ -33,8 +33,6 @@ Class MultiplayerService Implements IOnHttpRequestComplete
 	End
 	
 	Method OnHttpRequestComplete:Void(request:HttpRequest)
-		Print request.ResponseText()
-		Print request.Status()
 
 		Self.http_status = request.Status()
 		Self.raw_response = request.ResponseText()
