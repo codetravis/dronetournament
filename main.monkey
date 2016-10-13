@@ -69,6 +69,8 @@ Class DroneTournamentGame Extends App
 	Method OnUpdate()
 		If (game_state = "setup")
 			GetUsername()
+		Else If (game_state = "get_password")
+			GetPassword()
 		Else If (game_state = "menu")
 			If (TouchDown(0))
 				If (Self.play_tutorial_button.Selected())
@@ -77,7 +79,7 @@ Class DroneTournamentGame Extends App
 					SignIn() 					
 				End
 			End
-		Else If (game_state = "server")
+		Else If (Self.game_state = "server" Or Self.game_state = "multiplayer_server")
 			DetermineGameState()
 		Else If (game_state = "get_games")
 			GetListOfActiveGames()
@@ -127,7 +129,7 @@ Class DroneTournamentGame Extends App
 		Local char = GetChar()
 		If (char = CHAR_ENTER)
 			DisableKeyboard()
-			Self.game_state = "menu"
+			Self.game_state = "get_password"
 		Else If (char = CHAR_BACKSPACE Or char = CHAR_DELETE)
 			If (Self.user.username.Length() <= 1)
 				Self.user.username = ""
@@ -138,9 +140,26 @@ Class DroneTournamentGame Extends App
 			Self.user.username += String.FromChar(char)
 		End
 	End
+	
+	Method GetPassword:Void()
+		EnableKeyboard()
+		Local char = GetChar()
+		If (char = CHAR_ENTER)
+			DisableKeyboard()
+			Self.game_state = "menu"
+		Else If (char = CHAR_BACKSPACE Or char = CHAR_DELETE)
+			If (Self.user.password.Length() <= 1)
+				Self.user.password = ""
+			Else
+				Self.user.password = Self.user.password[..-1]
+			End
+		Else If (char > 0 And Self.user.password.Length() < 13)
+			Self.user.password += String.FromChar(char)
+		End
+	End
 
 	Method SignIn:Void()
-		Self.multiplayer_service.PostRequest("/sign_in/" + user.username)
+		Self.multiplayer_service.PostJsonRequest("/sign_in", "{ ~qusername~q: ~q" + user.username + "~q, ~qpassword~q: ~q" + user.password + "~q }")
 		Self.game_state = "server"
 	End
 
@@ -184,7 +203,7 @@ Class DroneTournamentGame Extends App
 		Local player_unit_count:Int = 0
 		Local opponent_unit_count:Int = 0
 
-		For Local key:String = Eachin Self.game.units.Keys
+		For Local key:Int = Eachin Self.game.units.Keys
 			Local current_unit:Unit = Self.game.units.Get(key)
 			If (current_unit.armor > 0 And current_unit.player_id = Self.user.player_id)
 				player_unit_count += 1
@@ -223,7 +242,7 @@ Class DroneTournamentGame Extends App
 		Local y = 10
 		For Local i:Int = 0 Until Self.game_list.Length
 			Local game_object:JsonObject = JsonObject(Self.game_list.Get(i))
-			Local game_ui:GameSelect = New GameSelect(x, y, 400, 50, game_object.GetString("game_id"))
+			Local game_ui:GameSelect = New GameSelect(x, y, 400, 50, String(game_object.GetInt("game_id")))
 			Self.game_select.AddLast(game_ui)
 			y += 55
 		End 
@@ -244,6 +263,8 @@ Class DroneTournamentGame Extends App
 		
 		If (Self.game_state = "setup")	
 			DrawText("Enter a username: " + user.username, 50, 200)
+		Else If (Self.game_state = "get_password")
+			DrawText("Enter a password: " + user.password, 50, 200)
 		Else If (game_state = "menu")
 			Self.play_tutorial_button.Draw()
 			Self.play_multiplayer_button.Draw()
@@ -252,8 +273,12 @@ Class DroneTournamentGame Extends App
 				game_ui.Draw()
 			End
 			Self.join_button.Draw()
-		Else If (Self.game_state = "multiplayer" Or Self.game_state = "multiplayer_ready" Or Self.game_state = "end_turn" Or Self.game_state = "updated")
-			For Local key:String = Eachin Self.game.units.Keys
+		Else If (Self.game_state = "multiplayer" Or
+		 		Self.game_state = "multiplayer_ready" Or
+		  		Self.game_state = "end_turn" Or
+		   		Self.game_state = "updated" Or
+		   		Self.game_state = "multiplayer_server")
+			For Local key:Int = Eachin Self.game.units.Keys
 				Local current_unit:Unit = Self.game.units.Get(key)
 				If (current_unit.armor > 0)
 					current_unit.DrawStatic(Self.user.player_id, Self.game_state)
@@ -390,7 +415,7 @@ Class DroneTournamentGame Extends App
 	Method RunMultiplayer:Void()
 		If (Self.moves > 0)
 
-			For Local unit_id:String = Eachin Self.game.units.Keys
+			For Local unit_id:Int = Eachin Self.game.units.Keys
 				Local current_unit:Unit = Self.game.units.Get(unit_id)
 				If (current_unit.armor > 0)
 					Self.game.units.Get(unit_id).Update()
@@ -408,7 +433,7 @@ Class DroneTournamentGame Extends App
 
 			For Local particle:Particle = Eachin Self.game.particles
 				particle.Update()
-				For Local unit_id:String = Eachin Self.game.units.Keys
+				For Local unit_id:Int = Eachin Self.game.units.Keys
 					Local current_unit:Unit = Self.game.units.Get(unit_id)
 					If Collided(particle, current_unit)
 						Self.game.units.Get(unit_id).TakeDamage()
@@ -429,7 +454,7 @@ Class DroneTournamentGame Extends App
 
 	Method UserPlanMoves:Void()
 		If (TouchDown(0))
-			For Local unit_id:String = Eachin Self.game.units.Keys
+			For Local unit_id:Int = Eachin Self.game.units.Keys
 				Local unit:Unit = Self.game.units.Get(unit_id)
 				If (unit.player_id = Self.user.player_id  And Self.game.units.Get(unit_id).ControlSelected(TouchX(0), TouchY(0)))
 					Self.game.units.Get(unit_id).SetControl(TouchX(0), TouchY(0), SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -437,7 +462,7 @@ Class DroneTournamentGame Extends App
 				End
 			End
 		Else
-			For Local unit_id:String = Eachin Self.game.units.Keys
+			For Local unit_id:Int = Eachin Self.game.units.Keys
 				Self.game.units.Get(unit_id).ControlReleased()
 			End
 		End
@@ -451,13 +476,13 @@ Class DroneTournamentGame Extends App
 	Method GetServerMoves:Void()
 		Local move_json:String = BuildMoveJson()
 		Self.multiplayer_service.PostJsonRequest("/move_points/" + Self.game.id + "/" + Self.user.player_id + "/30", move_json)
-		Self.game_state = "server"
+		Self.game_state = "multiplayer_server"
 	End
 
 	Method EndTurn:Void()
 		Local move_json:String = BuildMoveJson()
 		Self.multiplayer_service.PostJsonRequest("/end_turn/" + Self.game.id, move_json)
-		Self.game_state = "server"
+		Self.game_state = "multiplayer_server"
 	End
 	
 	Method BuildMoveJson:String()
@@ -466,7 +491,7 @@ Class DroneTournamentGame Extends App
 		Local move_json:String = "{ ~qdata~q : { ~qplayer_id~q: " + user.player_id + ", "
 		move_json += "~qmoves~q : [ "
 	
-		For Local unit_id:String = Eachin Self.game.units.Keys
+		For Local unit_id:Int = Eachin Self.game.units.Keys
 			
 			If (Self.game.units.Get(unit_id).player_id = Self.user.player_id)
 				If first = 1
@@ -492,12 +517,12 @@ Class DroneTournamentGame Extends App
 	
 	Method GetNextTurn:Void()
 		Self.multiplayer_service.GetRequest("/next_turn/" + Self.game.id + "/" + Self.user.player_id)
-		Self.game_state = "server"
+		Self.game_state = "multiplayer_server"
 	End
 	
 	Method CheckIfAllPlayersUpdated:Void()
 		Self.multiplayer_service.GetRequest("/update_state/" + Self.game.id + "/" + Self.user.player_id)
-		Self.game_state = "server"
+		Self.game_state = "multiplayer_server"
 	End
 	
 End

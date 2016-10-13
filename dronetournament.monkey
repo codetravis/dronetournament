@@ -247,6 +247,7 @@ Function NewPoint:Vec2D (start_point:Vec2D, start_angle:Float, goal_angle:Float,
 End
 
 Class UnitType
+	Field id:Int
 	Field name:String
 	Field maxVelocity:Float
 	Field maxRotation:Float
@@ -256,32 +257,32 @@ Class UnitType
 	Field image:Image
 	
 	Method New(type_json:JsonObject)
+		Self.id = type_json.GetInt("id")
 		Self.name = type_json.GetString("name")
-		Self.maxVelocity = Float(type_json.GetString("speed"))
-		Self.maxRotation = Float(type_json.GetString("turn"))
-		Self.maxEnergy = Float(type_json.GetString("full_energy"))
-		Self.chargeEnergy = Float(type_json.GetString("charge_energy"))
-		Self.maxArmor = Float(type_json.GetString("armor"))
+		Self.maxVelocity = Float(type_json.GetFloat("speed"))
+		Self.maxRotation = Float(type_json.GetFloat("turn"))
+		Self.maxEnergy = Float(type_json.GetFloat("full_energy"))
+		Self.chargeEnergy = Float(type_json.GetFloat("charge_energy"))
+		Self.maxArmor = Float(type_json.GetInt("armor"))
 		
-		Local image_name:String = type_json.GetString("image")
-		Print image_name
+		Local image_name:String = type_json.GetString("image_name")
 		Self.image = LoadImage("images/" + image_name, 1, Image.MidHandle)
 	End
 End
 
 Class Game
 	Field id:String
-	Field units:StringMap<Unit>
+	Field units:IntMap<Unit>
 	Field opponents:List<Unit>
 	Field particles:List<Particle>
-	Field types:StringMap<UnitType>
+	Field types:IntMap<UnitType>
 	Field player_state:String
 	
 	Method New()
-		Self.units = New StringMap<Unit>()
+		Self.units = New IntMap<Unit>()
 		Self.opponents = New List<Unit>()
 		Self.particles = New List<Particle>()
-		Self.types = New StringMap<UnitType>()
+		Self.types = New IntMap<UnitType>()
 	End
 	
 	Method LoadFromJson(game_json:JsonObject, player_id:String)
@@ -290,7 +291,7 @@ Class Game
 		Self.particles.Clear()
 		Self.types.Clear()
 
-		Self.id = game_json.GetString("id")
+		Self.id = String(game_json.GetInt("id"))
 		Local unit_list:JsonArray = JsonArray(game_json.Get("units"))
 		Local types_list:JsonArray = JsonArray(game_json.Get("types"))
 		Local player_list:JsonArray = JsonArray(game_json.Get("players"))
@@ -299,29 +300,30 @@ Class Game
 		For Local i:Int = 0 Until types_list.Length
 			Local type_json:JsonObject = JsonObject(types_list.Get(i))
 			Local new_type:UnitType = New UnitType(type_json)
-			Self.types.Add(new_type.name, new_type)
+			Self.types.Add(new_type.id, new_type)
 		End
 		
 		For Local i:Int = 0 Until unit_list.Length
 			Local unit_json:JsonObject = JsonObject(unit_list.Get(i))
-			Local type_name:String = unit_json.GetString("type")
-			Local unit_type:UnitType = Self.types.Get(type_name)
+			Local type_id:Int = unit_json.GetInt("unit_type_id")
+			Local unit_type:UnitType = Self.types.Get(type_id)
 
-			Local new_unit:Unit = New Unit(Int(unit_json.GetString("id")), 
-											Float(unit_json.GetString("x")), 
-											Float(unit_json.GetString("y")), 
-											Float(unit_json.GetString("heading")), 
+			Local new_unit:Unit = New Unit(Int(unit_json.GetInt("id")), 
+											Float(unit_json.GetFloat("x")), 
+											Float(unit_json.GetFloat("y")), 
+											Float(unit_json.GetFloat("heading")), 
 											unit_type, 
-											Int(unit_json.GetString("player_id")), 
-											Int(unit_json.GetString("player_id")),
-											Float(unit_json.GetString("energy")))
-			new_unit.armor = Float(unit_json.GetString("armor"))
+											Int(unit_json.GetInt("player_id")), 
+											Int(unit_json.GetInt("player_id")),
+											Float(unit_json.GetFloat("energy")))
+			new_unit.armor = Float(unit_json.GetInt("armor"))
 			Self.units.Add(new_unit.unit_id, new_unit)
+			Print "new unit " + new_unit.unit_id + " should be added" 
 		End
 		
 		For Local i:Int = 0 Until player_list.Length
 			Local player_json:JsonObject = JsonObject(player_list.Get(i))
-			Local current_player_id:String = player_json.GetString("player_id")
+			Local current_player_id:String = String(player_json.GetInt("player_id"))
 			Local current_player_state:String = player_json.GetString("player_state")
 			If (current_player_id = player_id)
 				Self.player_state = current_player_state
@@ -332,15 +334,15 @@ Class Game
 		
 		For Local i:Int = 0 Until particle_list.Length
 			Local particle_json:JsonObject = JsonObject(particle_list.Get(i))
-			Local current_particle_id:String = particle_json.GetString("id")
+			Local current_particle_id:String = particle_json.GetInt("id")
 			
-			Local new_particle:Particle = New Particle(New Vec2D( Float(particle_json.GetString("x")), Float(particle_json.GetString("y")) ),
+			Local new_particle:Particle = New Particle(New Vec2D( Float(particle_json.GetFloat("x")), Float(particle_json.GetFloat("y")) ),
 													    2.5,
-													    Float(particle_json.GetString("power")),
-													    Float(particle_json.GetString("heading")),
-													    Float(particle_json.GetString("speed")),
-													    Int(particle_json.GetString("team")),
-													    Int(particle_json.GetString("lifetime")) )
+													    Float(particle_json.GetFloat("power")),
+													    Float(particle_json.GetFloat("heading")),
+													    Float(particle_json.GetFloat("speed")),
+													    Int(particle_json.GetInt("team")),
+													    Int(particle_json.GetInt("lifetime")) )
 			new_particle.past_position.Set(new_particle.position.x - new_particle.speed * Cosr(new_particle.angle * (PI/180)), 
 										    new_particle.position.y - new_particle.speed * Sinr(new_particle.angle * (PI/180)))
 			Self.particles.AddLast(new_particle)
@@ -352,21 +354,21 @@ Class Game
 		Local unit_list:JsonArray = JsonArray(game_json.Get("units"))
 		For Local i:Int = 0 Until unit_list.Length
 			Local unit_json:JsonObject = JsonObject(unit_list.Get(i))
-			Local current_unit:Unit = Self.units.Get(unit_json.GetString("id"))
-			current_unit.position.Set(Float(unit_json.GetString("x")), Float(unit_json.GetString("y")))
-			current_unit.heading = Float(unit_json.GetString("heading"))
-			current_unit.SetServerControl(Float(unit_json.GetString("control_x")), Float(unit_json.GetString("control_y")), SCREEN_WIDTH, SCREEN_HEIGHT)
-			current_unit.armor = Int(unit_json.GetString("armor"))
-			Self.units.Set(unit_json.GetString("id"), current_unit)
+			Local current_unit:Unit = Self.units.Get(unit_json.GetInt("id"))
+			current_unit.position.Set(Float(unit_json.GetFloat("x")), Float(unit_json.GetFloat("y")))
+			current_unit.heading = Float(unit_json.GetFloat("heading"))
+			current_unit.SetServerControl(Float(unit_json.GetFloat("control_x")), Float(unit_json.GetFloat("control_y")), SCREEN_WIDTH, SCREEN_HEIGHT)
+			current_unit.armor = Int(unit_json.GetInt("armor"))
+			Self.units.Set(unit_json.GetInt("id"), current_unit)
 		End
 	End
 	
 	Method SetUnitPathsToServerSimulation(server_json:JsonObject, player_id:String)
 		Local moves_json:JsonObject = JsonObject(server_json.Get("move_points"))
-		For Local key:String = Eachin Self.units.Keys 
+		For Local key:Int = Eachin Self.units.Keys 
 			If (Self.units.Get(key).player_id = player_id)
 				Self.units.Get(key).points = New Deque<Vec2D>
-				Local moves_array:JsonArray = JsonArray(moves_json.Get(key))
+				Local moves_array:JsonArray = JsonArray(moves_json.Get(String(key)))
 				For Local i:Int = 0 Until moves_array.Length
 					Local move_json:JsonObject = JsonObject(moves_array.Get(i))
 					Local move:Vec2D = New Vec2D(Float(move_json.GetFloat("x")), Float(move_json.GetFloat("y")), Float(move_json.GetFloat("heading")))
