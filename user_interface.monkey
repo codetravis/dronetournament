@@ -1,4 +1,5 @@
 Import Mojo
+Import dronetournament
 
 Class Button
 
@@ -18,7 +19,7 @@ Class Button
 	
 	Method Draw()
 		DrawImage(Self.image, Self.position.x, Self.position.y)
-		' this is used when positioning button hit boxes on screen for now
+		' Used for helping place new buttons and their hit boxes for now
 		'DrawRect(Self.touch_box.position.x, Self.touch_box.position.y, Self.touch_box.width, Self.touch_box.height)
 	End
 
@@ -44,22 +45,6 @@ Class TouchBox
 		Else
 			Return False
 		End
-	End
-End
-
-Class Vec2D
-	Field x:Float
-	Field y:Float
-	Field heading:Float
-	
-	Method New(x:Float=0, y:Float=0, h:Float=0)
-		Set(x,y,h)
-	End
-	
-	Method Set(x:Float, y:Float, h:Float=0)
-		Self.x = x
-		Self.y = y
-		Self.heading = h
 	End
 End
 

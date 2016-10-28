@@ -1,0 +1,23 @@
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/MonkeyGame.ap_ \
+ : /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/res/drawable-hdpi/icon.png \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/res/drawable-ldpi/icon.png \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/res/drawable-mdpi/icon.png \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/res/layout/main.xml \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/res/values/strings.xml \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/res/drawable-hdpi/icon.png \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/res/drawable-ldpi/icon.png \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/res/drawable-mdpi/icon.png \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/assets/monkey \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/assets/monkey/images \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/assets/monkey/mojo_font.png \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/assets/monkey/images/end_turn_button.png \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/assets/monkey/images/eye_fighter.png \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/assets/monkey/images/join_game.png \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/assets/monkey/images/lose_button.png \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/assets/monkey/images/play_button.png \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/assets/monkey/images/play_multiplayer_button.png \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/assets/monkey/images/play_tutorial_button.png \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/assets/monkey/images/single_turret.png \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/assets/monkey/images/t_fighter.png \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/assets/monkey/images/win_button.png \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/AndroidManifest.xml \
