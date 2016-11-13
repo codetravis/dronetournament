@@ -38,14 +38,26 @@ Class Unit
 	End
 
 	Method DrawStatic(game_player_id:String, game_state:String)
+		Local R:Int = 0
+		Local G:Int = 0
+		Local B:Int = 0
 		If (Self.player_id = game_player_id)
-			SetColor(128, 255, 128)
+			R = 128
+			G = 255
+			B = 128
 		Else
-			SetColor(255, 128, 128)
+			R = 255
+			G = 128
+			B = 128
 		End
 		
+		SetColor(R, G, B)
 		DrawImage(Self.unit_type.image, Self.position.x, Self.position.y, -Self.heading, 1, 1)
-
+		For Local i = 0 Until Self.armor - 1
+			SetColor(0, 0, 255)
+			DrawRect(Self.position.x - 20 + (i * 5), Self.position.y + 28, 5, 3)
+		End
+		SetColor(R, G, B)
 		If (Self.player_id = game_player_id And (game_state = "multiplayer" Or game_state = "tutorial" Or game_state = "end_turn"))
 			Self.control.Draw()
 

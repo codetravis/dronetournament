@@ -32,7 +32,8 @@ Class DroneTournamentGame Extends App
 	Field t_fighter_img:Image
 	Field eye_fighter_img:Image
 	Field single_turret_img:Image
-	Field tournament_server_url:String = "http://localhost:4567/dronetournament" '"https://evolvinggames.herokuapp.com/dronetournament"
+	'Field tournament_server_url:String = "https://evolvinggames.herokuapp.com/dronetournament"
+	Field tournament_server_url:String = "http://localhost:3000/dronetournament"
 	Field game_id:Int
 	Field multiplayer_service:MultiplayerService
 	Field game_list:JsonArray
@@ -190,6 +191,9 @@ Class DroneTournamentGame Extends App
 			Else If (action = "Sign In")
 				Self.user.player_id = Self.multiplayer_service.response.GetString("player_id")
 				Self.game_state = "get_games"
+			Else If (action = "Invalid Sign In")
+				Self.user = New User("")
+				Self.game_state = "setup"
 			Else If (action = "List Games")
 				Self.game_list = JsonArray(multiplayer_service.response.Get("games"))
 				BuildGameListUI()

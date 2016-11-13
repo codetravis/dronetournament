@@ -22,7 +22,7 @@ CFG_TEXT_FILES="*.txt|*.xml|*.json";
 //${CONFIG_END}
 
 //${METADATA_BEGIN}
-var META_DATA="[mojo_font.png];type=image/png;width=864;height=13;\n[images/end_turn_button.png];type=image/png;width=640;height=480;\n[images/eye_fighter.png];type=image/png;width=64;height=64;\n[images/join_game.png];type=image/png;width=640;height=480;\n[images/lose_button.png];type=image/png;width=640;height=480;\n[images/play_button.png];type=image/png;width=640;height=480;\n[images/play_multiplayer_button.png];type=image/png;width=640;height=480;\n[images/play_tutorial_button.png];type=image/png;width=640;height=480;\n[images/single_turret.png];type=image/png;width=64;height=64;\n[images/t_fighter.png];type=image/png;width=64;height=64;\n[images/win_button.png];type=image/png;width=640;height=480;\n";
+var META_DATA="[mojo_font.png];type=image/png;width=864;height=13;\n[images/control_point.png];type=image/png;width=64;height=64;\n[images/end_turn_button.png];type=image/png;width=640;height=480;\n[images/eye_fighter.png];type=image/png;width=64;height=64;\n[images/join_game.png];type=image/png;width=640;height=480;\n[images/lose_button.png];type=image/png;width=640;height=480;\n[images/play_button.png];type=image/png;width=640;height=480;\n[images/play_multiplayer_button.png];type=image/png;width=640;height=480;\n[images/play_tutorial_button.png];type=image/png;width=640;height=480;\n[images/single_turret.png];type=image/png;width=64;height=64;\n[images/t_fighter.png];type=image/png;width=64;height=64;\n[images/win_button.png];type=image/png;width=640;height=480;\n";
 //${METADATA_END}
 
 //${TRANSCODE_BEGIN}
@@ -2427,7 +2427,7 @@ function c_DroneTournamentGame(){
 	this.m_game_state="";
 	this.m_keyboard_enabled=false;
 	this.m_user=null;
-	this.m_tournament_server_url="http://localhost:4567/dronetournament";
+	this.m_tournament_server_url="http://localhost:3000/dronetournament";
 	this.m_multiplayer_service=null;
 	this.m_game=null;
 	this.m_play_tutorial_button_image=null;
@@ -2460,199 +2460,199 @@ c_DroneTournamentGame.m_new=function(){
 }
 c_DroneTournamentGame.prototype.p_LoadImages=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<59>";
-	this.m_play_tutorial_button_image=bb_graphics_LoadImage("images/play_tutorial_button.png",1,c_Image.m_DefaultFlags);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<60>";
-	this.m_play_multiplayer_button_image=bb_graphics_LoadImage("images/play_multiplayer_button.png",1,c_Image.m_DefaultFlags);
+	this.m_play_tutorial_button_image=bb_graphics_LoadImage("images/play_tutorial_button.png",1,c_Image.m_DefaultFlags);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<61>";
-	this.m_join_button_image=bb_graphics_LoadImage("images/join_game.png",1,c_Image.m_DefaultFlags);
+	this.m_play_multiplayer_button_image=bb_graphics_LoadImage("images/play_multiplayer_button.png",1,c_Image.m_DefaultFlags);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<62>";
-	this.m_win_button=bb_graphics_LoadImage("images/win_button.png",1,c_Image.m_DefaultFlags);
+	this.m_join_button_image=bb_graphics_LoadImage("images/join_game.png",1,c_Image.m_DefaultFlags);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<63>";
-	this.m_lose_button=bb_graphics_LoadImage("images/lose_button.png",1,c_Image.m_DefaultFlags);
+	this.m_win_button=bb_graphics_LoadImage("images/win_button.png",1,c_Image.m_DefaultFlags);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<64>";
+	this.m_lose_button=bb_graphics_LoadImage("images/lose_button.png",1,c_Image.m_DefaultFlags);
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<65>";
 	this.m_end_turn_button_image=bb_graphics_LoadImage("images/end_turn_button.png",1,c_Image.m_DefaultFlags);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<66>";
-	this.m_t_fighter_img=bb_graphics_LoadImage("images/t_fighter.png",1,1);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<67>";
-	this.m_eye_fighter_img=bb_graphics_LoadImage("images/eye_fighter.png",1,1);
+	this.m_t_fighter_img=bb_graphics_LoadImage("images/t_fighter.png",1,1);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<68>";
+	this.m_eye_fighter_img=bb_graphics_LoadImage("images/eye_fighter.png",1,1);
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<69>";
 	this.m_single_turret_img=bb_graphics_LoadImage("images/single_turret.png",1,1);
 	pop_err();
 	return 0;
 }
 c_DroneTournamentGame.prototype.p_CreateUIElements=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<72>";
-	dbg_object(this).m_play_tutorial_button=c_Button.m_new.call(new c_Button,10.0,-100.0,110.0,60.0,440.0,170.0,dbg_object(this).m_play_tutorial_button_image);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<73>";
-	dbg_object(this).m_play_multiplayer_button=c_Button.m_new.call(new c_Button,10.0,100.0,60.0,260.0,540.0,170.0,dbg_object(this).m_play_multiplayer_button_image);
+	dbg_object(this).m_play_tutorial_button=c_Button.m_new.call(new c_Button,10.0,-100.0,110.0,60.0,440.0,170.0,dbg_object(this).m_play_tutorial_button_image);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<74>";
-	dbg_object(this).m_join_button=c_Button.m_new.call(new c_Button,10.0,100.0,60.0,260.0,540.0,170.0,dbg_object(this).m_join_button_image);
+	dbg_object(this).m_play_multiplayer_button=c_Button.m_new.call(new c_Button,10.0,100.0,60.0,260.0,540.0,170.0,dbg_object(this).m_play_multiplayer_button_image);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<75>";
-	dbg_object(this).m_end_turn_button=c_Button.m_new.call(new c_Button,100.0,300.0,250.0,740.0,540.0,170.0,dbg_object(this).m_end_turn_button_image);
+	dbg_object(this).m_join_button=c_Button.m_new.call(new c_Button,10.0,100.0,60.0,260.0,540.0,170.0,dbg_object(this).m_join_button_image);
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<76>";
+	dbg_object(this).m_end_turn_button=c_Button.m_new.call(new c_Button,200.0,500.0,250.0,650.0,540.0,170.0,dbg_object(this).m_end_turn_button_image);
 	pop_err();
 	return 0;
 }
 c_DroneTournamentGame.prototype.p_OnCreate=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<44>";
-	print("Creating Game");
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<45>";
-	this.m_game_state="setup";
+	print("Creating Game");
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<46>";
-	dbg_object(this).m_keyboard_enabled=false;
+	this.m_game_state="setup";
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<47>";
-	bb_app_SetUpdateRate(30);
+	dbg_object(this).m_keyboard_enabled=false;
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<48>";
+	bb_app_SetUpdateRate(30);
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<49>";
 	this.m_user=c_User.m_new.call(new c_User,"","0","");
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<50>";
-	this.m_multiplayer_service=c_MultiplayerService.m_new.call(new c_MultiplayerService,this.m_tournament_server_url);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<51>";
+	this.m_multiplayer_service=c_MultiplayerService.m_new.call(new c_MultiplayerService,this.m_tournament_server_url);
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<52>";
 	this.m_game=c_Game.m_new.call(new c_Game);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<53>";
-	this.p_LoadImages();
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<54>";
+	this.p_LoadImages();
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<55>";
 	this.p_CreateUIElements();
 	pop_err();
 	return 0;
 }
 c_DroneTournamentGame.prototype.p_GetUsername=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<137>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<138>";
 	if(dbg_object(this).m_keyboard_enabled){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<138>";
-		var t_char=bb_input_GetChar();
 		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<139>";
+		var t_char=bb_input_GetChar();
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<140>";
 		if(t_char==13){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<140>";
-			bb_input_DisableKeyboard();
 			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<141>";
-			dbg_object(this).m_keyboard_enabled=false;
+			bb_input_DisableKeyboard();
 			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<142>";
+			dbg_object(this).m_keyboard_enabled=false;
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<143>";
 			dbg_object(this).m_game_state="get_password";
 		}else{
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<143>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<144>";
 			if(t_char==8 || t_char==127){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<144>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<145>";
 				if(dbg_object(dbg_object(this).m_user).m_username.length<=1){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<145>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<146>";
 					dbg_object(dbg_object(this).m_user).m_username="";
 				}else{
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<147>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<148>";
 					dbg_object(dbg_object(this).m_user).m_username=dbg_object(dbg_object(this).m_user).m_username.slice(0,-1);
 				}
 			}else{
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<149>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<150>";
 				if(t_char>0 && dbg_object(dbg_object(this).m_user).m_username.length<13){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<150>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<151>";
 					dbg_object(dbg_object(this).m_user).m_username=dbg_object(dbg_object(this).m_user).m_username+String.fromCharCode(t_char);
 				}
 			}
 		}
 	}else{
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<153>";
-		bb_input_EnableKeyboard();
 		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<154>";
+		bb_input_EnableKeyboard();
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<155>";
 		dbg_object(this).m_keyboard_enabled=true;
 	}
 	pop_err();
 }
 c_DroneTournamentGame.prototype.p_GetPassword=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<159>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<160>";
 	if(dbg_object(this).m_keyboard_enabled){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<160>";
-		var t_char=bb_input_GetChar();
 		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<161>";
+		var t_char=bb_input_GetChar();
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<162>";
 		if(t_char==13){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<162>";
-			bb_input_DisableKeyboard();
 			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<163>";
-			dbg_object(this).m_keyboard_enabled=false;
+			bb_input_DisableKeyboard();
 			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<164>";
+			dbg_object(this).m_keyboard_enabled=false;
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<165>";
 			dbg_object(this).m_game_state="menu";
 		}else{
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<165>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<166>";
 			if(t_char==8 || t_char==127){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<166>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<167>";
 				if(dbg_object(dbg_object(this).m_user).m_password.length<=1){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<167>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<168>";
 					dbg_object(dbg_object(this).m_user).m_password="";
 				}else{
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<169>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<170>";
 					dbg_object(dbg_object(this).m_user).m_password=dbg_object(dbg_object(this).m_user).m_password.slice(0,-1);
 				}
 			}else{
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<171>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<172>";
 				if(t_char>0 && dbg_object(dbg_object(this).m_user).m_password.length<13){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<172>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<173>";
 					dbg_object(dbg_object(this).m_user).m_password=dbg_object(dbg_object(this).m_user).m_password+String.fromCharCode(t_char);
 				}
 			}
 		}
 	}else{
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<175>";
-		bb_input_EnableKeyboard();
 		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<176>";
+		bb_input_EnableKeyboard();
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<177>";
 		dbg_object(this).m_keyboard_enabled=true;
 	}
 	pop_err();
 }
 c_DroneTournamentGame.prototype.p_SetupTutorial=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<337>";
-	var t_t_type=c_UnitType.m_new.call(new c_UnitType,(c_JsonObject.m_new3.call(new c_JsonObject,"{\"id\": 1, \"name\": \"T-Fighter\", \"speed\": 120, \"turn\": 4, \"armor\": 5, \"full_energy\": 100, \"charge_energy\": 5, \"image_name\": \"t_fighter.png\"}")));
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<338>";
-	dbg_object(dbg_object(this).m_game).m_opponents=c_List.m_new.call(new c_List);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<339>";
-	dbg_object(this).m_tutorial_unit=c_Unit.m_new.call(new c_Unit,1,150.0,150.0,-30.0,t_t_type,"1",1,0.0);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<341>";
-	var t_eye_type=c_UnitType.m_new.call(new c_UnitType,(c_JsonObject.m_new3.call(new c_JsonObject,"{\"id\": 2, \"name\": \"Eye-Fighter\", \"speed\": 100, \"turn\": 3, \"armor\": 2, \"full_energy\": 100, \"charge_energy\": 5, \"image_name\": \"eye_fighter.png\"}")));
+	var t_t_type=c_UnitType.m_new.call(new c_UnitType,(c_JsonObject.m_new3.call(new c_JsonObject,"{\"id\": 1, \"name\": \"T-Fighter\", \"speed\": 120, \"turn\": 4, \"armor\": 5, \"full_energy\": 100, \"charge_energy\": 5, \"image_name\": \"t_fighter.png\"}")));
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<342>";
+	dbg_object(dbg_object(this).m_game).m_opponents=c_List.m_new.call(new c_List);
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<343>";
+	dbg_object(this).m_tutorial_unit=c_Unit.m_new.call(new c_Unit,1,150.0,150.0,-30.0,t_t_type,"1",1,0.0);
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<345>";
+	var t_eye_type=c_UnitType.m_new.call(new c_UnitType,(c_JsonObject.m_new3.call(new c_JsonObject,"{\"id\": 2, \"name\": \"Eye-Fighter\", \"speed\": 100, \"turn\": 3, \"armor\": 2, \"full_energy\": 100, \"charge_energy\": 5, \"image_name\": \"eye_fighter.png\"}")));
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<346>";
 	for(var t_i=0;t_i<=3;t_i=t_i+1){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<343>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<347>";
 		var t_xrand=bb_random_Rnd2(200.0,580.0);
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<344>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<348>";
 		var t_yrand=bb_random_Rnd2(200.0,420.0);
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<345>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<349>";
 		var t_opponent=c_Unit.m_new.call(new c_Unit,t_i+2,t_xrand,t_yrand,30.0,t_eye_type,"0",2,0.0);
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<346>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<350>";
 		dbg_object(dbg_object(this).m_game).m_opponents.p_AddLast(t_opponent);
 	}
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<348>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<352>";
 	dbg_object(this).m_moves=0;
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<349>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<353>";
 	dbg_object(dbg_object(this).m_game).m_particles=c_List2.m_new.call(new c_List2);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<350>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<354>";
 	dbg_object(this).m_game_state="tutorial";
 	pop_err();
 }
 c_DroneTournamentGame.prototype.p_SignIn=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<181>";
-	dbg_object(this).m_multiplayer_service.p_PostJsonRequest("/sign_in","{ \"username\": \""+dbg_object(this.m_user).m_username+"\", \"password\": \""+dbg_object(this.m_user).m_password+"\" }");
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<182>";
+	dbg_object(this).m_multiplayer_service.p_PostJsonRequest("/sign_in","{ \"username\": \""+dbg_object(this.m_user).m_username+"\", \"password\": \""+dbg_object(this.m_user).m_password+"\" }");
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<183>";
 	dbg_object(this).m_game_state="server";
 	pop_err();
 }
 c_DroneTournamentGame.prototype.p_BuildGameListUI=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<259>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<263>";
 	dbg_object(this).m_game_select=c_List3.m_new.call(new c_List3);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<260>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<264>";
 	var t_x=10;
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<261>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<265>";
 	var t_y=10;
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<262>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<266>";
 	for(var t_i=0;t_i<dbg_object(this).m_game_list.p_Length();t_i=t_i+1){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<263>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<267>";
 		var t_game_object=object_downcast((dbg_object(this).m_game_list.p_Get3(t_i)),c_JsonObject);
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<264>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<268>";
 		var t_game_ui=c_GameSelect.m_new.call(new c_GameSelect,(t_x),(t_y),400.0,50.0,String(t_game_object.p_GetInt("game_id",0)));
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<265>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<269>";
 		dbg_object(this).m_game_select.p_AddLast3(t_game_ui);
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<266>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<270>";
 		t_y+=55;
 	}
 	pop_err();
@@ -2660,19 +2660,19 @@ c_DroneTournamentGame.prototype.p_BuildGameListUI=function(){
 }
 c_DroneTournamentGame.prototype.p_UsePlayerStateToSetGameState=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<271>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<275>";
 	if(dbg_object(dbg_object(this).m_game).m_player_state=="plan"){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<272>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<276>";
 		dbg_object(this).m_game_state="multiplayer";
 	}else{
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<273>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<277>";
 		if(dbg_object(dbg_object(this).m_game).m_player_state=="finished"){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<274>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<278>";
 			dbg_object(this).m_game_state="end_turn";
 		}else{
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<275>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<279>";
 			if(dbg_object(dbg_object(this).m_game).m_player_state=="updated"){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<276>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<280>";
 				dbg_object(this).m_game_state="updated";
 			}
 		}
@@ -2682,42 +2682,42 @@ c_DroneTournamentGame.prototype.p_UsePlayerStateToSetGameState=function(){
 }
 c_DroneTournamentGame.prototype.p_WinLoseOrContinue=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<222>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<226>";
 	var t_player_unit_count=0;
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<223>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<227>";
 	var t_opponent_unit_count=0;
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<225>";
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<225>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<229>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<229>";
 	var t_=dbg_object(dbg_object(this).m_game).m_units.p_Keys().p_ObjectEnumerator();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<225>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<229>";
 	while(t_.p_HasNext()){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<225>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<229>";
 		var t_key=t_.p_NextObject();
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<226>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<230>";
 		var t_current_unit=dbg_object(dbg_object(this).m_game).m_units.p_Get3(t_key);
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<227>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<231>";
 		if(dbg_object(t_current_unit).m_armor>0 && dbg_object(t_current_unit).m_player_id==dbg_object(dbg_object(this).m_user).m_player_id){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<228>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<232>";
 			t_player_unit_count+=1;
 		}else{
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<229>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<233>";
 			if(dbg_object(t_current_unit).m_armor>0){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<230>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<234>";
 				t_opponent_unit_count+=1;
 			}
 		}
 	}
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<234>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<238>";
 	if(t_player_unit_count==0){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<235>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<239>";
 		dbg_object(this).m_game_state="loser";
 	}else{
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<236>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<240>";
 		if(t_opponent_unit_count==0){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<237>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<241>";
 			dbg_object(this).m_game_state="winner";
 		}else{
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<239>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<243>";
 			dbg_object(this).m_game_state="multiplayer_ready";
 		}
 	}
@@ -2725,95 +2725,103 @@ c_DroneTournamentGame.prototype.p_WinLoseOrContinue=function(){
 }
 c_DroneTournamentGame.prototype.p_GetGameInfoFromServer=function(t_game_id){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<249>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<253>";
 	dbg_object(this).m_multiplayer_service.p_GetRequest("/game/"+t_game_id);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<250>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<254>";
 	dbg_object(this).m_game_state="server";
 	pop_err();
 }
 c_DroneTournamentGame.prototype.p_EndTurn=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<509>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<513>";
 	var t_move_json=dbg_object(this).m_game.p_BuildMoveJson(dbg_object(dbg_object(this).m_user).m_player_id);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<510>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<514>";
 	dbg_object(this).m_multiplayer_service.p_PostJsonRequest("/end_turn/"+dbg_object(dbg_object(this).m_game).m_id,t_move_json);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<511>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<515>";
 	dbg_object(this).m_game_state="multiplayer_server";
 	pop_err();
 }
 c_DroneTournamentGame.prototype.p_DetermineGameState=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<186>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<187>";
 	if(dbg_object(this).m_multiplayer_service.p_HasRequestFinished()){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<187>";
-		var t_action=dbg_object(dbg_object(this).m_multiplayer_service).m_response.p_GetString("action","");
 		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<188>";
+		var t_action=dbg_object(dbg_object(this).m_multiplayer_service).m_response.p_GetString("action","");
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<189>";
 		if(t_action=="Bad Server Response"){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<189>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<190>";
 			dbg_object(this).m_game_state="menu";
 		}else{
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<190>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<191>";
 			if(t_action=="Sign In"){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<191>";
-				dbg_object(dbg_object(this).m_user).m_player_id=dbg_object(dbg_object(this).m_multiplayer_service).m_response.p_GetString("player_id","");
 				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<192>";
+				dbg_object(dbg_object(this).m_user).m_player_id=dbg_object(dbg_object(this).m_multiplayer_service).m_response.p_GetString("player_id","");
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<193>";
 				dbg_object(this).m_game_state="get_games";
 			}else{
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<193>";
-				if(t_action=="List Games"){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<194>";
-					dbg_object(this).m_game_list=object_downcast((dbg_object(this.m_multiplayer_service).m_response.p_Get("games",null)),c_JsonArray);
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<194>";
+				if(t_action=="Invalid Sign In"){
 					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<195>";
-					this.p_BuildGameListUI();
+					dbg_object(this).m_user=c_User.m_new.call(new c_User,"","0","");
 					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<196>";
-					dbg_object(this).m_game_state="list_games";
+					dbg_object(this).m_game_state="setup";
 				}else{
 					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<197>";
-					if(t_action=="Load Game"){
+					if(t_action=="List Games"){
 						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<198>";
-						dbg_object(this).m_game.p_LoadFromJson(dbg_object(dbg_object(this).m_multiplayer_service).m_response,dbg_object(dbg_object(this).m_user).m_player_id);
+						dbg_object(this).m_game_list=object_downcast((dbg_object(this.m_multiplayer_service).m_response.p_Get("games",null)),c_JsonArray);
 						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<199>";
-						this.p_UsePlayerStateToSetGameState();
-					}else{
+						this.p_BuildGameListUI();
 						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<200>";
-						if(t_action=="Turn Stop"){
-							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<201>";
-							dbg_object(this).m_game_state="multiplayer";
-						}else{
+						dbg_object(this).m_game_state="list_games";
+					}else{
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<201>";
+						if(t_action=="Load Game"){
 							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<202>";
-							if(t_action=="Waiting" || t_action=="Turn Ended"){
-								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<203>";
-								dbg_object(this).m_timer_begin=(bb_app_Millisecs());
-								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<204>";
-								this.m_game_state="end_turn";
-							}else{
+							dbg_object(this).m_game.p_LoadFromJson(dbg_object(dbg_object(this).m_multiplayer_service).m_response,dbg_object(dbg_object(this).m_user).m_player_id);
+							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<203>";
+							this.p_UsePlayerStateToSetGameState();
+						}else{
+							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<204>";
+							if(t_action=="Turn Stop"){
 								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<205>";
-								if(t_action=="Ready"){
-									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<206>";
-									dbg_object(this).m_moves=30;
+								dbg_object(this).m_game_state="multiplayer";
+							}else{
+								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<206>";
+								if(t_action=="Waiting" || t_action=="Turn Ended"){
 									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<207>";
-									dbg_object(this).m_game.p_LoadServerMoves(dbg_object(dbg_object(this).m_multiplayer_service).m_response);
+									dbg_object(this).m_timer_begin=(bb_app_Millisecs());
 									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<208>";
-									this.p_WinLoseOrContinue();
+									this.m_game_state="end_turn";
 								}else{
 									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<209>";
-									if(t_action=="Update Waiting"){
+									if(t_action=="Ready"){
 										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<210>";
-										dbg_object(this).m_timer_begin=(bb_app_Millisecs());
+										dbg_object(this).m_moves=30;
 										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<211>";
-										this.m_game_state="updated";
-									}else{
+										dbg_object(this).m_game.p_LoadServerMoves(dbg_object(dbg_object(this).m_multiplayer_service).m_response);
 										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<212>";
-										if(t_action=="Update Ready"){
-											err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<213>";
-											this.p_GetGameInfoFromServer(dbg_object(dbg_object(this).m_game).m_id);
-										}else{
+										this.p_WinLoseOrContinue();
+									}else{
+										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<213>";
+										if(t_action=="Update Waiting"){
 											err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<214>";
-											if(t_action=="Server Move Points"){
-												err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<215>";
-												dbg_object(this).m_game.p_SetUnitPathsToServerSimulation(dbg_object(dbg_object(this).m_multiplayer_service).m_response,dbg_object(dbg_object(this).m_user).m_player_id);
-												err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<216>";
-												this.p_EndTurn();
+											dbg_object(this).m_timer_begin=(bb_app_Millisecs());
+											err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<215>";
+											this.m_game_state="updated";
+										}else{
+											err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<216>";
+											if(t_action=="Update Ready"){
+												err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<217>";
+												this.p_GetGameInfoFromServer(dbg_object(dbg_object(this).m_game).m_id);
+											}else{
+												err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<218>";
+												if(t_action=="Server Move Points"){
+													err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<219>";
+													dbg_object(this).m_game.p_SetUnitPathsToServerSimulation(dbg_object(dbg_object(this).m_multiplayer_service).m_response,dbg_object(dbg_object(this).m_user).m_player_id);
+													err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<220>";
+													this.p_EndTurn();
+												}
 											}
 										}
 									}
@@ -2829,450 +2837,450 @@ c_DroneTournamentGame.prototype.p_DetermineGameState=function(){
 }
 c_DroneTournamentGame.prototype.p_GetListOfActiveGames=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<244>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<248>";
 	dbg_object(this).m_multiplayer_service.p_GetRequest("/games/"+dbg_object(dbg_object(this).m_user).m_player_id);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<245>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<249>";
 	dbg_object(this).m_game_state="server";
 	pop_err();
 }
 c_DroneTournamentGame.prototype.p_JoinGame=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<254>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<258>";
 	dbg_object(this).m_multiplayer_service.p_PostRequest("/join_game/"+dbg_object(this.m_user).m_player_id);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<255>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<259>";
 	dbg_object(this).m_game_state="server";
 	pop_err();
 }
 c_DroneTournamentGame.prototype.p_LiveOpponentCount=function(t_enemies){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<327>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<331>";
 	var t_live_opponents=0;
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<328>";
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<328>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<332>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<332>";
 	var t_=t_enemies.p_ObjectEnumerator();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<328>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<332>";
 	while(t_.p_HasNext()){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<328>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<332>";
 		var t_enemy=t_.p_NextObject();
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<329>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<333>";
 		if(dbg_object(t_enemy).m_armor>0){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<330>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<334>";
 			t_live_opponents=t_live_opponents+1;
 		}
 	}
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<333>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<337>";
 	pop_err();
 	return t_live_opponents;
 }
 c_DroneTournamentGame.prototype.p_RunTutorial=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<364>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<368>";
 	if(this.m_moves<1){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<365>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<369>";
 		if(dbg_object(dbg_object(this).m_tutorial_unit).m_armor<1){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<366>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<370>";
 			dbg_object(this).m_game_state="loser";
 		}else{
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<367>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<371>";
 			if(this.p_LiveOpponentCount(dbg_object(dbg_object(this).m_game).m_opponents)==0){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<368>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<372>";
 				dbg_object(this).m_game_state="winner";
 			}else{
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<369>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<373>";
 				if((bb_input_TouchDown(0))!=0){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<370>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<374>";
 					if(dbg_object(this).m_end_turn_button.p_Selected()){
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<371>";
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<371>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<375>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<375>";
 						var t_=dbg_object(dbg_object(this).m_game).m_opponents.p_ObjectEnumerator();
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<371>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<375>";
 						while(t_.p_HasNext()){
-							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<371>";
+							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<375>";
 							var t_enemy=t_.p_NextObject();
-							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<372>";
+							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<376>";
 							var t_xrand=((bb_random_Rnd2(-15.0,15.0))|0);
-							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<373>";
+							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<377>";
 							var t_yrand=((bb_random_Rnd2(-15.0,15.0))|0);
-							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<374>";
-							t_enemy.p_SetControl(dbg_object(dbg_object(dbg_object(this).m_tutorial_unit).m_position).m_x+(t_xrand),dbg_object(dbg_object(dbg_object(this).m_tutorial_unit).m_position).m_y+(t_yrand),640.0,700.0);
+							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<378>";
+							t_enemy.p_SetControl(dbg_object(dbg_object(dbg_object(this).m_tutorial_unit).m_position).m_x+(t_xrand),dbg_object(dbg_object(dbg_object(this).m_tutorial_unit).m_position).m_y+(t_yrand),640.0,480.0);
 						}
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<376>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<380>";
 						this.m_moves=30;
 					}else{
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<377>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<381>";
 						if((dbg_object(this).m_tutorial_unit.p_ControlSelected(bb_input_TouchX(0),bb_input_TouchY(0)))!=0){
-							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<378>";
-							dbg_object(this).m_tutorial_unit.p_SetControl(bb_input_TouchX(0),bb_input_TouchY(0),640.0,700.0);
+							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<382>";
+							dbg_object(this).m_tutorial_unit.p_SetControl(bb_input_TouchX(0),bb_input_TouchY(0),640.0,480.0);
 						}
 					}
 				}else{
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<381>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<385>";
 					dbg_object(this).m_tutorial_unit.p_ControlReleased();
 				}
 			}
 		}
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<384>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<388>";
 		if((bb_input_KeyHit(13))!=0){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<385>";
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<385>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<389>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<389>";
 			var t_2=dbg_object(dbg_object(this).m_game).m_opponents.p_ObjectEnumerator();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<385>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<389>";
 			while(t_2.p_HasNext()){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<385>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<389>";
 				var t_enemy2=t_2.p_NextObject();
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<386>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<390>";
 				var t_xrand2=((bb_random_Rnd2(-15.0,15.0))|0);
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<387>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<391>";
 				var t_yrand2=((bb_random_Rnd2(-15.0,15.0))|0);
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<388>";
-				t_enemy2.p_SetControl(dbg_object(dbg_object(dbg_object(this).m_tutorial_unit).m_position).m_x+(t_xrand2),dbg_object(dbg_object(dbg_object(this).m_tutorial_unit).m_position).m_y+(t_yrand2),640.0,700.0);
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<392>";
+				t_enemy2.p_SetControl(dbg_object(dbg_object(dbg_object(this).m_tutorial_unit).m_position).m_x+(t_xrand2),dbg_object(dbg_object(dbg_object(this).m_tutorial_unit).m_position).m_y+(t_yrand2),640.0,480.0);
 			}
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<390>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<394>";
 			this.m_moves=30;
 		}
 	}else{
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<393>";
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<393>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<397>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<397>";
 		var t_3=dbg_object(dbg_object(this).m_game).m_opponents.p_ObjectEnumerator();
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<393>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<397>";
 		while(t_3.p_HasNext()){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<393>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<397>";
 			var t_enemy3=t_3.p_NextObject();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<394>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<398>";
 			if(dbg_object(t_enemy3).m_armor>0){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<395>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<399>";
 				t_enemy3.p_Update();
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<396>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<400>";
 				if(dbg_object(t_enemy3).m_currentEnergy==100.0){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<397>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<401>";
 					dbg_object(this.m_game).m_particles.p_AddLast2(c_Particle.m_new.call(new c_Particle,dbg_object(t_enemy3).m_position,2.5,1.0,dbg_object(t_enemy3).m_heading,20.0,dbg_object(t_enemy3).m_team,30));
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<398>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<402>";
 					t_enemy3.p_FireWeapon();
 				}
 			}
 		}
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<403>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<407>";
 		if(dbg_object(dbg_object(this).m_tutorial_unit).m_armor>0){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<404>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<408>";
 			dbg_object(this).m_tutorial_unit.p_Update();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<405>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<409>";
 			if(dbg_object(dbg_object(this).m_tutorial_unit).m_currentEnergy==100.0){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<406>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<410>";
 				dbg_object(dbg_object(this).m_game).m_particles.p_AddLast2(c_Particle.m_new.call(new c_Particle,dbg_object(dbg_object(this).m_tutorial_unit).m_position,2.5,1.0,dbg_object(dbg_object(this).m_tutorial_unit).m_heading,20.0,dbg_object(dbg_object(this).m_tutorial_unit).m_team,30));
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<407>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<411>";
 				dbg_object(this).m_tutorial_unit.p_FireWeapon();
 			}
 		}
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<411>";
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<411>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<415>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<415>";
 		var t_4=dbg_object(dbg_object(this).m_game).m_particles.p_ObjectEnumerator();
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<411>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<415>";
 		while(t_4.p_HasNext()){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<411>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<415>";
 			var t_particle=t_4.p_NextObject();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<412>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<416>";
 			t_particle.p_Update();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<413>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<417>";
 			if((bb_dronetournament_Collided(t_particle,dbg_object(this).m_tutorial_unit))!=0){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<414>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<418>";
 				dbg_object(this).m_tutorial_unit.p_TakeDamage(1);
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<415>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<419>";
 				dbg_object(dbg_object(this).m_game).m_particles.p_Remove(t_particle);
 			}else{
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<417>";
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<417>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<421>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<421>";
 				var t_5=dbg_object(dbg_object(this).m_game).m_opponents.p_ObjectEnumerator();
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<417>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<421>";
 				while(t_5.p_HasNext()){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<417>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<421>";
 					var t_opponent=t_5.p_NextObject();
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<418>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<422>";
 					if((bb_dronetournament_Collided(t_particle,t_opponent))!=0){
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<419>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<423>";
 						t_opponent.p_TakeDamage(1);
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<420>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<424>";
 						dbg_object(dbg_object(this).m_game).m_particles.p_Remove(t_particle);
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<421>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<425>";
 						break;
 					}
 				}
 			}
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<426>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<430>";
 			if(dbg_object(t_particle).m_lifetime<=0){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<427>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<431>";
 				dbg_object(dbg_object(this).m_game).m_particles.p_Remove(t_particle);
 			}
 		}
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<430>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<434>";
 		this.m_moves-=1;
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<431>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<435>";
 		if(this.m_moves<1){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<432>";
-			dbg_object(this).m_tutorial_unit.p_SetControl(dbg_object(dbg_object(dbg_object(this).m_tutorial_unit).m_position).m_x+dbg_object(dbg_object(dbg_object(this).m_tutorial_unit).m_velocity).m_x,dbg_object(dbg_object(dbg_object(this).m_tutorial_unit).m_position).m_y+dbg_object(dbg_object(dbg_object(this).m_tutorial_unit).m_velocity).m_y,640.0,700.0);
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<436>";
+			dbg_object(this).m_tutorial_unit.p_SetControl(dbg_object(dbg_object(dbg_object(this).m_tutorial_unit).m_position).m_x+dbg_object(dbg_object(dbg_object(this).m_tutorial_unit).m_velocity).m_x,dbg_object(dbg_object(dbg_object(this).m_tutorial_unit).m_position).m_y+dbg_object(dbg_object(dbg_object(this).m_tutorial_unit).m_velocity).m_y,640.0,480.0);
 		}
 	}
 	pop_err();
 }
 c_DroneTournamentGame.prototype.p_GetServerMoves=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<503>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<507>";
 	var t_move_json=dbg_object(this).m_game.p_BuildMoveJson(dbg_object(dbg_object(this).m_user).m_player_id);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<504>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<508>";
 	dbg_object(this).m_multiplayer_service.p_PostJsonRequest("/move_points/"+dbg_object(dbg_object(this).m_game).m_id+"/"+dbg_object(dbg_object(this).m_user).m_player_id+"/30",t_move_json);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<505>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<509>";
 	dbg_object(this).m_game_state="multiplayer_server";
 	pop_err();
 }
 c_DroneTournamentGame.prototype.p_UserPlanMoves=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<478>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<482>";
 	if((bb_input_TouchDown(0))!=0){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<479>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<483>";
 		if(dbg_object(this).m_end_turn_button.p_Selected()){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<480>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<484>";
 			this.p_GetServerMoves();
 		}else{
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<482>";
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<482>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<486>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<486>";
 			var t_=dbg_object(dbg_object(this).m_game).m_units.p_Keys().p_ObjectEnumerator();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<482>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<486>";
 			while(t_.p_HasNext()){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<482>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<486>";
 				var t_unit_id=t_.p_NextObject();
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<483>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<487>";
 				var t_unit=dbg_object(dbg_object(this).m_game).m_units.p_Get3(t_unit_id);
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<484>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<488>";
 				if(dbg_object(t_unit).m_player_id==dbg_object(dbg_object(this).m_user).m_player_id && ((dbg_object(dbg_object(this).m_game).m_units.p_Get3(t_unit_id).p_ControlSelected(bb_input_TouchX(0),bb_input_TouchY(0)))!=0)){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<485>";
-					dbg_object(dbg_object(this).m_game).m_units.p_Get3(t_unit_id).p_SetControl(bb_input_TouchX(0),bb_input_TouchY(0),640.0,700.0);
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<486>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<489>";
+					dbg_object(dbg_object(this).m_game).m_units.p_Get3(t_unit_id).p_SetControl(bb_input_TouchX(0),bb_input_TouchY(0),640.0,480.0);
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<490>";
 					break;
 				}
 			}
 		}
 	}else{
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<491>";
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<491>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<495>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<495>";
 		var t_2=dbg_object(dbg_object(this).m_game).m_units.p_Keys().p_ObjectEnumerator();
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<491>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<495>";
 		while(t_2.p_HasNext()){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<491>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<495>";
 			var t_unit_id2=t_2.p_NextObject();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<492>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<496>";
 			dbg_object(dbg_object(this).m_game).m_units.p_Get3(t_unit_id2).p_ControlReleased();
 		}
 	}
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<496>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<500>";
 	if((bb_input_KeyHit(13))!=0){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<497>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<501>";
 		this.p_GetServerMoves();
 	}
 	pop_err();
 }
 c_DroneTournamentGame.prototype.p_GetNextTurn=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<516>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<520>";
 	dbg_object(this).m_multiplayer_service.p_GetRequest("/next_turn/"+dbg_object(dbg_object(this).m_game).m_id+"/"+dbg_object(dbg_object(this).m_user).m_player_id);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<517>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<521>";
 	dbg_object(this).m_game_state="multiplayer_server";
 	pop_err();
 }
 c_DroneTournamentGame.prototype.p_RunMultiplayer=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<438>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<442>";
 	if(dbg_object(this).m_moves>0){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<440>";
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<440>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<444>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<444>";
 		var t_=dbg_object(dbg_object(this).m_game).m_units.p_Keys().p_ObjectEnumerator();
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<440>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<444>";
 		while(t_.p_HasNext()){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<440>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<444>";
 			var t_unit_id=t_.p_NextObject();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<441>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<445>";
 			var t_current_unit=dbg_object(dbg_object(this).m_game).m_units.p_Get3(t_unit_id);
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<442>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<446>";
 			if(dbg_object(t_current_unit).m_armor>0){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<443>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<447>";
 				dbg_object(dbg_object(this).m_game).m_units.p_Get3(t_unit_id).p_Update();
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<444>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<448>";
 				t_current_unit=dbg_object(dbg_object(this).m_game).m_units.p_Get3(t_unit_id);
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<445>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<449>";
 				if(dbg_object(t_current_unit).m_currentEnergy>=dbg_object(dbg_object(t_current_unit).m_unit_type).m_maxEnergy){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<446>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<450>";
 					dbg_object(this.m_game).m_particles.p_AddLast2(c_Particle.m_new.call(new c_Particle,dbg_object(t_current_unit).m_position,2.5,1.0,dbg_object(t_current_unit).m_heading,20.0,dbg_object(t_current_unit).m_team,30));
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<448>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<452>";
 					dbg_object(dbg_object(this).m_game).m_units.p_Get3(t_unit_id).p_FireWeapon();
 				}
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<450>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<454>";
 				if(this.m_moves==1){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<451>";
-					dbg_object(dbg_object(this).m_game).m_units.p_Get3(t_unit_id).p_SetControl(dbg_object(dbg_object(t_current_unit).m_position).m_x+dbg_object(dbg_object(t_current_unit).m_velocity).m_x,dbg_object(dbg_object(t_current_unit).m_position).m_y+dbg_object(dbg_object(t_current_unit).m_velocity).m_y,640.0,700.0);
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<455>";
+					dbg_object(dbg_object(this).m_game).m_units.p_Get3(t_unit_id).p_SetControl(dbg_object(dbg_object(t_current_unit).m_position).m_x+dbg_object(dbg_object(t_current_unit).m_velocity).m_x,dbg_object(dbg_object(t_current_unit).m_position).m_y+dbg_object(dbg_object(t_current_unit).m_velocity).m_y,640.0,480.0);
 				}
 			}
 		}
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<456>";
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<456>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<460>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<460>";
 		var t_2=dbg_object(dbg_object(this).m_game).m_particles.p_ObjectEnumerator();
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<456>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<460>";
 		while(t_2.p_HasNext()){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<456>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<460>";
 			var t_particle=t_2.p_NextObject();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<457>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<461>";
 			t_particle.p_Update();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<458>";
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<458>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<462>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<462>";
 			var t_3=dbg_object(dbg_object(this).m_game).m_units.p_Keys().p_ObjectEnumerator();
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<458>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<462>";
 			while(t_3.p_HasNext()){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<458>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<462>";
 				var t_unit_id2=t_3.p_NextObject();
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<459>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<463>";
 				var t_current_unit2=dbg_object(dbg_object(this).m_game).m_units.p_Get3(t_unit_id2);
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<460>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<464>";
 				if((bb_dronetournament_Collided(t_particle,t_current_unit2))!=0){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<461>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<465>";
 					dbg_object(dbg_object(this).m_game).m_units.p_Get3(t_unit_id2).p_TakeDamage(1);
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<462>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<466>";
 					dbg_object(dbg_object(this).m_game).m_particles.p_Remove(t_particle);
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<463>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<467>";
 					break;
 				}
 			}
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<467>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<471>";
 			if(dbg_object(t_particle).m_lifetime<=0){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<468>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<472>";
 				dbg_object(dbg_object(this).m_game).m_particles.p_Remove(t_particle);
 			}
 		}
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<471>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<475>";
 		dbg_object(this).m_moves-=1;
 	}else{
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<473>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<477>";
 		dbg_object(this).m_game_state="updated";
 	}
 	pop_err();
 }
 c_DroneTournamentGame.prototype.p_CheckIfAllPlayersUpdated=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<521>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<525>";
 	dbg_object(this).m_multiplayer_service.p_GetRequest("/update_state/"+dbg_object(dbg_object(this).m_game).m_id+"/"+dbg_object(dbg_object(this).m_user).m_player_id);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<522>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<526>";
 	dbg_object(this).m_game_state="multiplayer_server";
 	pop_err();
 }
 c_DroneTournamentGame.prototype.p_OnUpdate=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<79>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<80>";
 	if(this.m_game_state=="setup"){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<80>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<81>";
 		this.p_GetUsername();
 	}else{
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<81>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<82>";
 		if(this.m_game_state=="get_password"){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<82>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<83>";
 			this.p_GetPassword();
 		}else{
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<83>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<84>";
 			if(this.m_game_state=="menu"){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<84>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<85>";
 				if((bb_input_TouchDown(0))!=0){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<85>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<86>";
 					if(dbg_object(this).m_play_tutorial_button.p_Selected()){
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<86>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<87>";
 						this.p_SetupTutorial();
 					}else{
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<87>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<88>";
 						if(dbg_object(this).m_play_multiplayer_button.p_Selected()){
-							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<88>";
+							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<89>";
 							this.p_SignIn();
 						}
 					}
 				}
 			}else{
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<91>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<92>";
 				if(dbg_object(this).m_game_state=="server" || dbg_object(this).m_game_state=="multiplayer_server"){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<92>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<93>";
 					this.p_DetermineGameState();
 				}else{
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<93>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<94>";
 					if(this.m_game_state=="get_games"){
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<94>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<95>";
 						this.p_GetListOfActiveGames();
 					}else{
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<95>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<96>";
 						if(this.m_game_state=="list_games"){
-							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<96>";
+							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<97>";
 							if((bb_input_TouchDown(0))!=0){
-								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<97>";
-								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<97>";
+								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<98>";
+								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<98>";
 								var t_=dbg_object(this).m_game_select.p_ObjectEnumerator();
-								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<97>";
+								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<98>";
 								while(t_.p_HasNext()){
-									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<97>";
-									var t_game_ui=t_.p_NextObject();
 									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<98>";
+									var t_game_ui=t_.p_NextObject();
+									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<99>";
 									if(t_game_ui.p_Selected()){
-										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<99>";
-										this.p_GetGameInfoFromServer(dbg_object(t_game_ui).m_game_id);
 										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<100>";
+										this.p_GetGameInfoFromServer(dbg_object(t_game_ui).m_game_id);
+										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<101>";
 										break;
 									}
 								}
-								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<104>";
+								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<105>";
 								if(this.m_join_button.p_Selected()){
-									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<105>";
+									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<106>";
 									this.p_JoinGame();
 								}
 							}
 						}else{
-							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<108>";
+							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<109>";
 							if(this.m_game_state=="tutorial"){
-								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<109>";
+								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<110>";
 								this.p_RunTutorial();
 							}else{
-								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<110>";
+								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<111>";
 								if(dbg_object(this).m_game_state=="multiplayer"){
-									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<111>";
+									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<112>";
 									this.p_UserPlanMoves();
 								}else{
-									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<112>";
+									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<113>";
 									if(dbg_object(this).m_game_state=="end_turn"){
-										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<113>";
+										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<114>";
 										if((bb_app_Millisecs())-dbg_object(this).m_timer_begin>3000.0){
-											err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<114>";
-											dbg_object(this).m_timer_begin=(bb_app_Millisecs());
 											err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<115>";
+											dbg_object(this).m_timer_begin=(bb_app_Millisecs());
+											err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<116>";
 											this.p_GetNextTurn();
 										}
 									}else{
-										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<117>";
+										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<118>";
 										if(dbg_object(this).m_game_state=="multiplayer_ready"){
-											err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<118>";
+											err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<119>";
 											this.p_RunMultiplayer();
 										}else{
-											err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<119>";
+											err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<120>";
 											if(dbg_object(this).m_game_state=="updated"){
-												err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<120>";
+												err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<121>";
 												if((bb_app_Millisecs())-dbg_object(this).m_timer_begin>3000.0){
-													err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<121>";
-													dbg_object(this).m_timer_begin=(bb_app_Millisecs());
 													err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<122>";
+													dbg_object(this).m_timer_begin=(bb_app_Millisecs());
+													err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<123>";
 													this.p_CheckIfAllPlayersUpdated();
 												}
 											}else{
-												err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<124>";
+												err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<125>";
 												if(dbg_object(this).m_game_state=="loser"){
-													err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<125>";
+													err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<126>";
 													if((bb_input_TouchDown(0))!=0){
-														err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<126>";
+														err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<127>";
 														dbg_object(this).m_game_state="menu";
 													}
 												}else{
-													err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<128>";
+													err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<129>";
 													if(dbg_object(this).m_game_state=="winner"){
-														err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<129>";
+														err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<130>";
 														if((bb_input_TouchDown(0))!=0){
-															err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<130>";
+															err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<131>";
 															dbg_object(this).m_game_state="menu";
 														}
 													}
@@ -3288,94 +3296,94 @@ c_DroneTournamentGame.prototype.p_OnUpdate=function(){
 			}
 		}
 	}
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<133>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<134>";
 	bb_asyncevent_UpdateAsyncEvents();
 	pop_err();
 	return 0;
 }
 c_DroneTournamentGame.prototype.p_OnRender=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<281>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<285>";
 	bb_graphics_Cls(100.0,100.0,100.0);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<283>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<287>";
 	if(dbg_object(this).m_game_state=="setup"){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<284>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<288>";
 		bb_graphics_DrawText("Enter a username: "+dbg_object(this.m_user).m_username,50.0,200.0,0.0,0.0);
 	}else{
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<285>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<289>";
 		if(dbg_object(this).m_game_state=="get_password"){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<286>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<290>";
 			bb_graphics_DrawText("Enter a password: "+dbg_object(this.m_user).m_password,50.0,200.0,0.0,0.0);
 		}else{
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<287>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<291>";
 			if(this.m_game_state=="menu"){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<288>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<292>";
 				dbg_object(this).m_play_tutorial_button.p_Draw2();
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<289>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<293>";
 				dbg_object(this).m_play_multiplayer_button.p_Draw2();
 			}else{
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<290>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<294>";
 				if(this.m_game_state=="list_games"){
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<291>";
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<291>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<295>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<295>";
 					var t_=dbg_object(this).m_game_select.p_ObjectEnumerator();
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<291>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<295>";
 					while(t_.p_HasNext()){
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<291>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<295>";
 						var t_game_ui=t_.p_NextObject();
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<292>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<296>";
 						t_game_ui.p_Draw2();
 					}
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<294>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<298>";
 					dbg_object(this).m_join_button.p_Draw2();
 				}else{
-					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<299>";
+					err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<303>";
 					if(dbg_object(this).m_game_state=="multiplayer" || dbg_object(this).m_game_state=="multiplayer_ready" || dbg_object(this).m_game_state=="end_turn" || dbg_object(this).m_game_state=="updated" || dbg_object(this).m_game_state=="multiplayer_server"){
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<301>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<305>";
 						dbg_object(this).m_end_turn_button.p_Draw2();
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<302>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<306>";
 						dbg_object(this).m_game.p_Draw(dbg_object(dbg_object(this).m_user).m_player_id,dbg_object(this).m_game_state);
 					}else{
-						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<303>";
+						err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<307>";
 						if(dbg_object(this).m_game_state=="loser"){
-							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<304>";
+							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<308>";
 							bb_graphics_DrawImage(this.m_lose_button,10.0,100.0,0);
 						}else{
-							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<305>";
+							err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<309>";
 							if(dbg_object(this).m_game_state=="winner"){
-								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<306>";
+								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<310>";
 								bb_graphics_DrawImage(this.m_win_button,10.0,100.0,0);
 							}else{
-								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<307>";
+								err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<311>";
 								if(dbg_object(this).m_game_state=="tutorial"){
-									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<308>";
+									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<312>";
 									dbg_object(this).m_end_turn_button.p_Draw2();
-									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<310>";
+									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<314>";
 									if(dbg_object(dbg_object(this).m_tutorial_unit).m_armor>0){
-										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<311>";
+										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<315>";
 										dbg_object(this).m_tutorial_unit.p_DrawStatic("1",dbg_object(this).m_game_state);
 									}
-									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<314>";
-									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<314>";
+									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<318>";
+									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<318>";
 									var t_2=dbg_object(dbg_object(this).m_game).m_opponents.p_ObjectEnumerator();
-									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<314>";
+									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<318>";
 									while(t_2.p_HasNext()){
-										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<314>";
+										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<318>";
 										var t_enemy=t_2.p_NextObject();
-										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<315>";
+										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<319>";
 										if(dbg_object(t_enemy).m_armor>0){
-											err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<316>";
+											err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<320>";
 											t_enemy.p_DrawStatic("2",dbg_object(this).m_game_state);
 										}
 									}
-									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<320>";
-									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<320>";
+									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<324>";
+									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<324>";
 									var t_3=dbg_object(dbg_object(this).m_game).m_particles.p_ObjectEnumerator();
-									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<320>";
+									err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<324>";
 									while(t_3.p_HasNext()){
-										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<320>";
+										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<324>";
 										var t_part=t_3.p_NextObject();
-										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<321>";
+										err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<325>";
 										t_part.p_Draw2();
 									}
 								}
@@ -3540,7 +3548,7 @@ var bb_app__delegate=null;
 var bb_app__game=null;
 function bbMain(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<536>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<540>";
 	c_DroneTournamentGame.m_new.call(new c_DroneTournamentGame);
 	pop_err();
 	return 0;
@@ -6413,56 +6421,56 @@ function c_Unit(){
 }
 c_Unit.prototype.p_SetControl=function(t_click_x,t_click_y,t_map_width,t_map_height){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<93>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<105>";
 	var t_goal_angle=((Math.atan2(t_click_y-dbg_object(dbg_object(this).m_position).m_y,t_click_x-dbg_object(dbg_object(this).m_position).m_x)*R2D)|0);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<94>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<106>";
 	var t_start_angle=((dbg_object(this).m_heading)|0);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<95>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<107>";
 	var t_control_pos=c_Vec2D.m_new.call(new c_Vec2D,dbg_object(dbg_object(this).m_position).m_x,dbg_object(dbg_object(this).m_position).m_y,dbg_object(this).m_heading);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<96>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<108>";
 	dbg_object(this).m_points=c_Deque.m_new.call(new c_Deque);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<98>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<110>";
 	for(var t_i=0;t_i<30;t_i=t_i+1){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<99>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<111>";
 		t_control_pos=bb_dronetournament_NewPoint(t_control_pos,(t_start_angle),(t_goal_angle),dbg_object(dbg_object(this).m_unit_type).m_maxRotation,dbg_object(dbg_object(this).m_unit_type).m_maxVelocity/30.0);
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<100>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<112>";
 		t_start_angle=((dbg_object(t_control_pos).m_heading)|0);
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<101>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<113>";
 		t_goal_angle=((Math.atan2(t_click_y-dbg_object(t_control_pos).m_y,t_click_x-dbg_object(t_control_pos).m_x)*R2D)|0);
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<102>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<114>";
 		dbg_object(this).m_points.p_PushLast(t_control_pos);
 	}
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<105>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<117>";
 	if(dbg_object(t_control_pos).m_x>t_map_width){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<106>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<118>";
 		dbg_object(t_control_pos).m_x=t_map_width-10.0;
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<107>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<119>";
 		dbg_object(t_control_pos).m_heading=180.0;
 	}else{
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<108>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<120>";
 		if(dbg_object(t_control_pos).m_x<0.0){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<109>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<121>";
 			dbg_object(t_control_pos).m_x=10.0;
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<110>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<122>";
 			dbg_object(t_control_pos).m_heading=0.0;
 		}
 	}
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<113>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<125>";
 	if(dbg_object(t_control_pos).m_y>t_map_height){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<114>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<126>";
 		dbg_object(t_control_pos).m_y=t_map_height-10.0;
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<115>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<127>";
 		dbg_object(t_control_pos).m_heading=270.0;
 	}else{
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<116>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<128>";
 		if(dbg_object(t_control_pos).m_y<0.0){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<117>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<129>";
 			dbg_object(t_control_pos).m_y=10.0;
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<118>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<130>";
 			dbg_object(t_control_pos).m_heading=90.0;
 		}
 	}
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<121>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<133>";
 	dbg_object(dbg_object(this).m_control).m_position.p_Set4(dbg_object(t_control_pos).m_x,dbg_object(t_control_pos).m_y,dbg_object(t_control_pos).m_heading);
 	pop_err();
 	return 0;
@@ -6502,47 +6510,47 @@ c_Unit.m_new2=function(){
 }
 c_Unit.prototype.p_SetServerControl=function(t_click_x,t_click_y,t_map_width,t_map_height){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<125>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<137>";
 	var t_goal_angle=((Math.atan2(t_click_y-dbg_object(dbg_object(this).m_position).m_y,t_click_x-dbg_object(dbg_object(this).m_position).m_x)*R2D)|0);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<126>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<138>";
 	var t_start_angle=dbg_object(this).m_heading;
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<127>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<139>";
 	var t_control_pos=c_Vec2D.m_new.call(new c_Vec2D,dbg_object(dbg_object(this).m_position).m_x,dbg_object(dbg_object(this).m_position).m_y,dbg_object(this).m_heading);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<128>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<140>";
 	dbg_object(this).m_points=c_Deque.m_new.call(new c_Deque);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<130>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<142>";
 	for(var t_i=0;t_i<30;t_i=t_i+1){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<131>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<143>";
 		t_control_pos=bb_dronetournament_NewPoint(t_control_pos,t_start_angle,(t_goal_angle),dbg_object(dbg_object(this).m_unit_type).m_maxRotation,dbg_object(dbg_object(this).m_unit_type).m_maxVelocity/30.0);
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<132>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<144>";
 		t_start_angle=dbg_object(t_control_pos).m_heading;
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<133>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<145>";
 		t_goal_angle=((Math.atan2(t_click_y-dbg_object(t_control_pos).m_y,t_click_x-dbg_object(t_control_pos).m_x)*R2D)|0);
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<134>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<146>";
 		dbg_object(this).m_points.p_PushLast(t_control_pos);
 	}
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<137>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<149>";
 	dbg_object(dbg_object(this).m_control).m_position.p_Set4(dbg_object(t_control_pos).m_x,dbg_object(t_control_pos).m_y,dbg_object(t_control_pos).m_heading);
 	pop_err();
 	return 0;
 }
 c_Unit.prototype.p_ControlSelected=function(t_click_x,t_click_y){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<75>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<87>";
 	if(dbg_object(dbg_object(this).m_control).m_selected){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<76>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<88>";
 		pop_err();
 		return 1;
 	}else{
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<80>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<92>";
 		if(t_click_x>=dbg_object(dbg_object(dbg_object(this).m_control).m_position).m_x-dbg_object(dbg_object(this).m_control).m_width && t_click_x<=dbg_object(dbg_object(dbg_object(this).m_control).m_position).m_x+dbg_object(dbg_object(this).m_control).m_width && t_click_y>=dbg_object(dbg_object(dbg_object(this).m_control).m_position).m_y-dbg_object(dbg_object(this).m_control).m_width && t_click_y<=dbg_object(dbg_object(dbg_object(this).m_control).m_position).m_y+dbg_object(dbg_object(this).m_control).m_height){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<81>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<93>";
 			dbg_object(dbg_object(this).m_control).m_selected=true;
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<82>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<94>";
 			pop_err();
 			return 1;
 		}else{
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<84>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<96>";
 			pop_err();
 			return 0;
 		}
@@ -6550,36 +6558,36 @@ c_Unit.prototype.p_ControlSelected=function(t_click_x,t_click_y){
 }
 c_Unit.prototype.p_ControlReleased=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<89>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<101>";
 	dbg_object(dbg_object(this).m_control).m_selected=false;
 	pop_err();
 	return 0;
 }
 c_Unit.prototype.p_Update=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<65>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<77>";
 	var t_next_point=dbg_object(this).m_points.p_PopFirst();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<67>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<79>";
 	dbg_object(this).m_heading=(Math.atan2(dbg_object(t_next_point).m_y-dbg_object(dbg_object(this).m_position).m_y,dbg_object(t_next_point).m_x-dbg_object(dbg_object(this).m_position).m_x)*R2D);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<68>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<80>";
 	dbg_object(this).m_velocity.p_Set4(dbg_object(dbg_object(this).m_unit_type).m_maxVelocity*Math.cos(this.m_heading*0.017453292500000002),dbg_object(dbg_object(this).m_unit_type).m_maxVelocity*Math.sin(dbg_object(this).m_heading*0.017453292500000002),0.0);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<69>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<81>";
 	dbg_object(this).m_position=t_next_point;
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<70>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<82>";
 	dbg_object(this).m_currentEnergy=bb_math2_Min2(dbg_object(dbg_object(this).m_unit_type).m_maxEnergy,dbg_object(this).m_currentEnergy+dbg_object(dbg_object(this).m_unit_type).m_chargeEnergy);
 	pop_err();
 	return 0;
 }
 c_Unit.prototype.p_FireWeapon=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<141>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<153>";
 	dbg_object(this).m_currentEnergy=0.0;
 	pop_err();
 	return 0;
 }
 c_Unit.prototype.p_TakeDamage=function(t_power){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<145>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<157>";
 	dbg_object(this).m_armor=dbg_object(this).m_armor-t_power;
 	pop_err();
 	return 0;
@@ -6587,32 +6595,57 @@ c_Unit.prototype.p_TakeDamage=function(t_power){
 c_Unit.prototype.p_DrawStatic=function(t_game_player_id,t_game_state){
 	push_err();
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<41>";
+	var t_R=0;
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<42>";
+	var t_G=0;
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<43>";
+	var t_B=0;
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<44>";
 	if(dbg_object(this).m_player_id==t_game_player_id){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<42>";
-		bb_graphics_SetColor(128.0,255.0,128.0);
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<45>";
+		t_R=128;
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<46>";
+		t_G=255;
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<47>";
+		t_B=128;
 	}else{
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<44>";
-		bb_graphics_SetColor(255.0,128.0,128.0);
-	}
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<47>";
-	bb_graphics_DrawImage2(dbg_object(dbg_object(this).m_unit_type).m_image,dbg_object(dbg_object(this).m_position).m_x,dbg_object(dbg_object(this).m_position).m_y,-dbg_object(this).m_heading,1.0,1.0,0);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<49>";
-	if(dbg_object(this).m_player_id==t_game_player_id && (t_game_state=="multiplayer" || t_game_state=="tutorial" || t_game_state=="end_turn")){
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<49>";
+		t_R=255;
 		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<50>";
+		t_G=128;
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<51>";
+		t_B=128;
+	}
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<54>";
+	bb_graphics_SetColor((t_R),(t_G),(t_B));
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<55>";
+	bb_graphics_DrawImage2(dbg_object(dbg_object(this).m_unit_type).m_image,dbg_object(dbg_object(this).m_position).m_x,dbg_object(dbg_object(this).m_position).m_y,-dbg_object(this).m_heading,1.0,1.0,0);
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<56>";
+	for(var t_i=0;t_i<dbg_object(this).m_armor-1;t_i=t_i+1){
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<57>";
+		bb_graphics_SetColor(0.0,0.0,255.0);
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<58>";
+		bb_graphics_DrawRect(dbg_object(dbg_object(this).m_position).m_x-20.0+(t_i*5),dbg_object(dbg_object(this).m_position).m_y+28.0,5.0,3.0);
+	}
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<60>";
+	bb_graphics_SetColor((t_R),(t_G),(t_B));
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<61>";
+	if(dbg_object(this).m_player_id==t_game_player_id && (t_game_state=="multiplayer" || t_game_state=="tutorial" || t_game_state=="end_turn")){
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<62>";
 		dbg_object(this).m_control.p_Draw2();
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<52>";
-		for(var t_i=0;t_i<dbg_object(this).m_points.p_Length()-1;t_i=t_i+1){
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<53>";
-			if((dbg_object(this).m_currentEnergy+(t_i)*dbg_object(dbg_object(this).m_unit_type).m_chargeEnergy) % dbg_object(dbg_object(this).m_unit_type).m_maxEnergy==0.0){
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<54>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<64>";
+		for(var t_i2=0;t_i2<dbg_object(this).m_points.p_Length()-1;t_i2=t_i2+1){
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<65>";
+			if((dbg_object(this).m_currentEnergy+(t_i2)*dbg_object(dbg_object(this).m_unit_type).m_chargeEnergy) % dbg_object(dbg_object(this).m_unit_type).m_maxEnergy==0.0){
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<66>";
 				bb_graphics_SetColor(100.0,100.0,255.0);
 			}else{
-				err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<56>";
+				err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<68>";
 				bb_graphics_SetColor(255.0,255.0,255.0);
 			}
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<58>";
-			var t_this_point=dbg_object(this).m_points.p_Get3(t_i);
-			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<59>";
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<70>";
+			var t_this_point=dbg_object(this).m_points.p_Get3(t_i2);
+			err_info="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<71>";
 			bb_graphics_DrawPoint(dbg_object(t_this_point).m_x,dbg_object(t_this_point).m_y);
 		}
 	}
@@ -7603,8 +7636,6 @@ c_Button.prototype.p_Draw2=function(){
 	push_err();
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<21>";
 	bb_graphics_DrawImage(dbg_object(this).m_image,dbg_object(dbg_object(this).m_position).m_x,dbg_object(dbg_object(this).m_position).m_y,0);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<22>";
-	bb_graphics_DrawRect(dbg_object(dbg_object(dbg_object(this).m_touch_box).m_position).m_x,dbg_object(dbg_object(dbg_object(this).m_touch_box).m_position).m_y,dbg_object(dbg_object(this).m_touch_box).m_width,dbg_object(dbg_object(this).m_touch_box).m_height);
 	pop_err();
 	return 0;
 }
@@ -7640,30 +7671,30 @@ function c_TouchBox(){
 }
 c_TouchBox.m_new=function(t_x,t_y,t_width,t_height){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<33>";
-	dbg_object(this).m_position=c_Vec2D.m_new.call(new c_Vec2D,t_x,t_y,0.0);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<34>";
-	dbg_object(this).m_width=t_width;
+	dbg_object(this).m_position=c_Vec2D.m_new.call(new c_Vec2D,t_x,t_y,0.0);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<35>";
+	dbg_object(this).m_width=t_width;
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<36>";
 	dbg_object(this).m_height=t_height;
 	pop_err();
 	return this;
 }
 c_TouchBox.m_new2=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<27>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<28>";
 	pop_err();
 	return this;
 }
 c_TouchBox.prototype.p_Selected2=function(t_touch_x,t_touch_y){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<42>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<43>";
 	if(t_touch_x>=dbg_object(dbg_object(this).m_position).m_x && t_touch_x<=dbg_object(dbg_object(this).m_position).m_x+dbg_object(this).m_width && t_touch_y>=dbg_object(dbg_object(this).m_position).m_y && t_touch_y<=dbg_object(dbg_object(this).m_position).m_y+dbg_object(this).m_height){
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<43>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<44>";
 		pop_err();
 		return true;
 	}else{
-		err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<45>";
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<46>";
 		pop_err();
 		return false;
 	}
@@ -7717,19 +7748,22 @@ function c_ControlPoint(){
 	this.m_height=.0;
 	this.m_selected=false;
 	this.m_heading=.0;
+	this.m_image=null;
 }
 c_ControlPoint.m_new=function(t_x,t_y,t_heading,t_width,t_height){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<11>";
-	dbg_object(this).m_position=c_Vec2D.m_new.call(new c_Vec2D,t_x,t_y,0.0);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<12>";
-	dbg_object(this).m_width=t_width;
+	dbg_object(this).m_position=c_Vec2D.m_new.call(new c_Vec2D,t_x,t_y,0.0);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<13>";
-	dbg_object(this).m_height=t_height;
+	dbg_object(this).m_width=t_width;
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<14>";
-	dbg_object(this).m_selected=false;
+	dbg_object(this).m_height=t_height;
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<15>";
+	dbg_object(this).m_selected=false;
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<16>";
 	dbg_object(this).m_heading=t_heading;
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<17>";
+	dbg_object(this).m_image=bb_graphics_LoadImage("images/control_point.png",1,1);
 	pop_err();
 	return this;
 }
@@ -7741,10 +7775,17 @@ c_ControlPoint.m_new2=function(){
 }
 c_ControlPoint.prototype.p_Draw2=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<19>";
-	bb_graphics_SetColor(255.0,255.0,128.0);
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<20>";
-	bb_graphics_DrawRect(dbg_object(dbg_object(this).m_position).m_x,dbg_object(dbg_object(this).m_position).m_y,dbg_object(this).m_width,dbg_object(this).m_height);
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<22>";
+	if(dbg_object(this).m_selected){
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<23>";
+		bb_graphics_SetColor(255.0,255.0,128.0);
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<24>";
+		bb_graphics_DrawRect(dbg_object(dbg_object(this).m_position).m_x-5.0,dbg_object(dbg_object(this).m_position).m_y-5.0,10.0,10.0);
+		err_info="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<25>";
+		bb_graphics_SetColor(255.0,255.0,255.0);
+	}
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<27>";
+	bb_graphics_DrawImage2(dbg_object(this).m_image,dbg_object(dbg_object(this).m_position).m_x,dbg_object(dbg_object(this).m_position).m_y,-dbg_object(dbg_object(this).m_position).m_heading,0.2,0.2,0);
 	pop_err();
 	return 0;
 }
@@ -8264,35 +8305,35 @@ function c_GameSelect(){
 }
 c_GameSelect.m_new=function(t_x,t_y,t_width,t_height,t_game_id){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<55>";
-	dbg_object(this).m_game_id=t_game_id;
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<56>";
+	dbg_object(this).m_game_id=t_game_id;
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<57>";
 	dbg_object(this).m_touch_box=c_TouchBox.m_new.call(new c_TouchBox,t_x,t_y,t_width,t_height);
 	pop_err();
 	return this;
 }
 c_GameSelect.m_new2=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<50>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<51>";
 	pop_err();
 	return this;
 }
 c_GameSelect.prototype.p_Selected=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<60>";
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<61>";
 	var t_=dbg_object(this).m_touch_box.p_Selected2(bb_input_TouchX(0),bb_input_TouchY(0));
 	pop_err();
 	return t_;
 }
 c_GameSelect.prototype.p_Draw2=function(){
 	push_err();
-	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<64>";
-	bb_graphics_SetColor(0.0,200.0,0.0);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<65>";
-	bb_graphics_DrawRect(dbg_object(dbg_object(dbg_object(this).m_touch_box).m_position).m_x,dbg_object(dbg_object(dbg_object(this).m_touch_box).m_position).m_y,dbg_object(dbg_object(this).m_touch_box).m_width,dbg_object(dbg_object(this).m_touch_box).m_height);
+	bb_graphics_SetColor(0.0,200.0,0.0);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<66>";
-	bb_graphics_SetColor(255.0,255.0,255.0);
+	bb_graphics_DrawRect(dbg_object(dbg_object(dbg_object(this).m_touch_box).m_position).m_x,dbg_object(dbg_object(dbg_object(this).m_touch_box).m_position).m_y,dbg_object(dbg_object(this).m_touch_box).m_width,dbg_object(dbg_object(this).m_touch_box).m_height);
 	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<67>";
+	bb_graphics_SetColor(255.0,255.0,255.0);
+	err_info="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<68>";
 	bb_graphics_DrawText(dbg_object(this).m_game_id,dbg_object(dbg_object(dbg_object(this).m_touch_box).m_position).m_x+5.0,dbg_object(dbg_object(dbg_object(this).m_touch_box).m_position).m_y+5.0,0.0,0.0);
 	pop_err();
 	return 0;
