@@ -338,11 +338,11 @@ Class DroneTournamentGame Extends App
 	End
 	
 	Method SetupTutorial:Void() 
-		Local t_type:UnitType = New UnitType(JsonObject("{~qid~q: 1, ~qname~q: ~qT-Fighter~q, ~qspeed~q: 120, ~qturn~q: 4, ~qarmor~q: 5, ~qfull_energy~q: 100, ~qcharge_energy~q: 5, ~qimage_name~q: ~qt_fighter.png~q}"))
+		Local t_type:UnitType = New UnitType(JsonObject("{~qid~q: 1, ~qname~q: ~qT-Fighter~q, ~qspeed~q: 100, ~qturn~q: 4, ~qarmor~q: 6, ~qfull_energy~q: 100, ~qcharge_energy~q: 6, ~qimage_name~q: ~qt_fighter.png~q}"))
 		Self.game.opponents = New List<Unit>()
 		Self.tutorial_unit = New Unit(1, 150.0, 150.0, -30, t_type, 1, 1)
 		
-		Local eye_type:UnitType = New UnitType(JsonObject("{~qid~q: 2, ~qname~q: ~qEye-Fighter~q, ~qspeed~q: 100, ~qturn~q: 3, ~qarmor~q: 2, ~qfull_energy~q: 100, ~qcharge_energy~q: 5, ~qimage_name~q: ~qeye_fighter.png~q}"))
+		Local eye_type:UnitType = New UnitType(JsonObject("{~qid~q: 2, ~qname~q: ~qEye-Fighter~q, ~qspeed~q: 120, ~qturn~q: 5, ~qarmor~q: 2, ~qfull_energy~q: 100, ~qcharge_energy~q: 5, ~qimage_name~q: ~qeye_fighter.png~q}"))
 		For Local i:Int = 0 To 3
 			Local xrand:Float = Rnd(200, 580)
 			Local yrand:Float = Rnd(200, 420)
@@ -375,7 +375,9 @@ Class DroneTournamentGame Extends App
 					For Local enemy:Unit = Eachin Self.game.opponents
 						Local xrand = Rnd(-15.0, 15.0)
 						Local yrand = Rnd(-15.0, 15.0)
-					enemy.SetControl(Self.tutorial_unit.position.x + xrand, Self.tutorial_unit.position.y + yrand, SCREEN_WIDTH, SCREEN_HEIGHT)
+						enemy.SetControl(Self.tutorial_unit.position.x + xrand, 
+										 Self.tutorial_unit.position.y + yrand,
+										 SCREEN_WIDTH, SCREEN_HEIGHT)
 					End
 					moves = 30
 				Else If (Self.tutorial_unit.ControlSelected(TouchX(0), TouchY(0)))
@@ -448,7 +450,6 @@ Class DroneTournamentGame Extends App
 					current_unit = Self.game.units.Get(unit_id)
 					If (current_unit.currentEnergy >= current_unit.unit_type.maxEnergy)
 						game.particles.AddLast(New Particle(current_unit.position, 2.5, 1, current_unit.heading, 20, current_unit.team))
-						'Print("Client created particle on step: " + Self.moves + " at:" + current_unit.position.x + ", " + current_unit.position.y + " with heading: " + current_unit.heading)
 						Self.game.units.Get(unit_id).FireWeapon()
 					End
 					If (moves = 1)
