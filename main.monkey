@@ -43,8 +43,9 @@ Class DroneTournamentGame Extends App
 
 	Method OnCreate()
 		Print "Creating Game"
-		game_state = "setup"
+		game_state = "menu"
 		Self.keyboard_enabled = False
+		Self.timer_begin = Millisecs()
 		SetUpdateRate(30)
 		user = New User("")
 		
@@ -82,11 +83,15 @@ Class DroneTournamentGame Extends App
 		Else If (game_state = "get_password")
 			GetPassword()
 		Else If (game_state = "menu")
-			If (TouchDown(0))
+			If (TouchDown(0) And (Millisecs() - Self.timer_begin > 1000))
 				If (Self.play_tutorial_button.Selected())
 					SetupTutorial()
 				Else If (Self.play_multiplayer_button.Selected())
-					SignIn() 					
+					If (Self.user.player_id = "0")
+						Self.game_state = "setup"
+					Else
+						SignIn() 
+					End			
 				End
 			End
 		Else If (Self.game_state = "server" Or Self.game_state = "multiplayer_server")
@@ -124,10 +129,12 @@ Class DroneTournamentGame Extends App
 			End
 		Else If (Self.game_state = "loser")
 			If (TouchDown(0))
+				Self.timer_begin = Millisecs()
 				Self.game_state = "menu"
 			End
 		Else If (Self.game_state = "winner")
 			If (TouchDown(0))
+				Self.timer_begin = Millisecs()
 				Self.game_state = "menu"
 			End
 		End
@@ -162,7 +169,7 @@ Class DroneTournamentGame Extends App
 			If (char = CHAR_ENTER)
 				DisableKeyboard()
 				Self.keyboard_enabled = False
-				Self.game_state = "menu"
+				SignIn()
 			Else If (char = CHAR_BACKSPACE Or char = CHAR_DELETE)
 				If (Self.user.password.Length() <= 1)
 					Self.user.password = ""
@@ -179,7 +186,8 @@ Class DroneTournamentGame Extends App
 	End
 
 	Method SignIn:Void()
-		Self.multiplayer_service.PostJsonRequest("/sign_in", "{ ~qusername~q: ~q" + user.username + "~q, ~qpassword~q: ~q" + user.password + "~q }")
+		Local json_body:String = "{ ~qusername~q: ~q" + Self.user.username + "~q, ~qpassword~q: ~q" + Self.user.password + "~q }"
+		Self.multiplayer_service.PostJsonRequest("/sign_in", json_body)
 		Self.game_state = "server"
 	End
 
@@ -338,11 +346,11 @@ Class DroneTournamentGame Extends App
 	End
 	
 	Method SetupTutorial:Void() 
-		Local t_type:UnitType = New UnitType(JsonObject("{~qid~q: 1, ~qname~q: ~qT-Fighter~q, ~qspeed~q: 100, ~qturn~q: 4, ~qarmor~q: 6, ~qfull_energy~q: 100, ~qcharge_energy~q: 6, ~qimage_name~q: ~qt_fighter.png~q}"))
+		Local t_type:UnitType = New UnitType(JsonObject("{~qid~q: 1, ~qname~q: ~qT-Fighter~q, ~qspeed~q: 100, ~qturn~q: 5, ~qarmor~q: 6, ~qfull_energy~q: 100, ~qcharge_energy~q: 6, ~qimage_name~q: ~qt_fighter.png~q}"))
 		Self.game.opponents = New List<Unit>()
 		Self.tutorial_unit = New Unit(1, 150.0, 150.0, -30, t_type, 1, 1)
 		
-		Local eye_type:UnitType = New UnitType(JsonObject("{~qid~q: 2, ~qname~q: ~qEye-Fighter~q, ~qspeed~q: 120, ~qturn~q: 5, ~qarmor~q: 2, ~qfull_energy~q: 100, ~qcharge_energy~q: 5, ~qimage_name~q: ~qeye_fighter.png~q}"))
+		Local eye_type:UnitType = New UnitType(JsonObject("{~qid~q: 2, ~qname~q: ~qEye-Fighter~q, ~qspeed~q: 120, ~qturn~q: 4, ~qarmor~q: 2, ~qfull_energy~q: 100, ~qcharge_energy~q: 4, ~qimage_name~q: ~qeye_fighter.png~q}"))
 		For Local i:Int = 0 To 3
 			Local xrand:Float = Rnd(200, 580)
 			Local yrand:Float = Rnd(200, 420)
