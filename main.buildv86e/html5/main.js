@@ -2428,7 +2428,7 @@ function c_DroneTournamentGame(){
 	this.m_keyboard_enabled=false;
 	this.m_timer_begin=.0;
 	this.m_user=null;
-	this.m_tournament_server_url="http://localhost:3000/dronetournament";
+	this.m_tournament_server_url="https://evolvinggames.herokuapp.com/dronetournament";
 	this.m_multiplayer_service=null;
 	this.m_game=null;
 	this.m_play_tutorial_button_image=null;
