@@ -21,6 +21,8 @@ Class DroneTournamentGame Extends App
 	Field play_tutorial_button:Button
 	Field play_multiplayer_button_image:Image
 	Field play_multiplayer_button:Button
+	Field small_end_turn_button_image:Image
+	Field small_end_turn_button:Button
 	Field end_turn_button_image:Image
 	Field end_turn_button:Button
 	Field win_button:Image
@@ -64,6 +66,7 @@ Class DroneTournamentGame Extends App
 		win_button = LoadImage("images/win_button.png")
 		lose_button = LoadImage("images/lose_button.png")
 		end_turn_button_image = LoadImage("images/end_turn_button.png")
+		small_end_turn_button_image = LoadImage("images/small_end_turn_button.png")
 		
 		t_fighter_img = LoadImage("images/t_fighter.png", 1, Image.MidHandle)
 		eye_fighter_img = LoadImage("images/eye_fighter.png", 1, Image.MidHandle)
@@ -74,7 +77,8 @@ Class DroneTournamentGame Extends App
 		Self.play_tutorial_button = New Button(10, -100, 110, 60, 440, 170, Self.play_tutorial_button_image)
 		Self.play_multiplayer_button = New Button(10, 100, 60, 260, 540, 170, Self.play_multiplayer_button_image)
 		Self.join_button = New Button(10, 100, 60, 260, 540, 170, Self.join_button_image)
-		Self.end_turn_button = New Button(200, 500, 250, 650, 540, 170, Self.end_turn_button_image)  
+		Self.end_turn_button = New Button(200, 500, 250, 650, 540, 170, Self.end_turn_button_image)
+		Self.small_end_turn_button = New Button(650, 10, 650, 10, 128, 64, Self.small_end_turn_button_image)
 	End
 	
 	Method OnUpdate()
@@ -100,9 +104,9 @@ Class DroneTournamentGame Extends App
 			GetListOfActiveGames()
 		Else If (game_state = "list_games")
 			If (TouchDown(0))
-				For Local game_ui:GameSelect = Eachin Self.game_select
-					If (game_ui.Selected())
-						GetGameInfoFromServer(game_ui.game_id)
+				For Local game_card:GameSelect = Eachin Self.game_select
+					If (game_card.Selected())
+						GetGameInfoFromServer(game_card.game_id)
 						Exit
 					End
 				End
@@ -311,6 +315,7 @@ Class DroneTournamentGame Extends App
 		   		Self.game_state = "multiplayer_server")
 
 		   	Self.end_turn_button.Draw()
+		   	Self.small_end_turn_button.Draw()
 			Self.game.Draw(Self.user.player_id, Self.game_state)
 		Else If (Self.game_state = "loser")
 			DrawImage(lose_button, 10, 100)
@@ -318,7 +323,7 @@ Class DroneTournamentGame Extends App
 			DrawImage(win_button, 10, 100)
 		Else If (Self.game_state = "tutorial")
 			Self.end_turn_button.Draw()
-			
+			Self.small_end_turn_button.Draw()
 			If (Self.tutorial_unit.armor > 0)
 				Self.tutorial_unit.DrawStatic(1, Self.game_state)
 			End
@@ -379,7 +384,9 @@ Class DroneTournamentGame Extends App
 			Else If (LiveOpponentCount(Self.game.opponents) = 0)
 				Self.game_state = "winner"
 			Else If (TouchDown(0))
-				If (Self.end_turn_button.Selected())
+				If (Self.tutorial_unit.ControlSelected(TouchX(0), TouchY(0)))
+					Self.tutorial_unit.SetControl(TouchX(0), TouchY(0), SCREEN_WIDTH, SCREEN_HEIGHT)
+				Else If (Self.end_turn_button.Selected() Or Self.small_end_turn_button.Selected())
 					For Local enemy:Unit = Eachin Self.game.opponents
 						Local xrand = Rnd(-15.0, 15.0)
 						Local yrand = Rnd(-15.0, 15.0)
@@ -387,9 +394,7 @@ Class DroneTournamentGame Extends App
 										 Self.tutorial_unit.position.y + yrand,
 										 SCREEN_WIDTH, SCREEN_HEIGHT)
 					End
-					moves = 30
-				Else If (Self.tutorial_unit.ControlSelected(TouchX(0), TouchY(0)))
-					Self.tutorial_unit.SetControl(TouchX(0), TouchY(0), SCREEN_WIDTH, SCREEN_HEIGHT)
+					moves = 30 
 				End
 			Else
 				Self.tutorial_unit.ControlReleased()
@@ -489,16 +494,18 @@ Class DroneTournamentGame Extends App
 
 	Method UserPlanMoves:Void()
 		If (TouchDown(0))
-			If (Self.end_turn_button.Selected())
-				GetServerMoves()
-			Else
-				For Local unit_id:Int = Eachin Self.game.units.Keys
-					Local unit:Unit = Self.game.units.Get(unit_id)
-					If (unit.player_id = Self.user.player_id  And Self.game.units.Get(unit_id).ControlSelected(TouchX(0), TouchY(0)))
-						Self.game.units.Get(unit_id).SetControl(TouchX(0), TouchY(0), SCREEN_WIDTH, SCREEN_HEIGHT)
-						Exit
-					End
+			Local making_move:Bool = False
+			For Local unit_id:Int = Eachin Self.game.units.Keys
+				Local unit:Unit = Self.game.units.Get(unit_id)
+				If (unit.player_id = Self.user.player_id  And Self.game.units.Get(unit_id).ControlSelected(TouchX(0), TouchY(0)))
+					making_move = True
+					Self.game.units.Get(unit_id).SetControl(TouchX(0), TouchY(0), SCREEN_WIDTH, SCREEN_HEIGHT)
+					Exit
 				End
+			End
+			
+			If (Self.end_turn_button.Selected() Or Self.small_end_turn_button.Selected() And Not making_move)
+				GetServerMoves()
 			End
 		Else
 			For Local unit_id:Int = Eachin Self.game.units.Keys
