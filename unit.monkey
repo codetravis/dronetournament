@@ -25,11 +25,11 @@ Class Unit
 		Self.unit_type = unit_type
 
 		Self.position = New Vec2D(x, y)
-		Self.control = New ControlPoint(x + Self.unit_type.maxVelocity, y, initial_heading, 10, 10)
+		Self.control = New ControlPoint(x + Self.unit_type.maxVelocity, y, initial_heading, 20, 20)
 
 		Self.heading = initial_heading
 		Self.velocity = New Vec2D(Self.unit_type.maxVelocity * Cosr(heading * (PI/180)), Self.unit_type.maxVelocity * Sinr(heading * (PI/180)))
-		Self.SetControl(velocity.x, velocity.y, SCREEN_WIDTH, SCREEN_HEIGHT)
+		Self.SetControl(velocity.x, velocity.y, GAME_WIDTH, GAME_HEIGHT)
 		Self.team = team_number
 
 		Self.currentEnergy = current_energy

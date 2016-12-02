@@ -12,6 +12,7 @@
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/bb_audio.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/bb_audiodevice.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/bb_boxes.class \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/bb_camera.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/bb_control_point.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/bb_data.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/bb_deque.class \
@@ -59,6 +60,7 @@
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_App.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_BBGameEvent.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_Button.class \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_Camera.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_ControlPoint.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_Deque.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_DisplayMode.class \

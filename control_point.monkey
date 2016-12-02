@@ -21,7 +21,7 @@ Class ControlPoint
 		
 		If (Self.selected)
 			SetColor(255, 255, 128)
-			DrawRect(Self.position.x - 5, Self.position.y - 5, 10, 10)
+			DrawCircle(Self.position.x, Self.position.y, 10)
 			SetColor(255, 255, 255)
 		End
 		DrawImage(Self.image, Self.position.x, Self.position.y, -Self.position.heading, 0.2, 0.2)

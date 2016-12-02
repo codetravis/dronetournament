@@ -6,8 +6,8 @@ Import user_interface
 Import unit
 Import particle
 
-Const SCREEN_WIDTH:Int = 640
-Const SCREEN_HEIGHT:Int = 480
+Const GAME_WIDTH:Int = 640
+Const GAME_HEIGHT:Int = 480
 
 
 Class Vec2D

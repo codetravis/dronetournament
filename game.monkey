@@ -102,7 +102,7 @@ Class Game
 			Local current_unit:Unit = Self.units.Get(unit_json.GetInt("id"))
 			current_unit.position.Set(unit_json.GetFloat("x"), unit_json.GetFloat("y"))
 			current_unit.heading = unit_json.GetFloat("heading")
-			current_unit.SetServerControl(unit_json.GetFloat("control_x"), unit_json.GetFloat("control_y"), SCREEN_WIDTH, SCREEN_HEIGHT)
+			current_unit.SetServerControl(unit_json.GetFloat("control_x"), unit_json.GetFloat("control_y"), GAME_WIDTH, GAME_HEIGHT)
 			current_unit.armor = unit_json.GetInt("armor")
 			Self.units.Set(unit_json.GetInt("id"), current_unit)
 		End
