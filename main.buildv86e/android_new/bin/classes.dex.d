@@ -76,6 +76,7 @@
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_HeadNode.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_HeadNode2.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_HeadNode3.class \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_HeadNode4.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_HttpRequest.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_IAsyncEventSource.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_Image.class \
@@ -98,6 +99,7 @@
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_List.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_List2.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_List3.class \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_List4.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_Map.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_Map2.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_Map3.class \
@@ -111,6 +113,7 @@
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_Node5.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_Node6.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_Node7.class \
+/Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_Node8.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_Particle.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_Stack.class \
 /Users/tcooper/projects/monkeygames/dronetournament/main.buildv86e/android_new/bin/classes/com/monkeycoder/monkeygame/c_Stack2.class \

@@ -23,8 +23,6 @@ Class DroneTournamentGame Extends App
 	Field play_tutorial_button:Button
 	Field play_multiplayer_button_image:Image
 	Field play_multiplayer_button:Button
-	Field small_end_turn_button_image:Image
-	Field small_end_turn_button:Button
 	Field end_turn_button_image:Image
 	Field end_turn_button:Button
 	Field win_button:Image
@@ -71,8 +69,7 @@ Class DroneTournamentGame Extends App
 		join_button_image = LoadImage("images/join_game.png")
 		win_button = LoadImage("images/win_button.png")
 		lose_button = LoadImage("images/lose_button.png")
-		end_turn_button_image = LoadImage("images/end_turn_button.png")
-		small_end_turn_button_image = LoadImage("images/small_end_turn_button.png")
+		end_turn_button_image = LoadImage("images/small_end_turn_button.png")
 		
 		t_fighter_img = LoadImage("images/t_fighter.png", 1, Image.MidHandle)
 		eye_fighter_img = LoadImage("images/eye_fighter.png", 1, Image.MidHandle)
@@ -83,7 +80,7 @@ Class DroneTournamentGame Extends App
 		Self.play_tutorial_button = New Button(10, -100, 110, 60, 440, 170, Self.play_tutorial_button_image)
 		Self.play_multiplayer_button = New Button(10, 100, 60, 260, 540, 170, Self.play_multiplayer_button_image)
 		Self.join_button = New Button(10, 100, 60, 260, 540, 170, Self.join_button_image)
-		Self.end_turn_button = New Button(0, 500, 50, 650, 540, 170, Self.end_turn_button_image)
+
 		Local end_x:Int
 		Local end_y:Int
 		If (GAME_WIDTH > SCREEN_WIDTH) 
@@ -98,9 +95,9 @@ Class DroneTournamentGame Extends App
 			end_y = GAME_HEIGHT - 74
 		ENd
 		
-		Self.small_end_turn_button = New Button(end_x, end_y, 
+		Self.end_turn_button = New Button(end_x, end_y, 
 												 end_x, end_y, 
-												 128, 64, Self.small_end_turn_button_image)
+												 128, 64, Self.end_turn_button_image)
 	End
 	
 	Method OnUpdate()
@@ -340,16 +337,14 @@ Class DroneTournamentGame Extends App
 		   		Self.game_state = "updated" Or
 		   		Self.game_state = "multiplayer_server")
 
-		   	'Self.end_turn_button.Draw()
-		   	Self.small_end_turn_button.Draw()
+		   	Self.end_turn_button.Draw()
 			Self.game.Draw(Self.user.player_id, Self.game_state)
 		Else If (Self.game_state = "loser")
 			DrawImage(lose_button, 10, 100)
 		Else If (Self.game_state = "winner")
 			DrawImage(win_button, 10, 100)
 		Else If (Self.game_state = "tutorial")
-			'Self.end_turn_button.Draw()
-			Self.small_end_turn_button.Draw()
+			Self.end_turn_button.Draw()
 			PushMatrix()
 			Translate(Self.game_cam.position.x, Self.game_cam.position.y)
 			Self.game.Draw(1, Self.game_state)
@@ -403,7 +398,7 @@ Class DroneTournamentGame Extends App
 					End
 				End
 				
-				If (Self.small_end_turn_button.Selected() And Not making_move)
+				If (Self.end_turn_button.Selected() And Not making_move)
 					Local target_ids:List<Int> = New List<Int>()
 					For Local unit_id:Int = Eachin Self.game.units.Keys
 						Local unit:Unit = Self.game.units.Get(unit_id)
@@ -555,7 +550,7 @@ Class DroneTournamentGame Extends App
 				End
 			End
 			
-			If (Self.small_end_turn_button.Selected() And Not making_move)
+			If (Self.end_turn_button.Selected() And Not making_move)
 				GetServerMoves()
 			End
 		Else
