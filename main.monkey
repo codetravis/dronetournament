@@ -389,13 +389,27 @@ Class DroneTournamentGame Extends App
 
 			If (TouchDown(0))
 				Local making_move:Bool = False
+				Local current_unit_id:Int = 0
 				For Local unit_id:Int = Eachin Self.game.units.Keys
 					Local unit:Unit = Self.game.units.Get(unit_id)
-					If (unit.player_id = Self.user.player_id  And Self.game.units.Get(unit_id).ControlSelected(TouchX(0) - game_cam.position.x, TouchY(0) - game_cam.position.y))
+					If (unit.control.selected)
 						making_move = True
-						Self.game.units.Get(unit_id).SetControl(TouchX(0) - game_cam.position.x, TouchY(0) - game_cam.position.y, GAME_WIDTH, GAME_HEIGHT)
+						current_unit_id = unit.unit_id
 						Exit
 					End
+				End
+				
+				If (Not making_move)
+					For Local unit_id:Int = Eachin Self.game.units.Keys
+						Local unit:Unit = Self.game.units.Get(unit_id)
+						If (unit.player_id = Self.user.player_id And Not making_move And Self.game.units.Get(unit_id).ControlSelected(TouchX(0) - game_cam.position.x, TouchY(0) - game_cam.position.y))
+							making_move = True
+							Self.game.units.Get(unit_id).SetControl(TouchX(0) - game_cam.position.x, TouchY(0) - game_cam.position.y, GAME_WIDTH, GAME_HEIGHT)
+							Exit
+						End
+					End
+				Else
+					Self.game.units.Get(current_unit_id).SetControl(TouchX(0) - game_cam.position.x, TouchY(0) - game_cam.position.y, GAME_WIDTH, GAME_HEIGHT)
 				End
 				
 				If (Self.end_turn_button.Selected() And Not making_move)
@@ -541,13 +555,28 @@ Class DroneTournamentGame Extends App
 	Method UserPlanMoves:Void()
 		If (TouchDown(0))
 			Local making_move:Bool = False
+			Local current_unit_id:Int = 0
 			For Local unit_id:Int = Eachin Self.game.units.Keys
 				Local unit:Unit = Self.game.units.Get(unit_id)
-				If (unit.player_id = Self.user.player_id  And Self.game.units.Get(unit_id).ControlSelected(TouchX(0), TouchY(0)))
+				If (unit.control.selected)
 					making_move = True
-					Self.game.units.Get(unit_id).SetControl(TouchX(0), TouchY(0), GAME_WIDTH, GAME_HEIGHT)
+					current_unit_id = unit.unit_id
 					Exit
 				End
+			End
+			
+			
+			If (Not making_move)
+				For Local unit_id:Int = Eachin Self.game.units.Keys
+					Local unit:Unit = Self.game.units.Get(unit_id)
+					If (unit.player_id = Self.user.player_id And Not making_move And Self.game.units.Get(unit_id).ControlSelected(TouchX(0) - game_cam.position.x, TouchY(0) - game_cam.position.y))
+						making_move = True
+						Self.game.units.Get(unit_id).SetControl(TouchX(0) - game_cam.position.x, TouchY(0) - game_cam.position.y, GAME_WIDTH, GAME_HEIGHT)
+						Exit
+					End
+				End
+			Else
+				Self.game.units.Get(current_unit_id).SetControl(TouchX(0) - game_cam.position.x, TouchY(0) - game_cam.position.y, GAME_WIDTH, GAME_HEIGHT)
 			End
 			
 			If (Self.end_turn_button.Selected() And Not making_move)
