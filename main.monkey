@@ -110,7 +110,7 @@ Class DroneTournamentGame Extends App
 				If (Self.play_tutorial_button.Selected())
 					SetupTutorial()
 				Else If (Self.play_multiplayer_button.Selected())
-					If (Self.user.player_id = "0")
+					If (Self.user.password = "")
 						Self.game_state = "setup"
 					Else
 						SignIn() 
