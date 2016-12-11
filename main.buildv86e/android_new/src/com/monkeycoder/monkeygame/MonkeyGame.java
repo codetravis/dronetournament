@@ -64,7 +64,7 @@ static final String BRL_GAMETARGET_IMPLEMENTED="1";
 static final String BRL_HTTPREQUEST_IMPLEMENTED="1";
 static final String BRL_THREAD_IMPLEMENTED="1";
 static final String CD="";
-static final String CONFIG="debug";
+static final String CONFIG="release";
 static final String HOST="macos";
 static final String IMAGE_FILES="*.png|*.jpg|*.gif|*.bmp";
 static final String LANG="java";
@@ -2842,78 +2842,47 @@ class BBHttpRequest extends BBThread{
 
 class c_App extends Object{
 	public final c_App m_App_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<152>";
 		if((bb_app.g__app)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<152>";
 			bb_std_lang.error("App has already been created");
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<153>";
 		bb_app.g__app=this;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<154>";
 		bb_app.g__delegate=(new c_GameDelegate()).m_GameDelegate_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<155>";
 		bb_app.g__game.SetDelegate(bb_app.g__delegate);
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final int p_OnResize(){
-		bb_std_lang.pushErr();
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public int p_OnCreate(){
-		bb_std_lang.pushErr();
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_OnSuspend(){
-		bb_std_lang.pushErr();
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public int p_OnResume(){
-		bb_std_lang.pushErr();
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public int p_OnUpdate(){
-		bb_std_lang.pushErr();
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_OnLoading(){
-		bb_std_lang.pushErr();
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public int p_OnRender(){
-		bb_std_lang.pushErr();
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_OnClose(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<177>";
 		bb_app.g_EndApp();
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_OnBack(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<181>";
 		p_OnClose();
-		bb_std_lang.popErr();
 		return 0;
 	}
 }
 class c_DroneTournamentGame extends c_App{
 	public final c_DroneTournamentGame m_DroneTournamentGame_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<13>";
 		super.m_App_new();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<13>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	int m_SCREEN_WIDTH=0;
@@ -2935,26 +2904,15 @@ class c_DroneTournamentGame extends c_App{
 	c_Image m_eye_fighter_img=null;
 	c_Image m_single_turret_img=null;
 	public final int p_LoadImages(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<67>";
 		m_play_tutorial_button_image=bb_graphics.g_LoadImage("images/play_tutorial_button.png",1,c_Image.m_DefaultFlags);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<68>";
 		m_play_multiplayer_button_image=bb_graphics.g_LoadImage("images/play_multiplayer_button.png",1,c_Image.m_DefaultFlags);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<69>";
 		m_join_button_image=bb_graphics.g_LoadImage("images/join_game.png",1,c_Image.m_DefaultFlags);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<70>";
 		m_win_button=bb_graphics.g_LoadImage("images/win_button.png",1,c_Image.m_DefaultFlags);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<71>";
 		m_lose_button=bb_graphics.g_LoadImage("images/lose_button.png",1,c_Image.m_DefaultFlags);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<72>";
 		m_end_turn_button_image=bb_graphics.g_LoadImage("images/small_end_turn_button.png",1,c_Image.m_DefaultFlags);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<74>";
 		m_t_fighter_img=bb_graphics.g_LoadImage("images/t_fighter.png",1,1);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<75>";
 		m_eye_fighter_img=bb_graphics.g_LoadImage("images/eye_fighter.png",1,1);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<76>";
 		m_single_turret_img=bb_graphics.g_LoadImage("images/single_turret.png",1,1);
-		bb_std_lang.popErr();
 		return 0;
 	}
 	c_Button m_play_tutorial_button=null;
@@ -2962,394 +2920,227 @@ class c_DroneTournamentGame extends c_App{
 	c_Button m_join_button=null;
 	c_Button m_end_turn_button=null;
 	public final int p_CreateUIElements(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<80>";
 		this.m_play_tutorial_button=(new c_Button()).m_Button_new(10.0f,-100.0f,110.0f,60.0f,440.0f,170.0f,this.m_play_tutorial_button_image);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<81>";
 		this.m_play_multiplayer_button=(new c_Button()).m_Button_new(10.0f,100.0f,60.0f,260.0f,540.0f,170.0f,this.m_play_multiplayer_button_image);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<82>";
 		this.m_join_button=(new c_Button()).m_Button_new(10.0f,100.0f,60.0f,260.0f,540.0f,170.0f,this.m_join_button_image);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<84>";
 		int t_end_x=0;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<85>";
 		int t_end_y=0;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<86>";
 		if(640>m_SCREEN_WIDTH){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<87>";
 			t_end_x=m_SCREEN_WIDTH-138;
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<89>";
 			t_end_x=502;
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<92>";
 		if(480>m_SCREEN_HEIGHT){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<93>";
 			t_end_y=m_SCREEN_HEIGHT-74;
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<95>";
 			t_end_y=406;
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<100>";
 		this.m_end_turn_button=(new c_Button()).m_Button_new((float)(t_end_x),(float)(t_end_y),(float)(t_end_x),(float)(t_end_y),128.0f,64.0f,this.m_end_turn_button_image);
-		bb_std_lang.popErr();
 		return 0;
 	}
 	c_Camera m_game_cam=null;
 	public final int p_OnCreate(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<48>";
 		bb_std_lang.print("Creating Game");
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<49>";
 		m_SCREEN_WIDTH=bb_app.g_DeviceWidth();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<50>";
 		m_SCREEN_HEIGHT=bb_app.g_DeviceHeight();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<51>";
 		m_game_state="menu";
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<52>";
 		this.m_keyboard_enabled=false;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<53>";
 		this.m_timer_begin=(float)(bb_app.g_Millisecs());
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<54>";
 		bb_app.g_SetUpdateRate(30);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<55>";
 		m_user=(new c_User()).m_User_new("","1","");
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<57>";
 		m_multiplayer_service=(new c_MultiplayerService()).m_MultiplayerService_new(m_tournament_server_url);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<58>";
 		m_game=(new c_Game()).m_Game_new();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<60>";
 		p_LoadImages();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<61>";
 		p_CreateUIElements();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<62>";
 		m_game_cam=(new c_Camera()).m_Camera_new(640,480,m_SCREEN_WIDTH,m_SCREEN_HEIGHT);
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final void p_GetUsername(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<168>";
 		if(this.m_keyboard_enabled){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<169>";
 			int t_char=bb_input.g_GetChar();
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<170>";
 			if(t_char==13){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<171>";
 				bb_input.g_DisableKeyboard();
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<172>";
 				this.m_keyboard_enabled=false;
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<173>";
 				this.m_game_state="get_password";
 			}else{
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<174>";
 				if(t_char==8 || t_char==127){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<175>";
 					if(this.m_user.m_username.length()<=1){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<176>";
 						this.m_user.m_username="";
 					}else{
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<178>";
 						this.m_user.m_username=bb_std_lang.slice(this.m_user.m_username,0,-1);
 					}
 				}else{
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<180>";
 					if(t_char>0 && this.m_user.m_username.length()<13){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<181>";
 						this.m_user.m_username=this.m_user.m_username+String.valueOf((char)(t_char));
 					}
 				}
 			}
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<184>";
 			bb_input.g_EnableKeyboard();
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<185>";
 			this.m_keyboard_enabled=true;
 		}
-		bb_std_lang.popErr();
 	}
 	public final void p_SignIn(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<212>";
 		String t_json_body="{ \"username\": \""+this.m_user.m_username+"\", \"password\": \""+this.m_user.m_password+"\" }";
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<213>";
 		this.m_multiplayer_service.p_PostJsonRequest("/sign_in",t_json_body);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<214>";
 		this.m_game_state="server";
-		bb_std_lang.popErr();
 	}
 	public final void p_GetPassword(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<190>";
 		if(this.m_keyboard_enabled){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<191>";
 			int t_char=bb_input.g_GetChar();
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<192>";
 			if(t_char==13){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<193>";
 				bb_input.g_DisableKeyboard();
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<194>";
 				this.m_keyboard_enabled=false;
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<195>";
 				p_SignIn();
 			}else{
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<196>";
 				if(t_char==8 || t_char==127){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<197>";
 					if(this.m_user.m_password.length()<=1){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<198>";
 						this.m_user.m_password="";
 					}else{
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<200>";
 						this.m_user.m_password=bb_std_lang.slice(this.m_user.m_password,0,-1);
 					}
 				}else{
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<202>";
 					if(t_char>0 && this.m_user.m_password.length()<13){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<203>";
 						this.m_user.m_password=this.m_user.m_password+String.valueOf((char)(t_char));
 					}
 				}
 			}
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<206>";
 			bb_input.g_EnableKeyboard();
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<207>";
 			this.m_keyboard_enabled=true;
 		}
-		bb_std_lang.popErr();
 	}
 	int m_moves=0;
 	public final void p_SetupTutorial(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<356>";
 		bb_random.g_Seed=bb_app.g_Millisecs();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<357>";
 		c_UnitType t_t_type=(new c_UnitType()).m_UnitType_new((new c_JsonObject()).m_JsonObject_new3("{\"id\": 1, \"name\": \"T-Fighter\", \"speed\": 100, \"turn\": 5, \"armor\": 6, \"full_energy\": 100, \"charge_energy\": 6, \"image_name\": \"t_fighter.png\"}"));
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<358>";
 		c_UnitType t_eye_type=(new c_UnitType()).m_UnitType_new((new c_JsonObject()).m_JsonObject_new3("{\"id\": 2, \"name\": \"Eye-Fighter\", \"speed\": 120, \"turn\": 4, \"armor\": 2, \"full_energy\": 100, \"charge_energy\": 4, \"image_name\": \"eye_fighter.png\"}"));
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<359>";
 		this.m_game.m_units=(new c_IntMap2()).m_IntMap_new();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<360>";
 		this.m_game.m_units.p_Add(1,(new c_Unit()).m_Unit_new(1,150.0f,150.0f,-30.0f,t_t_type,"1",1,0.0f));
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<361>";
 		this.m_game.m_units.p_Add(2,(new c_Unit()).m_Unit_new(2,150.0f,250.0f,300.0f,t_t_type,"1",1,0.0f));
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<364>";
 		for(int t_i=0;t_i<=3;t_i=t_i+1){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<365>";
 			float t_xrand=bb_random.g_Rnd2(200.0f,580.0f);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<366>";
 			float t_yrand=bb_random.g_Rnd2(200.0f,420.0f);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<367>";
 			float t_angle_rand=bb_random.g_Rnd2(0.0f,360.0f);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<368>";
 			c_Unit t_opponent=(new c_Unit()).m_Unit_new(t_i+3,t_xrand,t_yrand,t_angle_rand,t_eye_type,"0",2,0.0f);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<369>";
 			this.m_game.m_units.p_Add(t_opponent.m_unit_id,t_opponent);
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<371>";
 		this.m_moves=0;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<372>";
 		this.m_game.m_particles=(new c_List2()).m_List_new();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<373>";
 		this.m_game_state="tutorial";
-		bb_std_lang.popErr();
 	}
 	c_JsonArray m_game_list=null;
 	c_List3 m_game_select=null;
 	public final int p_BuildGameListUI(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<298>";
 		this.m_game_select=(new c_List3()).m_List_new();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<299>";
 		int t_x=10;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<300>";
 		int t_y=10;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<301>";
 		for(int t_i=0;t_i<this.m_game_list.p_Length();t_i=t_i+1){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<302>";
 			c_JsonObject t_game_object=bb_std_lang.as(c_JsonObject.class,(this.m_game_list.p_Get3(t_i)));
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<303>";
 			c_GameSelect t_game_ui=(new c_GameSelect()).m_GameSelect_new((float)(t_x),(float)(t_y),400.0f,50.0f,String.valueOf(t_game_object.p_GetInt("game_id",0)));
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<304>";
 			this.m_game_select.p_AddLast3(t_game_ui);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<305>";
 			t_y+=55;
 		}
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_UsePlayerStateToSetGameState(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<310>";
 		if(this.m_game.m_player_state.compareTo("plan")==0){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<311>";
 			this.m_game_state="multiplayer";
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<312>";
 			if(this.m_game.m_player_state.compareTo("finished")==0){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<313>";
 				this.m_game_state="end_turn";
 			}else{
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<314>";
 				if(this.m_game.m_player_state.compareTo("updated")==0){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<315>";
 					this.m_game_state="updated";
 				}
 			}
 		}
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final void p_WinLoseOrContinue(boolean t_is_tutorial){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<257>";
 		int t_player_unit_count=0;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<258>";
 		int t_opponent_unit_count=0;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<260>";
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<260>";
 		c_KeyEnumerator t_=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<260>";
 		while(t_.p_HasNext()){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<260>";
 			int t_key=t_.p_NextObject();
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<261>";
 			c_Unit t_current_unit=this.m_game.m_units.p_Get3(t_key);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<262>";
 			if(t_current_unit.m_armor>0 && (t_current_unit.m_player_id.compareTo(this.m_user.m_player_id)==0)){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<263>";
 				t_player_unit_count+=1;
 			}else{
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<264>";
 				if(t_current_unit.m_armor>0){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<265>";
 					t_opponent_unit_count+=1;
 				}
 			}
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<269>";
 		if(t_player_unit_count==0){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<270>";
 			this.m_game_state="loser";
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<271>";
 			this.m_game_cam.p_Reset();
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<272>";
 			if(t_opponent_unit_count==0){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<273>";
 				this.m_game_state="winner";
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<274>";
 				this.m_game_cam.p_Reset();
 			}else{
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<275>";
 				if(t_is_tutorial){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<276>";
 					this.m_game_state="tutorial";
 				}else{
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<278>";
 					this.m_game_state="multiplayer_ready";
 				}
 			}
 		}
-		bb_std_lang.popErr();
 	}
 	public final void p_GetGameInfoFromServer(String t_game_id){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<288>";
 		this.m_multiplayer_service.p_GetRequest("/game/"+t_game_id);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<289>";
 		this.m_game_state="server";
-		bb_std_lang.popErr();
 	}
 	public final void p_EndTurn(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<575>";
 		String t_move_json=this.m_game.p_BuildMoveJson(this.m_user.m_player_id);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<576>";
 		this.m_multiplayer_service.p_PostJsonRequest("/end_turn/"+this.m_game.m_id,t_move_json);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<577>";
 		this.m_game_state="multiplayer_server";
-		bb_std_lang.popErr();
 	}
 	public final void p_DetermineGameState(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<218>";
 		if(this.m_multiplayer_service.p_HasRequestFinished()){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<219>";
 			String t_action=this.m_multiplayer_service.m_response.p_GetString("action","");
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<220>";
 			if(t_action.compareTo("Bad Server Response")==0){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<221>";
 				this.m_game_state="menu";
 			}else{
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<222>";
 				if(t_action.compareTo("Sign In")==0){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<223>";
 					this.m_user.m_player_id=this.m_multiplayer_service.m_response.p_GetString("player_id","");
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<224>";
 					this.m_game_state="get_games";
 				}else{
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<225>";
 					if(t_action.compareTo("Invalid Sign In")==0){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<226>";
 						this.m_user=(new c_User()).m_User_new("","1","");
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<227>";
 						this.m_game_state="setup";
 					}else{
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<228>";
 						if(t_action.compareTo("List Games")==0){
-							bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<229>";
 							this.m_game_list=bb_std_lang.as(c_JsonArray.class,(m_multiplayer_service.m_response.p_Get("games",null)));
-							bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<230>";
 							p_BuildGameListUI();
-							bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<231>";
 							this.m_game_state="list_games";
 						}else{
-							bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<232>";
 							if(t_action.compareTo("Load Game")==0){
-								bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<233>";
 								this.m_game.p_LoadFromJson(this.m_multiplayer_service.m_response,this.m_user.m_player_id);
-								bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<234>";
 								p_UsePlayerStateToSetGameState();
 							}else{
-								bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<235>";
 								if(t_action.compareTo("Turn Stop")==0){
-									bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<236>";
 									this.m_game_state="multiplayer";
 								}else{
-									bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<237>";
 									if((t_action.compareTo("Waiting")==0) || (t_action.compareTo("Turn Ended")==0)){
-										bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<238>";
 										this.m_timer_begin=(float)(bb_app.g_Millisecs());
-										bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<239>";
 										m_game_state="end_turn";
 									}else{
-										bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<240>";
 										if(t_action.compareTo("Ready")==0){
-											bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<241>";
 											this.m_moves=30;
-											bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<242>";
 											this.m_game.p_LoadServerMoves(this.m_multiplayer_service.m_response);
-											bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<243>";
 											p_WinLoseOrContinue(false);
 										}else{
-											bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<244>";
 											if(t_action.compareTo("Update Waiting")==0){
-												bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<245>";
 												this.m_timer_begin=(float)(bb_app.g_Millisecs());
-												bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<246>";
 												m_game_state="updated";
 											}else{
-												bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<247>";
 												if(t_action.compareTo("Update Ready")==0){
-													bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<248>";
 													p_GetGameInfoFromServer(this.m_game.m_id);
 												}else{
-													bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<249>";
 													if(t_action.compareTo("Server Move Points")==0){
-														bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<250>";
 														this.m_game.p_SetUnitPathsToServerSimulation(this.m_multiplayer_service.m_response,this.m_user.m_player_id);
-														bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<251>";
 														p_EndTurn();
 													}
 												}
@@ -3363,528 +3154,327 @@ class c_DroneTournamentGame extends c_App{
 				}
 			}
 		}
-		bb_std_lang.popErr();
 	}
 	public final void p_GetListOfActiveGames(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<283>";
 		this.m_multiplayer_service.p_GetRequest("/games/"+this.m_user.m_player_id);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<284>";
 		this.m_game_state="server";
-		bb_std_lang.popErr();
 	}
 	public final void p_JoinGame(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<293>";
 		this.m_multiplayer_service.p_PostRequest("/join_game/"+m_user.m_player_id);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<294>";
 		this.m_game_state="server";
-		bb_std_lang.popErr();
 	}
 	public final int p_MoveCamera(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<530>";
 		if(bb_input.g_TouchX(0)>(float)(m_SCREEN_WIDTH-50)){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<531>";
 			this.m_game_cam.p_MoveRight();
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<532>";
 			if(bb_input.g_TouchX(0)<50.0f){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<533>";
 				this.m_game_cam.p_MoveLeft();
 			}else{
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<534>";
 				if(bb_input.g_TouchY(0)<50.0f){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<535>";
 					this.m_game_cam.p_MoveUp();
 				}else{
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<536>";
 					if(bb_input.g_TouchY(0)>(float)(m_SCREEN_HEIGHT-50)){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<537>";
 						this.m_game_cam.p_MoveDown();
 					}
 				}
 			}
 		}
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final void p_RunTutorial(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<387>";
 		if(m_moves<1){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<388>";
 			p_WinLoseOrContinue(true);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<390>";
 			if((bb_input.g_TouchDown(0))!=0){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<391>";
 				boolean t_making_move=false;
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<392>";
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<392>";
+				int t_current_unit_id=0;
 				c_KeyEnumerator t_=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<392>";
 				while(t_.p_HasNext()){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<392>";
 					int t_unit_id=t_.p_NextObject();
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<393>";
 					c_Unit t_unit=this.m_game.m_units.p_Get3(t_unit_id);
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<394>";
-					if((t_unit.m_player_id.compareTo(this.m_user.m_player_id)==0) && ((this.m_game.m_units.p_Get3(t_unit_id).p_ControlSelected(bb_input.g_TouchX(0)-m_game_cam.m_position.m_x,bb_input.g_TouchY(0)-m_game_cam.m_position.m_y))!=0)){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<395>";
+					if(t_unit.m_control.m_selected){
 						t_making_move=true;
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<396>";
-						this.m_game.m_units.p_Get3(t_unit_id).p_SetControl(bb_input.g_TouchX(0)-m_game_cam.m_position.m_x,bb_input.g_TouchY(0)-m_game_cam.m_position.m_y,640.0f,480.0f);
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<397>";
+						t_current_unit_id=t_unit.m_unit_id;
 						break;
 					}
 				}
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<401>";
-				if(this.m_end_turn_button.p_Selected() && !t_making_move){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<402>";
-					c_List4 t_target_ids=(new c_List4()).m_List_new();
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<403>";
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<403>";
+				if(!t_making_move){
 					c_KeyEnumerator t_2=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<403>";
 					while(t_2.p_HasNext()){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<403>";
 						int t_unit_id2=t_2.p_NextObject();
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<404>";
 						c_Unit t_unit2=this.m_game.m_units.p_Get3(t_unit_id2);
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<405>";
-						if((t_unit2.m_player_id.compareTo(this.m_user.m_player_id)==0) && t_unit2.m_armor>0){
-							bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<406>";
-							t_target_ids.p_AddLast4(t_unit_id2);
+						if((t_unit2.m_player_id.compareTo(this.m_user.m_player_id)==0) && !t_making_move && ((this.m_game.m_units.p_Get3(t_unit_id2).p_ControlSelected(bb_input.g_TouchX(0)-m_game_cam.m_position.m_x,bb_input.g_TouchY(0)-m_game_cam.m_position.m_y))!=0)){
+							t_making_move=true;
+							this.m_game.m_units.p_Get3(t_unit_id2).p_SetControl(bb_input.g_TouchX(0)-m_game_cam.m_position.m_x,bb_input.g_TouchY(0)-m_game_cam.m_position.m_y,640.0f,480.0f);
+							break;
 						}
 					}
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<410>";
-					int[] t_targets=t_target_ids.p_ToArray();
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<411>";
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<411>";
+				}else{
+					this.m_game.m_units.p_Get3(t_current_unit_id).p_SetControl(bb_input.g_TouchX(0)-m_game_cam.m_position.m_x,bb_input.g_TouchY(0)-m_game_cam.m_position.m_y,640.0f,480.0f);
+				}
+				if(this.m_end_turn_button.p_Selected() && !t_making_move){
+					c_List4 t_target_ids=(new c_List4()).m_List_new();
 					c_KeyEnumerator t_3=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<411>";
 					while(t_3.p_HasNext()){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<411>";
 						int t_unit_id3=t_3.p_NextObject();
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<412>";
 						c_Unit t_unit3=this.m_game.m_units.p_Get3(t_unit_id3);
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<413>";
-						if(t_unit3.m_player_id.compareTo(this.m_user.m_player_id)!=0){
-							bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<414>";
-							int t_xrand=(int)(bb_random.g_Rnd2(-15.0f,15.0f));
-							bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<415>";
-							int t_yrand=(int)(bb_random.g_Rnd2(-15.0f,15.0f));
-							bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<416>";
-							int t_target_rand=(int)(bb_random.g_Rnd2(0.0f,(float)(bb_std_lang.length(t_targets))));
-							bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<419>";
-							t_unit3.p_SetControl(this.m_game.m_units.p_Get3(t_targets[t_target_rand]).m_position.m_x+(float)(t_xrand),this.m_game.m_units.p_Get3(t_targets[t_target_rand]).m_position.m_y+(float)(t_yrand),640.0f,480.0f);
+						if((t_unit3.m_player_id.compareTo(this.m_user.m_player_id)==0) && t_unit3.m_armor>0){
+							t_target_ids.p_AddLast4(t_unit_id3);
 						}
 					}
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<422>";
+					int[] t_targets=t_target_ids.p_ToArray();
+					c_KeyEnumerator t_4=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
+					while(t_4.p_HasNext()){
+						int t_unit_id4=t_4.p_NextObject();
+						c_Unit t_unit4=this.m_game.m_units.p_Get3(t_unit_id4);
+						if(t_unit4.m_player_id.compareTo(this.m_user.m_player_id)!=0){
+							int t_xrand=(int)(bb_random.g_Rnd2(-15.0f,15.0f));
+							int t_yrand=(int)(bb_random.g_Rnd2(-15.0f,15.0f));
+							int t_target_rand=(int)(bb_random.g_Rnd2(0.0f,(float)(bb_std_lang.length(t_targets))));
+							t_unit4.p_SetControl(this.m_game.m_units.p_Get3(t_targets[t_target_rand]).m_position.m_x+(float)(t_xrand),this.m_game.m_units.p_Get3(t_targets[t_target_rand]).m_position.m_y+(float)(t_yrand),640.0f,480.0f);
+						}
+					}
 					m_moves=30;
 				}else{
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<424>";
 					p_MoveCamera();
 				}
 			}else{
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<427>";
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<427>";
-				c_KeyEnumerator t_4=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<427>";
-				while(t_4.p_HasNext()){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<427>";
-					int t_unit_id4=t_4.p_NextObject();
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<428>";
-					this.m_game.m_units.p_Get3(t_unit_id4).p_ControlReleased();
+				c_KeyEnumerator t_5=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
+				while(t_5.p_HasNext()){
+					int t_unit_id5=t_5.p_NextObject();
+					this.m_game.m_units.p_Get3(t_unit_id5).p_ControlReleased();
 				}
 			}
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<432>";
 			if((bb_input.g_KeyHit(13))!=0){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<433>";
 				c_List4 t_target_ids2=(new c_List4()).m_List_new();
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<434>";
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<434>";
-				c_KeyEnumerator t_5=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<434>";
-				while(t_5.p_HasNext()){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<434>";
-					int t_unit_id5=t_5.p_NextObject();
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<435>";
-					c_Unit t_unit4=this.m_game.m_units.p_Get3(t_unit_id5);
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<436>";
-					if((t_unit4.m_player_id.compareTo(this.m_user.m_player_id)==0) && t_unit4.m_armor>0){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<437>";
-						t_target_ids2.p_AddLast4(t_unit_id5);
-					}
-				}
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<441>";
-				int[] t_targets2=t_target_ids2.p_ToArray();
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<442>";
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<442>";
 				c_KeyEnumerator t_6=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<442>";
 				while(t_6.p_HasNext()){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<442>";
 					int t_unit_id6=t_6.p_NextObject();
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<443>";
 					c_Unit t_unit5=this.m_game.m_units.p_Get3(t_unit_id6);
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<444>";
-					if(t_unit5.m_player_id.compareTo(this.m_user.m_player_id)!=0){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<445>";
-						int t_xrand2=(int)(bb_random.g_Rnd2(-15.0f,15.0f));
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<446>";
-						int t_yrand2=(int)(bb_random.g_Rnd2(-15.0f,15.0f));
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<447>";
-						int t_target_rand2=(int)(bb_random.g_Rnd2(0.0f,(float)(bb_std_lang.length(t_targets2))));
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<450>";
-						t_unit5.p_SetControl(this.m_game.m_units.p_Get3(t_targets2[t_target_rand2]).m_position.m_x+(float)(t_xrand2),this.m_game.m_units.p_Get3(t_targets2[t_target_rand2]).m_position.m_y+(float)(t_yrand2),640.0f,480.0f);
+					if((t_unit5.m_player_id.compareTo(this.m_user.m_player_id)==0) && t_unit5.m_armor>0){
+						t_target_ids2.p_AddLast4(t_unit_id6);
 					}
 				}
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<453>";
+				int[] t_targets2=t_target_ids2.p_ToArray();
+				c_KeyEnumerator t_7=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
+				while(t_7.p_HasNext()){
+					int t_unit_id7=t_7.p_NextObject();
+					c_Unit t_unit6=this.m_game.m_units.p_Get3(t_unit_id7);
+					if(t_unit6.m_player_id.compareTo(this.m_user.m_player_id)!=0){
+						int t_xrand2=(int)(bb_random.g_Rnd2(-15.0f,15.0f));
+						int t_yrand2=(int)(bb_random.g_Rnd2(-15.0f,15.0f));
+						int t_target_rand2=(int)(bb_random.g_Rnd2(0.0f,(float)(bb_std_lang.length(t_targets2))));
+						t_unit6.p_SetControl(this.m_game.m_units.p_Get3(t_targets2[t_target_rand2]).m_position.m_x+(float)(t_xrand2),this.m_game.m_units.p_Get3(t_targets2[t_target_rand2]).m_position.m_y+(float)(t_yrand2),640.0f,480.0f);
+					}
+				}
 				m_moves=30;
 			}
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<456>";
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<456>";
-			c_KeyEnumerator t_7=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<456>";
-			while(t_7.p_HasNext()){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<456>";
-				int t_unit_id7=t_7.p_NextObject();
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<457>";
-				c_Unit t_current_unit=this.m_game.m_units.p_Get3(t_unit_id7);
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<458>";
+			c_KeyEnumerator t_8=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
+			while(t_8.p_HasNext()){
+				int t_unit_id8=t_8.p_NextObject();
+				c_Unit t_current_unit=this.m_game.m_units.p_Get3(t_unit_id8);
 				if(t_current_unit.m_armor>0){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<459>";
-					this.m_game.m_units.p_Get3(t_unit_id7).p_Update();
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<460>";
-					t_current_unit=this.m_game.m_units.p_Get3(t_unit_id7);
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<461>";
+					this.m_game.m_units.p_Get3(t_unit_id8).p_Update();
+					t_current_unit=this.m_game.m_units.p_Get3(t_unit_id8);
 					if(t_current_unit.m_currentEnergy>=t_current_unit.m_unit_type.m_maxEnergy){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<462>";
 						m_game.m_particles.p_AddLast2((new c_Particle()).m_Particle_new(t_current_unit.m_position,2.5f,1.0f,t_current_unit.m_heading,20.0f,t_current_unit.m_team,30));
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<463>";
-						this.m_game.m_units.p_Get3(t_unit_id7).p_FireWeapon();
+						this.m_game.m_units.p_Get3(t_unit_id8).p_FireWeapon();
 					}
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<465>";
 					if(m_moves==1){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<466>";
-						this.m_game.m_units.p_Get3(t_unit_id7).p_SetControl(t_current_unit.m_position.m_x+t_current_unit.m_velocity.m_x,t_current_unit.m_position.m_y+t_current_unit.m_velocity.m_y,640.0f,480.0f);
+						this.m_game.m_units.p_Get3(t_unit_id8).p_SetControl(t_current_unit.m_position.m_x+t_current_unit.m_velocity.m_x,t_current_unit.m_position.m_y+t_current_unit.m_velocity.m_y,640.0f,480.0f);
 					}
 				}
 			}
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<471>";
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<471>";
-			c_Enumerator3 t_8=this.m_game.m_particles.p_ObjectEnumerator();
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<471>";
-			while(t_8.p_HasNext()){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<471>";
-				c_Particle t_particle=t_8.p_NextObject();
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<472>";
+			c_Enumerator3 t_9=this.m_game.m_particles.p_ObjectEnumerator();
+			while(t_9.p_HasNext()){
+				c_Particle t_particle=t_9.p_NextObject();
 				t_particle.p_Update();
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<473>";
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<473>";
-				c_KeyEnumerator t_9=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<473>";
-				while(t_9.p_HasNext()){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<473>";
-					int t_unit_id8=t_9.p_NextObject();
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<474>";
-					c_Unit t_current_unit2=this.m_game.m_units.p_Get3(t_unit_id8);
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<475>";
+				c_KeyEnumerator t_10=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
+				while(t_10.p_HasNext()){
+					int t_unit_id9=t_10.p_NextObject();
+					c_Unit t_current_unit2=this.m_game.m_units.p_Get3(t_unit_id9);
 					if((bb_dronetournament.g_Collided(t_particle,t_current_unit2))!=0){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<476>";
-						this.m_game.m_units.p_Get3(t_unit_id8).p_TakeDamage(1);
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<477>";
+						this.m_game.m_units.p_Get3(t_unit_id9).p_TakeDamage(1);
 						this.m_game.m_particles.p_Remove(t_particle);
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<478>";
 						break;
 					}
 				}
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<482>";
 				if(t_particle.m_lifetime<=0){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<483>";
 					this.m_game.m_particles.p_Remove(t_particle);
 				}
 			}
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<486>";
 			m_moves-=1;
 		}
-		bb_std_lang.popErr();
 	}
 	public final void p_GetServerMoves(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<569>";
 		String t_move_json=this.m_game.p_BuildMoveJson(this.m_user.m_player_id);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<570>";
 		this.m_multiplayer_service.p_PostJsonRequest("/move_points/"+this.m_game.m_id+"/"+this.m_user.m_player_id+"/30",t_move_json);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<571>";
 		this.m_game_state="multiplayer_server";
-		bb_std_lang.popErr();
 	}
 	public final void p_UserPlanMoves(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<542>";
 		if((bb_input.g_TouchDown(0))!=0){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<543>";
 			boolean t_making_move=false;
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<544>";
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<544>";
+			int t_current_unit_id=0;
 			c_KeyEnumerator t_=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<544>";
 			while(t_.p_HasNext()){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<544>";
 				int t_unit_id=t_.p_NextObject();
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<545>";
 				c_Unit t_unit=this.m_game.m_units.p_Get3(t_unit_id);
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<546>";
-				if((t_unit.m_player_id.compareTo(this.m_user.m_player_id)==0) && ((this.m_game.m_units.p_Get3(t_unit_id).p_ControlSelected(bb_input.g_TouchX(0),bb_input.g_TouchY(0)))!=0)){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<547>";
+				if(t_unit.m_control.m_selected){
 					t_making_move=true;
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<548>";
-					this.m_game.m_units.p_Get3(t_unit_id).p_SetControl(bb_input.g_TouchX(0),bb_input.g_TouchY(0),640.0f,480.0f);
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<549>";
+					t_current_unit_id=t_unit.m_unit_id;
 					break;
 				}
 			}
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<553>";
+			if(!t_making_move){
+				c_KeyEnumerator t_2=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
+				while(t_2.p_HasNext()){
+					int t_unit_id2=t_2.p_NextObject();
+					c_Unit t_unit2=this.m_game.m_units.p_Get3(t_unit_id2);
+					if((t_unit2.m_player_id.compareTo(this.m_user.m_player_id)==0) && !t_making_move && ((this.m_game.m_units.p_Get3(t_unit_id2).p_ControlSelected(bb_input.g_TouchX(0)-m_game_cam.m_position.m_x,bb_input.g_TouchY(0)-m_game_cam.m_position.m_y))!=0)){
+						t_making_move=true;
+						this.m_game.m_units.p_Get3(t_unit_id2).p_SetControl(bb_input.g_TouchX(0)-m_game_cam.m_position.m_x,bb_input.g_TouchY(0)-m_game_cam.m_position.m_y,640.0f,480.0f);
+						break;
+					}
+				}
+			}else{
+				this.m_game.m_units.p_Get3(t_current_unit_id).p_SetControl(bb_input.g_TouchX(0)-m_game_cam.m_position.m_x,bb_input.g_TouchY(0)-m_game_cam.m_position.m_y,640.0f,480.0f);
+			}
 			if(this.m_end_turn_button.p_Selected() && !t_making_move){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<554>";
 				p_GetServerMoves();
 			}
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<557>";
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<557>";
-			c_KeyEnumerator t_2=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<557>";
-			while(t_2.p_HasNext()){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<557>";
-				int t_unit_id2=t_2.p_NextObject();
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<558>";
-				this.m_game.m_units.p_Get3(t_unit_id2).p_ControlReleased();
+			c_KeyEnumerator t_3=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
+			while(t_3.p_HasNext()){
+				int t_unit_id3=t_3.p_NextObject();
+				this.m_game.m_units.p_Get3(t_unit_id3).p_ControlReleased();
 			}
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<562>";
 		if((bb_input.g_KeyHit(13))!=0){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<563>";
 			p_GetServerMoves();
 		}
-		bb_std_lang.popErr();
 	}
 	public final void p_GetNextTurn(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<582>";
 		this.m_multiplayer_service.p_GetRequest("/next_turn/"+this.m_game.m_id+"/"+this.m_user.m_player_id);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<583>";
 		this.m_game_state="multiplayer_server";
-		bb_std_lang.popErr();
 	}
 	public final void p_RunMultiplayer(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<491>";
 		if(this.m_moves>0){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<493>";
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<493>";
 			c_KeyEnumerator t_=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<493>";
 			while(t_.p_HasNext()){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<493>";
 				int t_unit_id=t_.p_NextObject();
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<494>";
 				c_Unit t_current_unit=this.m_game.m_units.p_Get3(t_unit_id);
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<495>";
 				if(t_current_unit.m_armor>0){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<496>";
 					this.m_game.m_units.p_Get3(t_unit_id).p_Update();
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<497>";
 					t_current_unit=this.m_game.m_units.p_Get3(t_unit_id);
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<498>";
 					if(t_current_unit.m_currentEnergy>=t_current_unit.m_unit_type.m_maxEnergy){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<499>";
 						m_game.m_particles.p_AddLast2((new c_Particle()).m_Particle_new(t_current_unit.m_position,2.5f,1.0f,t_current_unit.m_heading,20.0f,t_current_unit.m_team,30));
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<500>";
 						this.m_game.m_units.p_Get3(t_unit_id).p_FireWeapon();
 					}
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<502>";
 					if(m_moves==1){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<503>";
 						this.m_game.m_units.p_Get3(t_unit_id).p_SetControl(t_current_unit.m_position.m_x+t_current_unit.m_velocity.m_x,t_current_unit.m_position.m_y+t_current_unit.m_velocity.m_y,640.0f,480.0f);
 					}
 				}
 			}
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<508>";
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<508>";
 			c_Enumerator3 t_2=this.m_game.m_particles.p_ObjectEnumerator();
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<508>";
 			while(t_2.p_HasNext()){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<508>";
 				c_Particle t_particle=t_2.p_NextObject();
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<509>";
 				t_particle.p_Update();
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<510>";
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<510>";
 				c_KeyEnumerator t_3=this.m_game.m_units.p_Keys().p_ObjectEnumerator();
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<510>";
 				while(t_3.p_HasNext()){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<510>";
 					int t_unit_id2=t_3.p_NextObject();
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<511>";
 					c_Unit t_current_unit2=this.m_game.m_units.p_Get3(t_unit_id2);
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<512>";
 					if((bb_dronetournament.g_Collided(t_particle,t_current_unit2))!=0){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<513>";
 						this.m_game.m_units.p_Get3(t_unit_id2).p_TakeDamage(1);
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<514>";
 						this.m_game.m_particles.p_Remove(t_particle);
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<515>";
 						break;
 					}
 				}
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<519>";
 				if(t_particle.m_lifetime<=0){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<520>";
 					this.m_game.m_particles.p_Remove(t_particle);
 				}
 			}
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<523>";
 			this.m_moves-=1;
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<525>";
 			this.m_game_state="updated";
 		}
-		bb_std_lang.popErr();
 	}
 	public final void p_CheckIfAllPlayersUpdated(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<587>";
 		this.m_multiplayer_service.p_GetRequest("/update_state/"+this.m_game.m_id+"/"+this.m_user.m_player_id);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<588>";
 		this.m_game_state="multiplayer_server";
-		bb_std_lang.popErr();
 	}
 	public final int p_OnUpdate(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<104>";
 		if(m_game_state.compareTo("setup")==0){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<105>";
 			p_GetUsername();
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<106>";
 			if(m_game_state.compareTo("get_password")==0){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<107>";
 				p_GetPassword();
 			}else{
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<108>";
 				if(m_game_state.compareTo("menu")==0){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<109>";
 					if(((bb_input.g_TouchDown(0))!=0) && (float)(bb_app.g_Millisecs())-this.m_timer_begin>1000.0f){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<110>";
 						if(this.m_play_tutorial_button.p_Selected()){
-							bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<111>";
 							p_SetupTutorial();
 						}else{
-							bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<112>";
 							if(this.m_play_multiplayer_button.p_Selected()){
-								bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<113>";
-								if(this.m_user.m_player_id.compareTo("0")==0){
-									bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<114>";
+								if(this.m_user.m_password.compareTo("")==0){
 									this.m_game_state="setup";
 								}else{
-									bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<116>";
 									p_SignIn();
 								}
 							}
 						}
 					}
 				}else{
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<120>";
 					if((this.m_game_state.compareTo("server")==0) || (this.m_game_state.compareTo("multiplayer_server")==0)){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<121>";
 						p_DetermineGameState();
 					}else{
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<122>";
 						if(m_game_state.compareTo("get_games")==0){
-							bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<123>";
 							p_GetListOfActiveGames();
 						}else{
-							bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<124>";
 							if(m_game_state.compareTo("list_games")==0){
-								bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<125>";
 								if((bb_input.g_TouchDown(0))!=0){
-									bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<126>";
-									bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<126>";
 									c_Enumerator t_=this.m_game_select.p_ObjectEnumerator();
-									bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<126>";
 									while(t_.p_HasNext()){
-										bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<126>";
 										c_GameSelect t_game_card=t_.p_NextObject();
-										bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<127>";
 										if(t_game_card.p_Selected()){
-											bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<128>";
 											p_GetGameInfoFromServer(t_game_card.m_game_id);
-											bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<129>";
 											break;
 										}
 									}
-									bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<133>";
 									if(m_join_button.p_Selected()){
-										bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<134>";
 										p_JoinGame();
 									}
 								}
 							}else{
-								bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<137>";
 								if(m_game_state.compareTo("tutorial")==0){
-									bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<138>";
 									p_RunTutorial();
 								}else{
-									bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<139>";
 									if(this.m_game_state.compareTo("multiplayer")==0){
-										bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<140>";
 										p_UserPlanMoves();
 									}else{
-										bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<141>";
 										if(this.m_game_state.compareTo("end_turn")==0){
-											bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<142>";
 											if((float)(bb_app.g_Millisecs())-this.m_timer_begin>3000.0f){
-												bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<143>";
 												this.m_timer_begin=(float)(bb_app.g_Millisecs());
-												bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<144>";
 												p_GetNextTurn();
 											}
 										}else{
-											bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<146>";
 											if(this.m_game_state.compareTo("multiplayer_ready")==0){
-												bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<147>";
 												p_RunMultiplayer();
 											}else{
-												bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<148>";
 												if(this.m_game_state.compareTo("updated")==0){
-													bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<149>";
 													if((float)(bb_app.g_Millisecs())-this.m_timer_begin>3000.0f){
-														bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<150>";
 														this.m_timer_begin=(float)(bb_app.g_Millisecs());
-														bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<151>";
 														p_CheckIfAllPlayersUpdated();
 													}
 												}else{
-													bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<153>";
 													if(this.m_game_state.compareTo("loser")==0){
-														bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<154>";
 														if((bb_input.g_TouchDown(0))!=0){
-															bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<155>";
 															this.m_timer_begin=(float)(bb_app.g_Millisecs());
-															bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<156>";
 															this.m_game_state="menu";
 														}
 													}else{
-														bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<158>";
 														if(this.m_game_state.compareTo("winner")==0){
-															bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<159>";
 															if((bb_input.g_TouchDown(0))!=0){
-																bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<160>";
 																this.m_timer_begin=(float)(bb_app.g_Millisecs());
-																bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<161>";
 																this.m_game_state="menu";
 															}
 														}
@@ -3900,75 +3490,44 @@ class c_DroneTournamentGame extends c_App{
 				}
 			}
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<164>";
 		bb_asyncevent.g_UpdateAsyncEvents();
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_OnRender(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<320>";
 		bb_graphics.g_Cls(100.0f,100.0f,100.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<322>";
 		if(this.m_game_state.compareTo("setup")==0){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<323>";
 			bb_graphics.g_DrawText("Enter a username: "+m_user.m_username,50.0f,200.0f,0.0f,0.0f);
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<324>";
 			if(this.m_game_state.compareTo("get_password")==0){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<325>";
 				bb_graphics.g_DrawText("Enter a password: "+m_user.m_password,50.0f,200.0f,0.0f,0.0f);
 			}else{
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<326>";
 				if(m_game_state.compareTo("menu")==0){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<327>";
 					this.m_play_tutorial_button.p_Draw2();
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<328>";
 					this.m_play_multiplayer_button.p_Draw2();
 				}else{
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<329>";
 					if(m_game_state.compareTo("list_games")==0){
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<330>";
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<330>";
 						c_Enumerator t_=this.m_game_select.p_ObjectEnumerator();
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<330>";
 						while(t_.p_HasNext()){
-							bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<330>";
 							c_GameSelect t_game_ui=t_.p_NextObject();
-							bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<331>";
 							t_game_ui.p_Draw2();
 						}
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<333>";
 						this.m_join_button.p_Draw2();
 					}else{
-						bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<338>";
 						if((this.m_game_state.compareTo("multiplayer")==0) || (this.m_game_state.compareTo("multiplayer_ready")==0) || (this.m_game_state.compareTo("end_turn")==0) || (this.m_game_state.compareTo("updated")==0) || (this.m_game_state.compareTo("multiplayer_server")==0)){
-							bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<340>";
 							this.m_end_turn_button.p_Draw2();
-							bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<341>";
 							this.m_game.p_Draw(this.m_user.m_player_id,this.m_game_state);
 						}else{
-							bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<342>";
 							if(this.m_game_state.compareTo("loser")==0){
-								bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<343>";
 								bb_graphics.g_DrawImage(m_lose_button,10.0f,100.0f,0);
 							}else{
-								bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<344>";
 								if(this.m_game_state.compareTo("winner")==0){
-									bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<345>";
 									bb_graphics.g_DrawImage(m_win_button,10.0f,100.0f,0);
 								}else{
-									bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<346>";
 									if(this.m_game_state.compareTo("tutorial")==0){
-										bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<347>";
 										this.m_end_turn_button.p_Draw2();
-										bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<348>";
 										bb_graphics.g_PushMatrix();
-										bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<349>";
 										bb_graphics.g_Translate(this.m_game_cam.m_position.m_x,this.m_game_cam.m_position.m_y);
-										bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<350>";
 										this.m_game.p_Draw("1",this.m_game_state);
-										bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<351>";
 										bb_graphics.g_PopMatrix();
 									}
 								}
@@ -3978,160 +3537,91 @@ class c_DroneTournamentGame extends c_App{
 				}
 			}
 		}
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_OnResume(){
-		bb_std_lang.pushErr();
-		bb_std_lang.popErr();
 		return 0;
 	}
 }
 class c_GameDelegate extends BBGameDelegate{
 	public final c_GameDelegate m_GameDelegate_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<65>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	gxtkGraphics m__graphics=null;
 	gxtkAudio m__audio=null;
 	c_InputDevice m__input=null;
 	public final void StartGame(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<75>";
 		m__graphics=(new gxtkGraphics());
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<76>";
 		bb_graphics.g_SetGraphicsDevice(m__graphics);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<77>";
 		bb_graphics.g_SetFont(null,32);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<79>";
 		m__audio=(new gxtkAudio());
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<80>";
 		bb_audio.g_SetAudioDevice(m__audio);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<82>";
 		m__input=(new c_InputDevice()).m_InputDevice_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<83>";
 		bb_input.g_SetInputDevice(m__input);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<85>";
 		bb_app.g_ValidateDeviceWindow(false);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<87>";
 		bb_app.g_EnumDisplayModes();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<89>";
 		bb_app.g__app.p_OnCreate();
-		bb_std_lang.popErr();
 	}
 	public final void SuspendGame(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<93>";
 		bb_app.g__app.p_OnSuspend();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<94>";
 		m__audio.Suspend();
-		bb_std_lang.popErr();
 	}
 	public final void ResumeGame(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<98>";
 		m__audio.Resume();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<99>";
 		bb_app.g__app.p_OnResume();
-		bb_std_lang.popErr();
 	}
 	public final void UpdateGame(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<103>";
 		bb_app.g_ValidateDeviceWindow(true);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<104>";
 		m__input.p_BeginUpdate();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<105>";
 		bb_app.g__app.p_OnUpdate();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<106>";
 		m__input.p_EndUpdate();
-		bb_std_lang.popErr();
 	}
 	public final void RenderGame(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<110>";
 		bb_app.g_ValidateDeviceWindow(true);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<111>";
 		int t_mode=m__graphics.BeginRender();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<112>";
 		if((t_mode)!=0){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<112>";
 			bb_graphics.g_BeginRender();
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<113>";
 		if(t_mode==2){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<113>";
 			bb_app.g__app.p_OnLoading();
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<113>";
 			bb_app.g__app.p_OnRender();
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<114>";
 		if((t_mode)!=0){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<114>";
 			bb_graphics.g_EndRender();
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<115>";
 		m__graphics.EndRender();
-		bb_std_lang.popErr();
 	}
 	public final void KeyEvent(int t_event,int t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<119>";
 		m__input.p_KeyEvent(t_event,t_data);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<120>";
 		if(t_event!=1){
-			bb_std_lang.popErr();
 			return;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<121>";
 		int t_1=t_data;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<122>";
 		if(t_1==432){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<123>";
 			bb_app.g__app.p_OnClose();
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<124>";
 			if(t_1==416){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<125>";
 				bb_app.g__app.p_OnBack();
 			}
 		}
-		bb_std_lang.popErr();
 	}
 	public final void MouseEvent(int t_event,int t_data,float t_x,float t_y){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<130>";
 		m__input.p_MouseEvent(t_event,t_data,t_x,t_y);
-		bb_std_lang.popErr();
 	}
 	public final void TouchEvent(int t_event,int t_data,float t_x,float t_y){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<134>";
 		m__input.p_TouchEvent(t_event,t_data,t_x,t_y);
-		bb_std_lang.popErr();
 	}
 	public final void MotionEvent(int t_event,int t_data,float t_x,float t_y,float t_z){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<138>";
 		m__input.p_MotionEvent(t_event,t_data,t_x,t_y,t_z);
-		bb_std_lang.popErr();
 	}
 	public final void DiscardGraphics(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<142>";
 		m__graphics.DiscardGraphics();
-		bb_std_lang.popErr();
 	}
 }
 class c_Image extends Object{
 	static int m_DefaultFlags;
 	public final c_Image m_Image_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<70>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	gxtkSurface m_surface=null;
@@ -4142,169 +3632,93 @@ class c_Image extends Object{
 	float m_tx=.0f;
 	float m_ty=.0f;
 	public final int p_SetHandle(float t_tx,float t_ty){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<114>";
 		this.m_tx=t_tx;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<115>";
 		this.m_ty=t_ty;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<116>";
 		this.m_flags=this.m_flags&-2;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_ApplyFlags(int t_iflags){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<197>";
 		m_flags=t_iflags;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<199>";
 		if((m_flags&2)!=0){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<200>";
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<200>";
 			c_Frame[] t_=m_frames;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<200>";
 			int t_2=0;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<200>";
 			while(t_2<bb_std_lang.length(t_)){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<200>";
 				c_Frame t_f=t_[t_2];
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<200>";
 				t_2=t_2+1;
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<201>";
 				t_f.m_x+=1;
 			}
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<203>";
 			m_width-=2;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<206>";
 		if((m_flags&4)!=0){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<207>";
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<207>";
 			c_Frame[] t_3=m_frames;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<207>";
 			int t_4=0;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<207>";
 			while(t_4<bb_std_lang.length(t_3)){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<207>";
 				c_Frame t_f2=t_3[t_4];
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<207>";
 				t_4=t_4+1;
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<208>";
 				t_f2.m_y+=1;
 			}
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<210>";
 			m_height-=2;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<213>";
 		if((m_flags&1)!=0){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<214>";
 			p_SetHandle((float)(m_width)/2.0f,(float)(m_height)/2.0f);
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<217>";
 		if(bb_std_lang.length(m_frames)==1 && m_frames[0].m_x==0 && m_frames[0].m_y==0 && m_width==m_surface.Width() && m_height==m_surface.Height()){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<218>";
 			m_flags|=65536;
 		}
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final c_Image p_Init(gxtkSurface t_surf,int t_nframes,int t_iflags){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<143>";
 		if((m_surface)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<143>";
 			bb_std_lang.error("Image already initialized");
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<144>";
 		m_surface=t_surf;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<146>";
 		m_width=m_surface.Width()/t_nframes;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<147>";
 		m_height=m_surface.Height();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<149>";
 		m_frames=new c_Frame[t_nframes];
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<150>";
 		for(int t_i=0;t_i<t_nframes;t_i=t_i+1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<151>";
 			m_frames[t_i]=(new c_Frame()).m_Frame_new(t_i*m_width,0);
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<154>";
 		p_ApplyFlags(t_iflags);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<155>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	c_Image m_source=null;
 	public final c_Image p_Init2(gxtkSurface t_surf,int t_x,int t_y,int t_iwidth,int t_iheight,int t_nframes,int t_iflags,c_Image t_src,int t_srcx,int t_srcy,int t_srcw,int t_srch){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<159>";
 		if((m_surface)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<159>";
 			bb_std_lang.error("Image already initialized");
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<160>";
 		m_surface=t_surf;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<161>";
 		m_source=t_src;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<163>";
 		m_width=t_iwidth;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<164>";
 		m_height=t_iheight;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<166>";
 		m_frames=new c_Frame[t_nframes];
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<168>";
 		int t_ix=t_x;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<168>";
 		int t_iy=t_y;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<170>";
 		for(int t_i=0;t_i<t_nframes;t_i=t_i+1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<171>";
 			if(t_ix+m_width>t_srcw){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<172>";
 				t_ix=0;
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<173>";
 				t_iy+=m_height;
 			}
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<175>";
 			if(t_ix+m_width>t_srcw || t_iy+m_height>t_srch){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<176>";
 				bb_std_lang.error("Image frame outside surface");
 			}
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<178>";
 			m_frames[t_i]=(new c_Frame()).m_Frame_new(t_ix+t_srcx,t_iy+t_srcy);
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<179>";
 			t_ix+=m_width;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<182>";
 		p_ApplyFlags(t_iflags);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<183>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final int p_Width(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<81>";
-		bb_std_lang.popErr();
 		return m_width;
 	}
 	public final int p_Height(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<85>";
-		bb_std_lang.popErr();
 		return m_height;
 	}
 	public final int p_Frames(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<93>";
-		int t_=bb_std_lang.length(m_frames);
-		bb_std_lang.popErr();
-		return t_;
+		return bb_std_lang.length(m_frames);
 	}
 }
 class c_GraphicsContext extends Object{
 	public final c_GraphicsContext m_GraphicsContext_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<29>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	c_Image m_defaultFont=null;
@@ -4329,15 +3743,10 @@ class c_GraphicsContext extends Object{
 	float m_scissor_width=.0f;
 	float m_scissor_height=.0f;
 	public final int p_Validate(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<40>";
 		if((m_matDirty)!=0){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<41>";
 			bb_graphics.g_renderDevice.SetMatrix(bb_graphics.g_context.m_ix,bb_graphics.g_context.m_iy,bb_graphics.g_context.m_jx,bb_graphics.g_context.m_jy,bb_graphics.g_context.m_tx,bb_graphics.g_context.m_ty);
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<42>";
 			m_matDirty=0;
 		}
-		bb_std_lang.popErr();
 		return 0;
 	}
 	float[] m_matrixStack=new float[192];
@@ -4346,31 +3755,20 @@ class c_Frame extends Object{
 	int m_x=0;
 	int m_y=0;
 	public final c_Frame m_Frame_new(int t_x,int t_y){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<23>";
 		this.m_x=t_x;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<24>";
 		this.m_y=t_y;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_Frame m_Frame_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<18>";
-		bb_std_lang.popErr();
 		return this;
 	}
 }
 class c_InputDevice extends Object{
 	c_JoyState[] m__joyStates=new c_JoyState[4];
 	public final c_InputDevice m_InputDevice_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<26>";
 		for(int t_i=0;t_i<4;t_i=t_i+1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<27>";
 			m__joyStates[t_i]=(new c_JoyState()).m_JoyState_new();
 		}
-		bb_std_lang.popErr();
 		return this;
 	}
 	boolean[] m__keyDown=new boolean[512];
@@ -4378,306 +3776,179 @@ class c_InputDevice extends Object{
 	int[] m__keyHitQueue=new int[33];
 	int[] m__keyHit=new int[512];
 	public final void p_PutKeyHit(int t_key){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<241>";
 		if(m__keyHitPut==bb_std_lang.length(m__keyHitQueue)){
-			bb_std_lang.popErr();
 			return;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<242>";
 		m__keyHit[t_key]+=1;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<243>";
 		m__keyHitQueue[m__keyHitPut]=t_key;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<244>";
 		m__keyHitPut+=1;
-		bb_std_lang.popErr();
 	}
 	public final void p_BeginUpdate(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<193>";
 		for(int t_i=0;t_i<4;t_i=t_i+1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<194>";
 			c_JoyState t_state=m__joyStates[t_i];
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<195>";
 			if(!BBGame.Game().PollJoystick(t_i,t_state.m_joyx,t_state.m_joyy,t_state.m_joyz,t_state.m_buttons)){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<195>";
 				break;
 			}
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<196>";
 			for(int t_j=0;t_j<32;t_j=t_j+1){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<197>";
 				int t_key=256+t_i*32+t_j;
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<198>";
 				if(t_state.m_buttons[t_j]){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<199>";
 					if(!m__keyDown[t_key]){
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<200>";
 						m__keyDown[t_key]=true;
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<201>";
 						p_PutKeyHit(t_key);
 					}
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<204>";
 					m__keyDown[t_key]=false;
 				}
 			}
 		}
-		bb_std_lang.popErr();
 	}
 	int m__charGet=0;
 	int m__charPut=0;
 	public final void p_EndUpdate(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<211>";
 		for(int t_i=0;t_i<m__keyHitPut;t_i=t_i+1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<212>";
 			m__keyHit[m__keyHitQueue[t_i]]=0;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<214>";
 		m__keyHitPut=0;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<215>";
 		m__charGet=0;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<216>";
 		m__charPut=0;
-		bb_std_lang.popErr();
 	}
 	int[] m__charQueue=new int[32];
 	public final void p_KeyEvent(int t_event,int t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<115>";
 		int t_1=t_event;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<116>";
 		if(t_1==1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<117>";
 			if(!m__keyDown[t_data]){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<118>";
 				m__keyDown[t_data]=true;
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<119>";
 				p_PutKeyHit(t_data);
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<120>";
 				if(t_data==1){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<121>";
 					m__keyDown[384]=true;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<122>";
 					p_PutKeyHit(384);
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<123>";
 					if(t_data==384){
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<124>";
 						m__keyDown[1]=true;
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<125>";
 						p_PutKeyHit(1);
 					}
 				}
 			}
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<128>";
 			if(t_1==2){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<129>";
 				if(m__keyDown[t_data]){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<130>";
 					m__keyDown[t_data]=false;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<131>";
 					if(t_data==1){
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<132>";
 						m__keyDown[384]=false;
 					}else{
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<133>";
 						if(t_data==384){
-							bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<134>";
 							m__keyDown[1]=false;
 						}
 					}
 				}
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<137>";
 				if(t_1==3){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<138>";
 					if(m__charPut<bb_std_lang.length(m__charQueue)){
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<139>";
 						m__charQueue[m__charPut]=t_data;
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<140>";
 						m__charPut+=1;
 					}
 				}
 			}
 		}
-		bb_std_lang.popErr();
 	}
 	float m__mouseX=.0f;
 	float m__mouseY=.0f;
 	float[] m__touchX=new float[32];
 	float[] m__touchY=new float[32];
 	public final void p_MouseEvent(int t_event,int t_data,float t_x,float t_y){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<146>";
 		int t_2=t_event;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<147>";
 		if(t_2==4){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<148>";
 			p_KeyEvent(1,1+t_data);
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<149>";
 			if(t_2==5){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<150>";
 				p_KeyEvent(2,1+t_data);
-				bb_std_lang.popErr();
 				return;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<152>";
 				if(t_2==6){
 				}else{
-					bb_std_lang.popErr();
 					return;
 				}
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<156>";
 		m__mouseX=t_x;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<157>";
 		m__mouseY=t_y;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<158>";
 		m__touchX[0]=t_x;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<159>";
 		m__touchY[0]=t_y;
-		bb_std_lang.popErr();
 	}
 	public final void p_TouchEvent(int t_event,int t_data,float t_x,float t_y){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<163>";
 		int t_3=t_event;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<164>";
 		if(t_3==7){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<165>";
 			p_KeyEvent(1,384+t_data);
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<166>";
 			if(t_3==8){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<167>";
 				p_KeyEvent(2,384+t_data);
-				bb_std_lang.popErr();
 				return;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<169>";
 				if(t_3==9){
 				}else{
-					bb_std_lang.popErr();
 					return;
 				}
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<173>";
 		m__touchX[t_data]=t_x;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<174>";
 		m__touchY[t_data]=t_y;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<175>";
 		if(t_data==0){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<176>";
 			m__mouseX=t_x;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<177>";
 			m__mouseY=t_y;
 		}
-		bb_std_lang.popErr();
 	}
 	float m__accelX=.0f;
 	float m__accelY=.0f;
 	float m__accelZ=.0f;
 	public final void p_MotionEvent(int t_event,int t_data,float t_x,float t_y,float t_z){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<182>";
 		int t_4=t_event;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<183>";
 		if(t_4==10){
 		}else{
-			bb_std_lang.popErr();
 			return;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<187>";
 		m__accelX=t_x;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<188>";
 		m__accelY=t_y;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<189>";
 		m__accelZ=t_z;
-		bb_std_lang.popErr();
 	}
 	public final int p_GetChar(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<57>";
 		if(m__charGet==m__charPut){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<57>";
-			bb_std_lang.popErr();
 			return 0;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<58>";
 		int t_chr=m__charQueue[m__charGet];
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<59>";
 		m__charGet+=1;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<60>";
-		bb_std_lang.popErr();
 		return t_chr;
 	}
 	public final int p_SetKeyboardEnabled(boolean t_enabled){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<42>";
 		BBGame.Game().SetKeyboardEnabled(t_enabled);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<43>";
-		bb_std_lang.popErr();
 		return 1;
 	}
 	public final boolean p_KeyDown(int t_key){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<47>";
 		if(t_key>0 && t_key<512){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<47>";
-			bb_std_lang.popErr();
 			return m__keyDown[t_key];
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<48>";
-		bb_std_lang.popErr();
 		return false;
 	}
 	public final float p_TouchX(int t_index){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<77>";
 		if(t_index>=0 && t_index<32){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<77>";
-			bb_std_lang.popErr();
 			return m__touchX[t_index];
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<78>";
-		bb_std_lang.popErr();
 		return 0.0f;
 	}
 	public final float p_TouchY(int t_index){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<82>";
 		if(t_index>=0 && t_index<32){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<82>";
-			bb_std_lang.popErr();
 			return m__touchY[t_index];
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<83>";
-		bb_std_lang.popErr();
 		return 0.0f;
 	}
 	public final int p_KeyHit(int t_key){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<52>";
 		if(t_key>0 && t_key<512){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<52>";
-			bb_std_lang.popErr();
 			return m__keyHit[t_key];
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<53>";
-		bb_std_lang.popErr();
 		return 0;
 	}
 }
 class c_JoyState extends Object{
 	public final c_JoyState m_JoyState_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/inputdevice.monkey<14>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	float[] m_joyx=new float[2];
@@ -4689,336 +3960,193 @@ class c_DisplayMode extends Object{
 	int m__width=0;
 	int m__height=0;
 	public final c_DisplayMode m_DisplayMode_new(int t_width,int t_height){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<192>";
 		m__width=t_width;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<193>";
 		m__height=t_height;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_DisplayMode m_DisplayMode_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<189>";
-		bb_std_lang.popErr();
 		return this;
 	}
 }
 abstract class c_Map extends Object{
 	public final c_Map m_Map_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<7>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	c_Node m_root=null;
 	public abstract int p_Compare(int t_lhs,int t_rhs);
 	public final c_Node p_FindNode(int t_key){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<157>";
 		c_Node t_node=m_root;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<159>";
 		while((t_node)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<160>";
 			int t_cmp=p_Compare(t_key,t_node.m_key);
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<161>";
 			if(t_cmp>0){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<162>";
 				t_node=t_node.m_right;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<163>";
 				if(t_cmp<0){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<164>";
 					t_node=t_node.m_left;
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<166>";
-					bb_std_lang.popErr();
 					return t_node;
 				}
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<169>";
-		bb_std_lang.popErr();
 		return t_node;
 	}
 	public final boolean p_Contains(int t_key){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<25>";
-		boolean t_=p_FindNode(t_key)!=null;
-		bb_std_lang.popErr();
-		return t_;
+		return p_FindNode(t_key)!=null;
 	}
 	public final int p_RotateLeft(c_Node t_node){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<251>";
 		c_Node t_child=t_node.m_right;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<252>";
 		t_node.m_right=t_child.m_left;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<253>";
 		if((t_child.m_left)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<254>";
 			t_child.m_left.m_parent=t_node;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<256>";
 		t_child.m_parent=t_node.m_parent;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<257>";
 		if((t_node.m_parent)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<258>";
 			if(t_node==t_node.m_parent.m_left){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<259>";
 				t_node.m_parent.m_left=t_child;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<261>";
 				t_node.m_parent.m_right=t_child;
 			}
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<264>";
 			m_root=t_child;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<266>";
 		t_child.m_left=t_node;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<267>";
 		t_node.m_parent=t_child;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_RotateRight(c_Node t_node){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<271>";
 		c_Node t_child=t_node.m_left;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<272>";
 		t_node.m_left=t_child.m_right;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<273>";
 		if((t_child.m_right)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<274>";
 			t_child.m_right.m_parent=t_node;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<276>";
 		t_child.m_parent=t_node.m_parent;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<277>";
 		if((t_node.m_parent)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<278>";
 			if(t_node==t_node.m_parent.m_right){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<279>";
 				t_node.m_parent.m_right=t_child;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<281>";
 				t_node.m_parent.m_left=t_child;
 			}
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<284>";
 			m_root=t_child;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<286>";
 		t_child.m_right=t_node;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<287>";
 		t_node.m_parent=t_child;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_InsertFixup(c_Node t_node){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<212>";
 		while(((t_node.m_parent)!=null) && t_node.m_parent.m_color==-1 && ((t_node.m_parent.m_parent)!=null)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<213>";
 			if(t_node.m_parent==t_node.m_parent.m_parent.m_left){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<214>";
 				c_Node t_uncle=t_node.m_parent.m_parent.m_right;
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<215>";
 				if(((t_uncle)!=null) && t_uncle.m_color==-1){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<216>";
 					t_node.m_parent.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<217>";
 					t_uncle.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<218>";
 					t_uncle.m_parent.m_color=-1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<219>";
 					t_node=t_uncle.m_parent;
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<221>";
 					if(t_node==t_node.m_parent.m_right){
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<222>";
 						t_node=t_node.m_parent;
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<223>";
 						p_RotateLeft(t_node);
 					}
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<225>";
 					t_node.m_parent.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<226>";
 					t_node.m_parent.m_parent.m_color=-1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<227>";
 					p_RotateRight(t_node.m_parent.m_parent);
 				}
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<230>";
 				c_Node t_uncle2=t_node.m_parent.m_parent.m_left;
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<231>";
 				if(((t_uncle2)!=null) && t_uncle2.m_color==-1){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<232>";
 					t_node.m_parent.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<233>";
 					t_uncle2.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<234>";
 					t_uncle2.m_parent.m_color=-1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<235>";
 					t_node=t_uncle2.m_parent;
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<237>";
 					if(t_node==t_node.m_parent.m_left){
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<238>";
 						t_node=t_node.m_parent;
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<239>";
 						p_RotateRight(t_node);
 					}
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<241>";
 					t_node.m_parent.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<242>";
 					t_node.m_parent.m_parent.m_color=-1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<243>";
 					p_RotateLeft(t_node.m_parent.m_parent);
 				}
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<247>";
 		m_root.m_color=1;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final boolean p_Set(int t_key,c_DisplayMode t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<29>";
 		c_Node t_node=m_root;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<30>";
 		c_Node t_parent=null;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<30>";
 		int t_cmp=0;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<32>";
 		while((t_node)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<33>";
 			t_parent=t_node;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<34>";
 			t_cmp=p_Compare(t_key,t_node.m_key);
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<35>";
 			if(t_cmp>0){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<36>";
 				t_node=t_node.m_right;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<37>";
 				if(t_cmp<0){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<38>";
 					t_node=t_node.m_left;
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<40>";
 					t_node.m_value=t_value;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<41>";
-					bb_std_lang.popErr();
 					return false;
 				}
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<45>";
 		t_node=(new c_Node()).m_Node_new(t_key,t_value,-1,t_parent);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<47>";
 		if((t_parent)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<48>";
 			if(t_cmp>0){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<49>";
 				t_parent.m_right=t_node;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<51>";
 				t_parent.m_left=t_node;
 			}
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<53>";
 			p_InsertFixup(t_node);
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<55>";
 			m_root=t_node;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<57>";
-		bb_std_lang.popErr();
 		return true;
 	}
 	public final boolean p_Insert(int t_key,c_DisplayMode t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<146>";
-		boolean t_=p_Set(t_key,t_value);
-		bb_std_lang.popErr();
-		return t_;
+		return p_Set(t_key,t_value);
 	}
 }
 class c_IntMap extends c_Map{
 	public final c_IntMap m_IntMap_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<534>";
 		super.m_Map_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<534>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final int p_Compare(int t_lhs,int t_rhs){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<537>";
-		int t_=t_lhs-t_rhs;
-		bb_std_lang.popErr();
-		return t_;
+		return t_lhs-t_rhs;
 	}
 }
 class c_Stack extends Object{
 	public final c_Stack m_Stack_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.popErr();
 		return this;
 	}
 	c_DisplayMode[] m_data=new c_DisplayMode[0];
 	int m_length=0;
 	public final c_Stack m_Stack_new2(c_DisplayMode[] t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<13>";
 		this.m_data=((c_DisplayMode[])bb_std_lang.sliceArray(t_data,0));
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<14>";
 		this.m_length=bb_std_lang.length(t_data);
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final void p_Push(c_DisplayMode t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<71>";
 		if(m_length==bb_std_lang.length(m_data)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<72>";
 			m_data=(c_DisplayMode[])bb_std_lang.resize(m_data,m_length*2+10,c_DisplayMode.class);
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<74>";
 		m_data[m_length]=t_value;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<75>";
 		m_length+=1;
-		bb_std_lang.popErr();
 	}
 	public final void p_Push2(c_DisplayMode[] t_values,int t_offset,int t_count){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<83>";
 		for(int t_i=0;t_i<t_count;t_i=t_i+1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<84>";
 			p_Push(t_values[t_offset+t_i]);
 		}
-		bb_std_lang.popErr();
 	}
 	public final void p_Push3(c_DisplayMode[] t_values,int t_offset){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<79>";
 		p_Push2(t_values,t_offset,bb_std_lang.length(t_values)-t_offset);
-		bb_std_lang.popErr();
 	}
 	public final c_DisplayMode[] p_ToArray(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<18>";
 		c_DisplayMode[] t_t=new c_DisplayMode[m_length];
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<19>";
 		for(int t_i=0;t_i<m_length;t_i=t_i+1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<20>";
 			t_t[t_i]=m_data[t_i];
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<22>";
-		bb_std_lang.popErr();
 		return t_t;
 	}
 }
@@ -5030,22 +4158,13 @@ class c_Node extends Object{
 	int m_color=0;
 	c_Node m_parent=null;
 	public final c_Node m_Node_new(int t_key,c_DisplayMode t_value,int t_color,c_Node t_parent){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<364>";
 		this.m_key=t_key;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<365>";
 		this.m_value=t_value;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<366>";
 		this.m_color=t_color;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<367>";
 		this.m_parent=t_parent;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_Node m_Node_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<361>";
-		bb_std_lang.popErr();
 		return this;
 	}
 }
@@ -5056,20 +4175,12 @@ class c_User extends Object{
 	String m_player_id="";
 	String m_password="";
 	public final c_User m_User_new(String t_username,String t_player_id,String t_password){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user.monkey<9>";
 		this.m_username=t_username;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user.monkey<10>";
 		this.m_player_id=t_player_id;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user.monkey<11>";
 		this.m_password=t_password;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_User m_User_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user.monkey<2>";
-		bb_std_lang.popErr();
 		return this;
 	}
 }
@@ -5082,475 +4193,265 @@ class c_MultiplayerService extends Object implements c_IOnHttpRequestComplete{
 	String m_raw_response="";
 	c_JsonObject m_response=null;
 	public final void p_ClearResponse(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<56>";
 		this.m_http_status="";
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<57>";
 		this.m_raw_response="";
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<58>";
 		this.m_response=(new c_JsonObject()).m_JsonObject_new();
-		bb_std_lang.popErr();
 	}
 	public final c_MultiplayerService m_MultiplayerService_new(String t_url){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<13>";
 		this.m_server_url=t_url;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<14>";
 		p_ClearResponse();
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_MultiplayerService m_MultiplayerService_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<4>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	c_HttpRequest m_server_request=null;
 	public final void p_PostJsonRequest(String t_path,String t_json){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<30>";
 		p_ClearResponse();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<31>";
 		m_server_request=(new c_HttpRequest()).m_HttpRequest_new2("POST",m_server_url+t_path,(this));
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<32>";
 		m_server_request.p_Send2(t_json,"application/json","utf8");
-		bb_std_lang.popErr();
 	}
 	public final boolean p_HasRequestFinished(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<48>";
 		if(this.m_http_status.compareTo("")!=0){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<49>";
-			bb_std_lang.popErr();
 			return true;
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<51>";
-			bb_std_lang.popErr();
 			return false;
 		}
 	}
 	public final void p_GetRequest(String t_path){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<18>";
 		p_ClearResponse();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<19>";
 		m_server_request=(new c_HttpRequest()).m_HttpRequest_new2("GET",m_server_url+t_path,(this));
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<20>";
 		m_server_request.p_Send();
-		bb_std_lang.popErr();
 	}
 	public final void p_PostRequest(String t_path){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<24>";
 		p_ClearResponse();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<25>";
 		m_server_request=(new c_HttpRequest()).m_HttpRequest_new2("POST",m_server_url+t_path,(this));
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<26>";
 		m_server_request.p_Send();
-		bb_std_lang.popErr();
 	}
 	public final void p_OnHttpRequestComplete(c_HttpRequest t_request){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<37>";
 		this.m_http_status=String.valueOf(t_request.p_Status());
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<38>";
 		this.m_raw_response=t_request.p_ResponseText();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<39>";
 		try{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<40>";
 			this.m_response=(new c_JsonObject()).m_JsonObject_new3(t_request.p_ResponseText());
 		}catch(ThrowableObject t_json_error){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<42>";
 			bb_std_lang.print("Server unreachable or gave a non JSON response");
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/server.monkey<43>";
 			this.m_response=(new c_JsonObject()).m_JsonObject_new3("{ \"action\": \"Bad Server Response\" }");
 		}
-		bb_std_lang.popErr();
 	}
 }
 abstract class c_JsonValue extends Object{
 	public final c_JsonValue m_JsonValue_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<14>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public int p_IntValue(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<21>";
 		bb_json.g_ThrowError();
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public String p_StringValue(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<29>";
 		bb_json.g_ThrowError();
-		bb_std_lang.popErr();
 		return "";
 	}
 	public float p_FloatValue(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<25>";
 		bb_json.g_ThrowError();
-		bb_std_lang.popErr();
 		return 0;
 	}
 }
 class c_JsonObject extends c_JsonValue{
 	c_StringMap m__data=null;
 	public final c_JsonObject m_JsonObject_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<46>";
 		super.m_JsonValue_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<47>";
 		m__data=(new c_StringMap()).m_StringMap_new();
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_JsonObject m_JsonObject_new2(c_StringMap t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<54>";
 		super.m_JsonValue_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<55>";
 		m__data=t_data;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_JsonObject m_JsonObject_new3(String t_json){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<50>";
 		super.m_JsonValue_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<51>";
 		m__data=((new c_JsonParser()).m_JsonParser_new(t_json)).p_ParseObject();
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_JsonValue p_Get(String t_key,c_JsonValue t_defval){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<83>";
 		if(!m__data.p_Contains2(t_key)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<83>";
-			bb_std_lang.popErr();
 			return t_defval;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<84>";
 		c_JsonValue t_val=m__data.p_Get2(t_key);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<85>";
 		if((t_val)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<85>";
-			bb_std_lang.popErr();
 			return t_val;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<86>";
-		c_JsonValue t_=(c_JsonNull.m_Instance());
-		bb_std_lang.popErr();
-		return t_;
+		return (c_JsonNull.m_Instance());
 	}
 	public final int p_GetInt(String t_key,int t_defval){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<95>";
 		if(!m__data.p_Contains2(t_key)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<95>";
-			bb_std_lang.popErr();
 			return t_defval;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<96>";
-		int t_=p_Get(t_key,null).p_IntValue();
-		bb_std_lang.popErr();
-		return t_;
+		return p_Get(t_key,null).p_IntValue();
 	}
 	public final String p_GetString(String t_key,String t_defval){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<105>";
 		if(!m__data.p_Contains2(t_key)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<105>";
-			bb_std_lang.popErr();
 			return t_defval;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<106>";
-		String t_=p_Get(t_key,null).p_StringValue();
-		bb_std_lang.popErr();
-		return t_;
+		return p_Get(t_key,null).p_StringValue();
 	}
 	public final float p_GetFloat(String t_key,float t_defval){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<100>";
 		if(!m__data.p_Contains2(t_key)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<100>";
-			bb_std_lang.popErr();
 			return t_defval;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<101>";
-		float t_=p_Get(t_key,null).p_FloatValue();
-		bb_std_lang.popErr();
-		return t_;
+		return p_Get(t_key,null).p_FloatValue();
 	}
 }
 abstract class c_Map2 extends Object{
 	public final c_Map2 m_Map_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<7>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	c_Node2 m_root=null;
 	public abstract int p_Compare2(String t_lhs,String t_rhs);
 	public final int p_RotateLeft2(c_Node2 t_node){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<251>";
 		c_Node2 t_child=t_node.m_right;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<252>";
 		t_node.m_right=t_child.m_left;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<253>";
 		if((t_child.m_left)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<254>";
 			t_child.m_left.m_parent=t_node;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<256>";
 		t_child.m_parent=t_node.m_parent;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<257>";
 		if((t_node.m_parent)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<258>";
 			if(t_node==t_node.m_parent.m_left){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<259>";
 				t_node.m_parent.m_left=t_child;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<261>";
 				t_node.m_parent.m_right=t_child;
 			}
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<264>";
 			m_root=t_child;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<266>";
 		t_child.m_left=t_node;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<267>";
 		t_node.m_parent=t_child;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_RotateRight2(c_Node2 t_node){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<271>";
 		c_Node2 t_child=t_node.m_left;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<272>";
 		t_node.m_left=t_child.m_right;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<273>";
 		if((t_child.m_right)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<274>";
 			t_child.m_right.m_parent=t_node;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<276>";
 		t_child.m_parent=t_node.m_parent;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<277>";
 		if((t_node.m_parent)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<278>";
 			if(t_node==t_node.m_parent.m_right){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<279>";
 				t_node.m_parent.m_right=t_child;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<281>";
 				t_node.m_parent.m_left=t_child;
 			}
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<284>";
 			m_root=t_child;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<286>";
 		t_child.m_right=t_node;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<287>";
 		t_node.m_parent=t_child;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_InsertFixup2(c_Node2 t_node){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<212>";
 		while(((t_node.m_parent)!=null) && t_node.m_parent.m_color==-1 && ((t_node.m_parent.m_parent)!=null)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<213>";
 			if(t_node.m_parent==t_node.m_parent.m_parent.m_left){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<214>";
 				c_Node2 t_uncle=t_node.m_parent.m_parent.m_right;
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<215>";
 				if(((t_uncle)!=null) && t_uncle.m_color==-1){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<216>";
 					t_node.m_parent.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<217>";
 					t_uncle.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<218>";
 					t_uncle.m_parent.m_color=-1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<219>";
 					t_node=t_uncle.m_parent;
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<221>";
 					if(t_node==t_node.m_parent.m_right){
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<222>";
 						t_node=t_node.m_parent;
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<223>";
 						p_RotateLeft2(t_node);
 					}
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<225>";
 					t_node.m_parent.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<226>";
 					t_node.m_parent.m_parent.m_color=-1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<227>";
 					p_RotateRight2(t_node.m_parent.m_parent);
 				}
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<230>";
 				c_Node2 t_uncle2=t_node.m_parent.m_parent.m_left;
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<231>";
 				if(((t_uncle2)!=null) && t_uncle2.m_color==-1){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<232>";
 					t_node.m_parent.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<233>";
 					t_uncle2.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<234>";
 					t_uncle2.m_parent.m_color=-1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<235>";
 					t_node=t_uncle2.m_parent;
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<237>";
 					if(t_node==t_node.m_parent.m_left){
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<238>";
 						t_node=t_node.m_parent;
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<239>";
 						p_RotateRight2(t_node);
 					}
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<241>";
 					t_node.m_parent.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<242>";
 					t_node.m_parent.m_parent.m_color=-1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<243>";
 					p_RotateLeft2(t_node.m_parent.m_parent);
 				}
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<247>";
 		m_root.m_color=1;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final boolean p_Set2(String t_key,c_JsonValue t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<29>";
 		c_Node2 t_node=m_root;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<30>";
 		c_Node2 t_parent=null;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<30>";
 		int t_cmp=0;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<32>";
 		while((t_node)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<33>";
 			t_parent=t_node;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<34>";
 			t_cmp=p_Compare2(t_key,t_node.m_key);
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<35>";
 			if(t_cmp>0){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<36>";
 				t_node=t_node.m_right;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<37>";
 				if(t_cmp<0){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<38>";
 					t_node=t_node.m_left;
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<40>";
 					t_node.m_value=t_value;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<41>";
-					bb_std_lang.popErr();
 					return false;
 				}
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<45>";
 		t_node=(new c_Node2()).m_Node_new(t_key,t_value,-1,t_parent);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<47>";
 		if((t_parent)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<48>";
 			if(t_cmp>0){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<49>";
 				t_parent.m_right=t_node;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<51>";
 				t_parent.m_left=t_node;
 			}
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<53>";
 			p_InsertFixup2(t_node);
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<55>";
 			m_root=t_node;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<57>";
-		bb_std_lang.popErr();
 		return true;
 	}
 	public final c_Node2 p_FindNode2(String t_key){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<157>";
 		c_Node2 t_node=m_root;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<159>";
 		while((t_node)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<160>";
 			int t_cmp=p_Compare2(t_key,t_node.m_key);
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<161>";
 			if(t_cmp>0){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<162>";
 				t_node=t_node.m_right;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<163>";
 				if(t_cmp<0){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<164>";
 					t_node=t_node.m_left;
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<166>";
-					bb_std_lang.popErr();
 					return t_node;
 				}
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<169>";
-		bb_std_lang.popErr();
 		return t_node;
 	}
 	public final boolean p_Contains2(String t_key){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<25>";
-		boolean t_=p_FindNode2(t_key)!=null;
-		bb_std_lang.popErr();
-		return t_;
+		return p_FindNode2(t_key)!=null;
 	}
 	public final c_JsonValue p_Get2(String t_key){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<101>";
 		c_Node2 t_node=p_FindNode2(t_key);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<102>";
 		if((t_node)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<102>";
-			bb_std_lang.popErr();
 			return t_node.m_value;
 		}
-		bb_std_lang.popErr();
 		return null;
 	}
 }
 class c_StringMap extends c_Map2{
 	public final c_StringMap m_StringMap_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<551>";
 		super.m_Map_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<551>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final int p_Compare2(String t_lhs,String t_rhs){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<554>";
-		int t_=t_lhs.compareTo(t_rhs);
-		bb_std_lang.popErr();
-		return t_;
+		return t_lhs.compareTo(t_rhs);
 	}
 }
 class c_JsonParser extends Object{
@@ -5559,319 +4460,180 @@ class c_JsonParser extends Object{
 	String m__toke="";
 	int m__type=0;
 	public final int p_GetChar(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<345>";
 		if(m__pos==m__text.length()){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<345>";
 			bb_json.g_ThrowError();
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<346>";
 		m__pos+=1;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<347>";
-		int t_=(int)m__text.charAt(m__pos-1);
-		bb_std_lang.popErr();
-		return t_;
+		return (int)m__text.charAt(m__pos-1);
 	}
 	public final boolean p_CParseDigits(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<367>";
 		int t_p=m__pos;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<368>";
 		while(m__pos<m__text.length() && (int)m__text.charAt(m__pos)>=48 && (int)m__text.charAt(m__pos)<=57){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<369>";
 			m__pos+=1;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<371>";
-		boolean t_=m__pos>t_p;
-		bb_std_lang.popErr();
-		return t_;
+		return m__pos>t_p;
 	}
 	public final boolean p_CParseChar(int t_chr){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<361>";
 		if(m__pos>=m__text.length() || (int)m__text.charAt(m__pos)!=t_chr){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<361>";
-			bb_std_lang.popErr();
 			return false;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<362>";
 		m__pos+=1;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<363>";
-		bb_std_lang.popErr();
 		return true;
 	}
 	public final int p_PeekChar(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<351>";
 		if(m__pos==m__text.length()){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<351>";
-			bb_std_lang.popErr();
 			return 0;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<352>";
-		bb_std_lang.popErr();
 		return (int)m__text.charAt(m__pos);
 	}
 	public final String p_Bump(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<376>";
 		while(m__pos<m__text.length() && (int)m__text.charAt(m__pos)<=32){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<377>";
 			m__pos+=1;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<380>";
 		if(m__pos==m__text.length()){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<381>";
 			m__toke="";
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<382>";
 			m__type=0;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<383>";
-			bb_std_lang.popErr();
 			return m__toke;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<386>";
 		int t_pos=m__pos;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<387>";
 		int t_chr=p_GetChar();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<389>";
 		if(t_chr==34){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<390>";
 			do{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<391>";
 				int t_chr2=p_GetChar();
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<392>";
 				if(t_chr2==34){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<392>";
 					break;
 				}
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<393>";
 				if(t_chr2==92){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<393>";
 					p_GetChar();
 				}
 			}while(!(false));
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<395>";
 			m__type=1;
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<396>";
 			if(t_chr==45 || t_chr>=48 && t_chr<=57){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<397>";
 				if(t_chr==45){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<398>";
 					t_chr=p_GetChar();
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<399>";
 					if(t_chr<48 || t_chr>57){
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<399>";
 						bb_json.g_ThrowError();
 					}
 				}
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<401>";
 				if(t_chr!=48){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<402>";
 					p_CParseDigits();
 				}
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<404>";
 				if(p_CParseChar(46)){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<405>";
 					p_CParseDigits();
 				}
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<407>";
 				if(p_CParseChar(69) || p_CParseChar(101)){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<408>";
 					if(p_PeekChar()==43 || p_PeekChar()==45){
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<408>";
 						p_GetChar();
 					}
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<409>";
 					if(!p_CParseDigits()){
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<409>";
 						bb_json.g_ThrowError();
 					}
 				}
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<411>";
 				m__type=2;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<412>";
 				if(t_chr>=65 && t_chr<91 || t_chr>=97 && t_chr<123){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<413>";
 					t_chr=p_PeekChar();
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<414>";
 					while(t_chr>=65 && t_chr<91 || t_chr>=97 && t_chr<123){
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<415>";
 						p_GetChar();
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<416>";
 						t_chr=p_PeekChar();
 					}
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<418>";
 					m__type=4;
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<420>";
 					m__type=3;
 				}
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<422>";
 		m__toke=bb_std_lang.slice(m__text,t_pos,m__pos);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<423>";
-		bb_std_lang.popErr();
 		return m__toke;
 	}
 	public final c_JsonParser m_JsonParser_new(String t_json){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<316>";
 		m__text=t_json;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<317>";
 		p_Bump();
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_JsonParser m_JsonParser_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<313>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final boolean p_CParse(String t_toke){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<435>";
 		if(t_toke.compareTo(m__toke)!=0){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<435>";
-			bb_std_lang.popErr();
 			return false;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<436>";
 		p_Bump();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<437>";
-		bb_std_lang.popErr();
 		return true;
 	}
 	public final void p_Parse(String t_toke){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<441>";
 		if(!p_CParse(t_toke)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<441>";
 			bb_json.g_ThrowError();
 		}
-		bb_std_lang.popErr();
 	}
 	public final int p_TokeType(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<431>";
-		bb_std_lang.popErr();
 		return m__type;
 	}
 	public final String p_Toke(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<427>";
-		bb_std_lang.popErr();
 		return m__toke;
 	}
 	public final String p_ParseString(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<471>";
 		if(p_TokeType()!=1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<471>";
 			bb_json.g_ThrowError();
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<472>";
 		String t_toke=bb_std_lang.slice(p_Toke(),1,-1);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<473>";
 		int t_i=t_toke.indexOf("\\",0);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<474>";
 		if(t_i!=-1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<475>";
 			c_StringStack t_frags=(new c_StringStack()).m_StringStack_new2();
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<475>";
 			int t_p=0;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<475>";
 			String t_esc="";
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<476>";
 			do{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<477>";
 				if(t_i+1>=t_toke.length()){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<477>";
 					bb_json.g_ThrowError();
 				}
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<478>";
 				t_frags.p_Push4(bb_std_lang.slice(t_toke,t_p,t_i));
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<479>";
 				int t_1=(int)t_toke.charAt(t_i+1);
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<480>";
 				if(t_1==34){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<480>";
 					t_esc="\"";
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<481>";
 					if(t_1==92){
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<481>";
 						t_esc="\\";
 					}else{
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<482>";
 						if(t_1==47){
-							bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<482>";
 							t_esc="/";
 						}else{
-							bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<483>";
 							if(t_1==98){
-								bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<483>";
 								t_esc=String.valueOf((char)(8));
 							}else{
-								bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<484>";
 								if(t_1==102){
-									bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<484>";
 									t_esc=String.valueOf((char)(12));
 								}else{
-									bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<485>";
 									if(t_1==114){
-										bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<485>";
 										t_esc=String.valueOf((char)(13));
 									}else{
-										bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<486>";
 										if(t_1==110){
-											bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<486>";
 											t_esc=String.valueOf((char)(10));
 										}else{
-											bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<487>";
 											if(t_1==117){
-												bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<488>";
 												if(t_i+6>t_toke.length()){
-													bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<488>";
 													bb_json.g_ThrowError();
 												}
-												bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<489>";
 												int t_val=0;
-												bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<490>";
 												for(int t_j=2;t_j<6;t_j=t_j+1){
-													bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<491>";
 													int t_chr=(int)t_toke.charAt(t_i+t_j);
-													bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<492>";
 													if(t_chr>=48 && t_chr<58){
-														bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<493>";
 														t_val=t_val<<4|t_chr-48;
 													}else{
-														bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<494>";
 														if(t_chr>=65 && t_chr<123){
-															bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<495>";
 															t_chr&=31;
-															bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<496>";
 															if(t_chr<1 || t_chr>6){
-																bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<496>";
 																bb_json.g_ThrowError();
 															}
-															bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<497>";
 															t_val=t_val<<4|t_chr+9;
 														}else{
-															bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<499>";
 															bb_json.g_ThrowError();
 														}
 													}
 												}
-												bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<502>";
 												t_esc=String.valueOf((char)(t_val));
-												bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<503>";
 												t_i+=4;
 											}else{
-												bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<505>";
 												bb_json.g_ThrowError();
 											}
 										}
@@ -5881,500 +4643,272 @@ class c_JsonParser extends Object{
 						}
 					}
 				}
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<507>";
 				t_frags.p_Push4(t_esc);
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<508>";
 				t_p=t_i+2;
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<509>";
 				t_i=t_toke.indexOf("\\",t_p);
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<510>";
 				if(t_i!=-1){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<510>";
 					continue;
 				}
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<511>";
 				t_frags.p_Push4(bb_std_lang.slice(t_toke,t_p));
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<512>";
 				break;
 			}while(!(false));
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<514>";
 			t_toke=t_frags.p_Join("");
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<516>";
 		p_Bump();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<517>";
-		bb_std_lang.popErr();
 		return t_toke;
 	}
 	public final String p_ParseNumber(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<521>";
 		if(p_TokeType()!=2){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<521>";
 			bb_json.g_ThrowError();
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<522>";
 		String t_toke=p_Toke();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<523>";
 		p_Bump();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<524>";
-		bb_std_lang.popErr();
 		return t_toke;
 	}
 	public final c_JsonValue[] p_ParseArray(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<459>";
 		p_Parse("[");
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<460>";
 		if(p_CParse("]")){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<460>";
-			bb_std_lang.popErr();
 			return new c_JsonValue[0];
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<461>";
 		c_Stack3 t_stack=(new c_Stack3()).m_Stack_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<462>";
 		do{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<463>";
 			c_JsonValue t_value=p_ParseValue();
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<464>";
 			t_stack.p_Push7(t_value);
 		}while(!(!p_CParse(",")));
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<466>";
 		p_Parse("]");
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<467>";
-		c_JsonValue[] t_=t_stack.p_ToArray();
-		bb_std_lang.popErr();
-		return t_;
+		return t_stack.p_ToArray();
 	}
 	public final c_JsonValue p_ParseValue(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<321>";
 		if(p_TokeType()==1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<321>";
-			c_JsonValue t_=(c_JsonString.m_Instance(p_ParseString()));
-			bb_std_lang.popErr();
-			return t_;
+			return (c_JsonString.m_Instance(p_ParseString()));
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<322>";
 		if(p_TokeType()==2){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<322>";
-			c_JsonValue t_2=(c_JsonNumber.m_Instance(p_ParseNumber()));
-			bb_std_lang.popErr();
-			return t_2;
+			return (c_JsonNumber.m_Instance(p_ParseNumber()));
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<323>";
 		if(p_Toke().compareTo("{")==0){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<323>";
-			c_JsonValue t_3=((new c_JsonObject()).m_JsonObject_new2(p_ParseObject()));
-			bb_std_lang.popErr();
-			return t_3;
+			return ((new c_JsonObject()).m_JsonObject_new2(p_ParseObject()));
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<324>";
 		if(p_Toke().compareTo("[")==0){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<324>";
-			c_JsonValue t_4=((new c_JsonArray()).m_JsonArray_new2(p_ParseArray()));
-			bb_std_lang.popErr();
-			return t_4;
+			return ((new c_JsonArray()).m_JsonArray_new2(p_ParseArray()));
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<325>";
 		if(p_CParse("true")){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<325>";
-			c_JsonValue t_5=(c_JsonBool.m_Instance(true));
-			bb_std_lang.popErr();
-			return t_5;
+			return (c_JsonBool.m_Instance(true));
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<326>";
 		if(p_CParse("false")){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<326>";
-			c_JsonValue t_6=(c_JsonBool.m_Instance(false));
-			bb_std_lang.popErr();
-			return t_6;
+			return (c_JsonBool.m_Instance(false));
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<327>";
 		if(p_CParse("null")){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<327>";
-			c_JsonValue t_7=(c_JsonNull.m_Instance());
-			bb_std_lang.popErr();
-			return t_7;
+			return (c_JsonNull.m_Instance());
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<328>";
 		bb_json.g_ThrowError();
-		bb_std_lang.popErr();
 		return null;
 	}
 	public final c_StringMap p_ParseObject(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<445>";
 		p_Parse("{");
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<446>";
 		c_StringMap t_map=(new c_StringMap()).m_StringMap_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<447>";
 		if(p_CParse("}")){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<447>";
-			bb_std_lang.popErr();
 			return t_map;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<448>";
 		do{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<449>";
 			String t_name=p_ParseString();
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<450>";
 			p_Parse(":");
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<451>";
 			c_JsonValue t_value=p_ParseValue();
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<452>";
 			t_map.p_Set2(t_name,t_value);
 		}while(!(!p_CParse(",")));
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<454>";
 		p_Parse("}");
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<455>";
-		bb_std_lang.popErr();
 		return t_map;
 	}
 }
 class c_JsonError extends ThrowableObject{
 	public final c_JsonError m_JsonError_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<11>";
-		bb_std_lang.popErr();
 		return this;
 	}
 }
 class c_Stack2 extends Object{
 	public final c_Stack2 m_Stack_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.popErr();
 		return this;
 	}
 	String[] m_data=bb_std_lang.emptyStringArray;
 	int m_length=0;
 	public final c_Stack2 m_Stack_new2(String[] t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<13>";
 		this.m_data=((String[])bb_std_lang.sliceArray(t_data,0));
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<14>";
 		this.m_length=bb_std_lang.length(t_data);
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final void p_Push4(String t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<71>";
 		if(m_length==bb_std_lang.length(m_data)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<72>";
 			m_data=bb_std_lang.resize(m_data,m_length*2+10);
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<74>";
 		m_data[m_length]=t_value;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<75>";
 		m_length+=1;
-		bb_std_lang.popErr();
 	}
 	public final void p_Push5(String[] t_values,int t_offset,int t_count){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<83>";
 		for(int t_i=0;t_i<t_count;t_i=t_i+1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<84>";
 			p_Push4(t_values[t_offset+t_i]);
 		}
-		bb_std_lang.popErr();
 	}
 	public final void p_Push6(String[] t_values,int t_offset){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<79>";
 		p_Push5(t_values,t_offset,bb_std_lang.length(t_values)-t_offset);
-		bb_std_lang.popErr();
 	}
 	public final String[] p_ToArray(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<18>";
 		String[] t_t=bb_std_lang.stringArray(m_length);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<19>";
 		for(int t_i=0;t_i<m_length;t_i=t_i+1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<20>";
 			t_t[t_i]=m_data[t_i];
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<22>";
-		bb_std_lang.popErr();
 		return t_t;
 	}
 }
 class c_StringStack extends c_Stack2{
 	public final c_StringStack m_StringStack_new(String[] t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<355>";
 		super.m_Stack_new2(t_data);
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_StringStack m_StringStack_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<352>";
 		super.m_Stack_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<352>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final String p_Join(String t_separator){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<359>";
-		String t_=bb_std_lang.join(t_separator,p_ToArray());
-		bb_std_lang.popErr();
-		return t_;
+		return bb_std_lang.join(t_separator,p_ToArray());
 	}
 }
 class c_JsonString extends c_JsonValue{
 	String m__value="";
 	public final c_JsonString m_JsonString_new(String t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<257>";
 		super.m_JsonValue_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<258>";
 		m__value=t_value;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_JsonString m_JsonString_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<255>";
 		super.m_JsonValue_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<255>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	static c_JsonString m__null;
 	public static c_JsonString m_Instance(String t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<270>";
 		if((t_value).length()!=0){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<270>";
-			c_JsonString t_=(new c_JsonString()).m_JsonString_new(t_value);
-			bb_std_lang.popErr();
-			return t_;
+			return (new c_JsonString()).m_JsonString_new(t_value);
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<271>";
-		bb_std_lang.popErr();
 		return m__null;
 	}
 	public final String p_StringValue(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<262>";
-		bb_std_lang.popErr();
 		return m__value;
 	}
 }
 class c_JsonNumber extends c_JsonValue{
 	String m__value="";
 	public final c_JsonNumber m_JsonNumber_new(String t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<284>";
 		super.m_JsonValue_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<286>";
 		m__value=t_value;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_JsonNumber m_JsonNumber_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<282>";
 		super.m_JsonValue_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<282>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	static c_JsonNumber m__zero;
 	public static c_JsonNumber m_Instance(String t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<302>";
 		if(t_value.compareTo("0")!=0){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<302>";
-			c_JsonNumber t_=(new c_JsonNumber()).m_JsonNumber_new(t_value);
-			bb_std_lang.popErr();
-			return t_;
+			return (new c_JsonNumber()).m_JsonNumber_new(t_value);
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<303>";
-		bb_std_lang.popErr();
 		return m__zero;
 	}
 	public final int p_IntValue(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<290>";
-		int t_=LangUtil.parseInt((m__value).trim());
-		bb_std_lang.popErr();
-		return t_;
+		return LangUtil.parseInt((m__value).trim());
 	}
 	public final float p_FloatValue(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<294>";
-		float t_=LangUtil.parseFloat((m__value).trim());
-		bb_std_lang.popErr();
-		return t_;
+		return LangUtil.parseFloat((m__value).trim());
 	}
 }
 class c_JsonArray extends c_JsonValue{
 	c_JsonValue[] m__data=new c_JsonValue[0];
 	public final c_JsonArray m_JsonArray_new(int t_length){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<133>";
 		super.m_JsonValue_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<134>";
 		m__data=new c_JsonValue[t_length];
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_JsonArray m_JsonArray_new2(c_JsonValue[] t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<137>";
 		super.m_JsonValue_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<138>";
 		m__data=t_data;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_JsonArray m_JsonArray_new3(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<131>";
 		super.m_JsonValue_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<131>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final int p_Length(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<142>";
-		int t_=bb_std_lang.length(m__data);
-		bb_std_lang.popErr();
-		return t_;
+		return bb_std_lang.length(m__data);
 	}
 	public final c_JsonValue p_Get3(int t_index){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<167>";
 		if(t_index<0 || t_index>=bb_std_lang.length(m__data)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<167>";
 			bb_json.g_ThrowError();
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<168>";
 		c_JsonValue t_val=m__data[t_index];
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<169>";
 		if((t_val)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<169>";
-			bb_std_lang.popErr();
 			return t_val;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<170>";
-		c_JsonValue t_=(c_JsonNull.m_Instance());
-		bb_std_lang.popErr();
-		return t_;
+		return (c_JsonNull.m_Instance());
 	}
 }
 class c_Stack3 extends Object{
 	public final c_Stack3 m_Stack_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.popErr();
 		return this;
 	}
 	c_JsonValue[] m_data=new c_JsonValue[0];
 	int m_length=0;
 	public final c_Stack3 m_Stack_new2(c_JsonValue[] t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<13>";
 		this.m_data=((c_JsonValue[])bb_std_lang.sliceArray(t_data,0));
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<14>";
 		this.m_length=bb_std_lang.length(t_data);
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final void p_Push7(c_JsonValue t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<71>";
 		if(m_length==bb_std_lang.length(m_data)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<72>";
 			m_data=(c_JsonValue[])bb_std_lang.resize(m_data,m_length*2+10,c_JsonValue.class);
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<74>";
 		m_data[m_length]=t_value;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<75>";
 		m_length+=1;
-		bb_std_lang.popErr();
 	}
 	public final void p_Push8(c_JsonValue[] t_values,int t_offset,int t_count){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<83>";
 		for(int t_i=0;t_i<t_count;t_i=t_i+1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<84>";
 			p_Push7(t_values[t_offset+t_i]);
 		}
-		bb_std_lang.popErr();
 	}
 	public final void p_Push9(c_JsonValue[] t_values,int t_offset){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<79>";
 		p_Push8(t_values,t_offset,bb_std_lang.length(t_values)-t_offset);
-		bb_std_lang.popErr();
 	}
 	public final c_JsonValue[] p_ToArray(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<18>";
 		c_JsonValue[] t_t=new c_JsonValue[m_length];
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<19>";
 		for(int t_i=0;t_i<m_length;t_i=t_i+1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<20>";
 			t_t[t_i]=m_data[t_i];
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<22>";
-		bb_std_lang.popErr();
 		return t_t;
 	}
 }
 class c_JsonBool extends c_JsonValue{
 	boolean m__value=false;
 	public final c_JsonBool m_JsonBool_new(boolean t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<228>";
 		super.m_JsonValue_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<229>";
 		m__value=t_value;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_JsonBool m_JsonBool_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<226>";
 		super.m_JsonValue_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<226>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	static c_JsonBool m__true;
 	static c_JsonBool m__false;
 	public static c_JsonBool m_Instance(boolean t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<242>";
 		if(t_value){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<242>";
-			bb_std_lang.popErr();
 			return m__true;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<243>";
-		bb_std_lang.popErr();
 		return m__false;
 	}
 }
 class c_JsonNull extends c_JsonValue{
 	public final c_JsonNull m_JsonNull_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<210>";
 		super.m_JsonValue_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<210>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	static c_JsonNull m__instance;
 	public static c_JsonNull m_Instance(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<217>";
-		bb_std_lang.popErr();
 		return m__instance;
 	}
 }
@@ -6386,22 +4920,13 @@ class c_Node2 extends Object{
 	int m_color=0;
 	c_Node2 m_parent=null;
 	public final c_Node2 m_Node_new(String t_key,c_JsonValue t_value,int t_color,c_Node2 t_parent){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<364>";
 		this.m_key=t_key;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<365>";
 		this.m_value=t_value;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<366>";
 		this.m_color=t_color;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<367>";
 		this.m_parent=t_parent;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_Node2 m_Node_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<361>";
-		bb_std_lang.popErr();
 		return this;
 	}
 }
@@ -6411,232 +4936,127 @@ class c_Game extends Object{
 	c_List2 m_particles=null;
 	c_IntMap3 m_types=null;
 	public final c_Game m_Game_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<17>";
 		this.m_units=(new c_IntMap2()).m_IntMap_new();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<18>";
 		this.m_opponents=(new c_List()).m_List_new();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<19>";
 		this.m_particles=(new c_List2()).m_List_new();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<20>";
 		this.m_types=(new c_IntMap3()).m_IntMap_new();
-		bb_std_lang.popErr();
 		return this;
 	}
 	String m_id="";
 	String m_player_state="";
 	public final int p_LoadFromJson(c_JsonObject t_game_json,String t_player_id){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<37>";
 		this.m_units.p_Clear();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<38>";
 		this.m_opponents.p_Clear();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<39>";
 		this.m_particles.p_Clear();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<40>";
 		this.m_types.p_Clear();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<42>";
 		this.m_id=String.valueOf(t_game_json.p_GetInt("id",0));
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<43>";
 		c_JsonArray t_unit_list=bb_std_lang.as(c_JsonArray.class,(t_game_json.p_Get("units",null)));
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<44>";
 		c_JsonArray t_types_list=bb_std_lang.as(c_JsonArray.class,(t_game_json.p_Get("types",null)));
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<45>";
 		c_JsonArray t_player_list=bb_std_lang.as(c_JsonArray.class,(t_game_json.p_Get("players",null)));
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<46>";
 		c_JsonArray t_particle_list=bb_std_lang.as(c_JsonArray.class,(t_game_json.p_Get("particles",null)));
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<48>";
 		for(int t_i=0;t_i<t_types_list.p_Length();t_i=t_i+1){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<49>";
 			c_JsonObject t_type_json=bb_std_lang.as(c_JsonObject.class,(t_types_list.p_Get3(t_i)));
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<50>";
 			c_UnitType t_new_type=(new c_UnitType()).m_UnitType_new(t_type_json);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<51>";
 			this.m_types.p_Add2(t_new_type.m_id,t_new_type);
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<54>";
 		for(int t_i2=0;t_i2<t_unit_list.p_Length();t_i2=t_i2+1){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<55>";
 			c_JsonObject t_unit_json=bb_std_lang.as(c_JsonObject.class,(t_unit_list.p_Get3(t_i2)));
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<56>";
 			int t_type_id=t_unit_json.p_GetInt("unit_type_id",0);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<57>";
 			c_UnitType t_unit_type=this.m_types.p_Get3(t_type_id);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<66>";
 			c_Unit t_new_unit=(new c_Unit()).m_Unit_new(t_unit_json.p_GetInt("id",0),t_unit_json.p_GetFloat("x",0.0f),t_unit_json.p_GetFloat("y",0.0f),t_unit_json.p_GetFloat("heading",0.0f),t_unit_type,String.valueOf(t_unit_json.p_GetInt("player_id",0)),t_unit_json.p_GetInt("player_id",0),t_unit_json.p_GetFloat("energy",0.0f));
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<67>";
 			t_new_unit.m_armor=t_unit_json.p_GetInt("armor",0);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<68>";
 			this.m_units.p_Add(t_new_unit.m_unit_id,t_new_unit);
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<71>";
 		for(int t_i3=0;t_i3<t_player_list.p_Length();t_i3=t_i3+1){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<72>";
 			c_JsonObject t_player_json=bb_std_lang.as(c_JsonObject.class,(t_player_list.p_Get3(t_i3)));
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<73>";
 			String t_current_player_id=String.valueOf(t_player_json.p_GetInt("player_id",0));
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<74>";
 			String t_current_player_state=t_player_json.p_GetString("player_state","");
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<75>";
 			if(t_current_player_id.compareTo(t_player_id)==0){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<76>";
 				this.m_player_state=t_current_player_state;
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<77>";
 				break;
 			}
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<81>";
 		for(int t_i4=0;t_i4<t_particle_list.p_Length();t_i4=t_i4+1){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<82>";
 			c_JsonObject t_particle_json=bb_std_lang.as(c_JsonObject.class,(t_particle_list.p_Get3(t_i4)));
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<90>";
 			c_Particle t_new_particle=(new c_Particle()).m_Particle_new((new c_Vec2D()).m_Vec2D_new(t_particle_json.p_GetFloat("x",0.0f),t_particle_json.p_GetFloat("y",0.0f),0.0f),2.5f,t_particle_json.p_GetFloat("power",0.0f),t_particle_json.p_GetFloat("heading",0.0f),t_particle_json.p_GetFloat("speed",0.0f),t_particle_json.p_GetInt("team",0),t_particle_json.p_GetInt("lifetime",0));
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<92>";
 			t_new_particle.m_past_position.p_Set4(t_new_particle.m_position.m_x-t_new_particle.m_speed*(float)Math.cos(t_new_particle.m_angle*0.017453292500000002f),t_new_particle.m_position.m_y-t_new_particle.m_speed*(float)Math.sin(t_new_particle.m_angle*0.017453292500000002f),0.0f);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<93>";
 			this.m_particles.p_AddLast2(t_new_particle);
 		}
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_LoadServerMoves(c_JsonObject t_game_json){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<99>";
 		c_JsonArray t_unit_list=bb_std_lang.as(c_JsonArray.class,(t_game_json.p_Get("units",null)));
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<100>";
 		for(int t_i=0;t_i<t_unit_list.p_Length();t_i=t_i+1){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<101>";
 			c_JsonObject t_unit_json=bb_std_lang.as(c_JsonObject.class,(t_unit_list.p_Get3(t_i)));
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<102>";
 			c_Unit t_current_unit=this.m_units.p_Get3(t_unit_json.p_GetInt("id",0));
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<103>";
 			t_current_unit.m_position.p_Set4(t_unit_json.p_GetFloat("x",0.0f),t_unit_json.p_GetFloat("y",0.0f),0.0f);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<104>";
 			t_current_unit.m_heading=t_unit_json.p_GetFloat("heading",0.0f);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<105>";
 			t_current_unit.p_SetServerControl(t_unit_json.p_GetFloat("control_x",0.0f),t_unit_json.p_GetFloat("control_y",0.0f),640.0f,480.0f);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<106>";
 			t_current_unit.m_armor=t_unit_json.p_GetInt("armor",0);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<107>";
 			this.m_units.p_Set3(t_unit_json.p_GetInt("id",0),t_current_unit);
 		}
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_SetUnitPathsToServerSimulation(c_JsonObject t_server_json,String t_player_id){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<112>";
 		c_JsonObject t_moves_json=bb_std_lang.as(c_JsonObject.class,(t_server_json.p_Get("move_points",null)));
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<113>";
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<113>";
 		c_KeyEnumerator t_=this.m_units.p_Keys().p_ObjectEnumerator();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<113>";
 		while(t_.p_HasNext()){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<113>";
 			int t_key=t_.p_NextObject();
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<114>";
 			if(this.m_units.p_Get3(t_key).m_player_id.compareTo(t_player_id)==0){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<115>";
 				this.m_units.p_Get3(t_key).m_points=(new c_Deque()).m_Deque_new();
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<116>";
 				c_JsonArray t_moves_array=bb_std_lang.as(c_JsonArray.class,(t_moves_json.p_Get(String.valueOf(t_key),null)));
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<117>";
 				for(int t_i=0;t_i<t_moves_array.p_Length();t_i=t_i+1){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<118>";
 					c_JsonObject t_move_json=bb_std_lang.as(c_JsonObject.class,(t_moves_array.p_Get3(t_i)));
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<119>";
 					c_Vec2D t_move=(new c_Vec2D()).m_Vec2D_new(t_move_json.p_GetFloat("x",0.0f),t_move_json.p_GetFloat("y",0.0f),t_move_json.p_GetFloat("heading",0.0f));
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<121>";
 					this.m_units.p_Get3(t_key).m_points.p_PushLast(t_move);
 				}
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<123>";
 				c_Vec2D t_last_point=this.m_units.p_Get3(t_key).m_points.p_Get3(this.m_units.p_Get3(t_key).m_points.p_Length()-1);
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<124>";
 				this.m_units.p_Get3(t_key).m_control.m_position.p_Set4(t_last_point.m_x,t_last_point.m_y,t_last_point.m_heading);
 			}
 		}
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final String p_BuildMoveJson(String t_player_id){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<130>";
 		bb_std_lang.print("Prepping move json");
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<131>";
 		int t_first=1;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<132>";
 		String t_move_json="{ \"data\" : { \"player_id\": "+t_player_id+", ";
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<133>";
 		t_move_json=t_move_json+"\"moves\" : [ ";
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<135>";
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<135>";
 		c_KeyEnumerator t_=this.m_units.p_Keys().p_ObjectEnumerator();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<135>";
 		while(t_.p_HasNext()){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<135>";
 			int t_unit_id=t_.p_NextObject();
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<137>";
 			if(this.m_units.p_Get3(t_unit_id).m_player_id.compareTo(t_player_id)==0){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<138>";
 				if(t_first==1){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<139>";
 					t_first=0;
 				}else{
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<141>";
 					t_move_json=t_move_json+", ";
 				}
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<143>";
 				t_move_json=t_move_json+("{ \"unit_id\": "+String.valueOf(this.m_units.p_Get3(t_unit_id).m_unit_id)+", ");
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<144>";
 				t_move_json=t_move_json+("\"x\": "+String.valueOf(this.m_units.p_Get3(t_unit_id).m_position.m_x)+", ");
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<145>";
 				t_move_json=t_move_json+("\"y\": "+String.valueOf(this.m_units.p_Get3(t_unit_id).m_position.m_y)+", ");
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<146>";
 				t_move_json=t_move_json+("\"control-x\": "+String.valueOf(this.m_units.p_Get3(t_unit_id).m_control.m_position.m_x)+", ");
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<147>";
 				t_move_json=t_move_json+("\"control-y\": "+String.valueOf(this.m_units.p_Get3(t_unit_id).m_control.m_position.m_y)+", ");
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<148>";
 				t_move_json=t_move_json+("\"control-heading\": "+String.valueOf(this.m_units.p_Get3(t_unit_id).m_control.m_position.m_heading)+", ");
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<149>";
 				t_move_json=t_move_json+("\"heading\": "+String.valueOf(this.m_units.p_Get3(t_unit_id).m_heading));
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<150>";
 				t_move_json=t_move_json+" }";
 			}
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<153>";
 		t_move_json=t_move_json+" ] } }";
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<155>";
-		bb_std_lang.popErr();
 		return t_move_json;
 	}
 	public final int p_Draw(String t_player_id,String t_game_state){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<25>";
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<25>";
 		c_KeyEnumerator t_=this.m_units.p_Keys().p_ObjectEnumerator();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<25>";
 		while(t_.p_HasNext()){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<25>";
 			int t_key=t_.p_NextObject();
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<26>";
 			c_Unit t_current_unit=this.m_units.p_Get3(t_key);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<27>";
 			if(t_current_unit.m_armor>0){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<28>";
 				t_current_unit.p_DrawStatic(t_player_id,t_game_state);
 			}
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<31>";
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<31>";
 		c_Enumerator3 t_2=this.m_particles.p_ObjectEnumerator();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<31>";
 		while(t_2.p_HasNext()){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<31>";
 			c_Particle t_part=t_2.p_NextObject();
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/game.monkey<32>";
 			t_part.p_Draw2();
 		}
-		bb_std_lang.popErr();
 		return 0;
 	}
 }
@@ -6650,625 +5070,355 @@ class c_Unit extends Object{
 	c_Vec2D m_velocity=null;
 	c_Deque m_points=null;
 	public final int p_SetControl(float t_click_x,float t_click_y,float t_map_width,float t_map_height){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<105>";
 		int t_goal_angle=(int)((float)(Math.atan2(t_click_y-this.m_position.m_y,t_click_x-this.m_position.m_x)*bb_std_lang.R2D));
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<106>";
 		int t_start_angle=(int)(this.m_heading);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<107>";
 		c_Vec2D t_control_pos=(new c_Vec2D()).m_Vec2D_new(this.m_position.m_x,this.m_position.m_y,this.m_heading);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<108>";
 		this.m_points=(new c_Deque()).m_Deque_new();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<110>";
 		for(int t_i=0;t_i<30;t_i=t_i+1){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<111>";
 			t_control_pos=bb_dronetournament.g_NewPoint(t_control_pos,(float)(t_start_angle),(float)(t_goal_angle),this.m_unit_type.m_maxRotation,this.m_unit_type.m_maxVelocity/30.0f);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<112>";
 			t_start_angle=(int)(t_control_pos.m_heading);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<113>";
 			t_goal_angle=(int)((float)(Math.atan2(t_click_y-t_control_pos.m_y,t_click_x-t_control_pos.m_x)*bb_std_lang.R2D));
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<114>";
 			this.m_points.p_PushLast(t_control_pos);
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<117>";
 		if(t_control_pos.m_x>t_map_width){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<118>";
 			t_control_pos.m_x=t_map_width-10.0f;
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<119>";
 			t_control_pos.m_heading=180.0f;
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<120>";
 			if(t_control_pos.m_x<0.0f){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<121>";
 				t_control_pos.m_x=10.0f;
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<122>";
 				t_control_pos.m_heading=0.0f;
 			}
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<125>";
 		if(t_control_pos.m_y>t_map_height){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<126>";
 			t_control_pos.m_y=t_map_height-10.0f;
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<127>";
 			t_control_pos.m_heading=270.0f;
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<128>";
 			if(t_control_pos.m_y<0.0f){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<129>";
 				t_control_pos.m_y=10.0f;
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<130>";
 				t_control_pos.m_heading=90.0f;
 			}
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<133>";
 		this.m_control.m_position.p_Set4(t_control_pos.m_x,t_control_pos.m_y,t_control_pos.m_heading);
-		bb_std_lang.popErr();
 		return 0;
 	}
 	int m_team=0;
 	float m_currentEnergy=.0f;
 	int m_armor=0;
 	public final c_Unit m_Unit_new(int t_unit_id,float t_x,float t_y,float t_initial_heading,c_UnitType t_unit_type,String t_player_id,int t_team_number,float t_current_energy){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<23>";
 		this.m_unit_id=t_unit_id;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<24>";
 		this.m_player_id=t_player_id;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<25>";
 		this.m_unit_type=t_unit_type;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<27>";
 		this.m_position=(new c_Vec2D()).m_Vec2D_new(t_x,t_y,0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<28>";
 		this.m_control=(new c_ControlPoint()).m_ControlPoint_new(t_x+this.m_unit_type.m_maxVelocity,t_y,t_initial_heading,20.0f,20.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<30>";
 		this.m_heading=t_initial_heading;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<31>";
 		this.m_velocity=(new c_Vec2D()).m_Vec2D_new(this.m_unit_type.m_maxVelocity*(float)Math.cos(m_heading*0.017453292500000002f),this.m_unit_type.m_maxVelocity*(float)Math.sin(m_heading*0.017453292500000002f),0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<32>";
 		this.p_SetControl(m_velocity.m_x,m_velocity.m_y,640.0f,480.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<33>";
 		this.m_team=t_team_number;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<35>";
 		this.m_currentEnergy=t_current_energy;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<37>";
 		this.m_armor=this.m_unit_type.m_maxArmor;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_Unit m_Unit_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<7>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final int p_SetServerControl(float t_click_x,float t_click_y,float t_map_width,float t_map_height){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<137>";
 		int t_goal_angle=(int)((float)(Math.atan2(t_click_y-this.m_position.m_y,t_click_x-this.m_position.m_x)*bb_std_lang.R2D));
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<138>";
 		float t_start_angle=this.m_heading;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<139>";
 		c_Vec2D t_control_pos=(new c_Vec2D()).m_Vec2D_new(this.m_position.m_x,this.m_position.m_y,this.m_heading);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<140>";
 		this.m_points=(new c_Deque()).m_Deque_new();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<142>";
 		for(int t_i=0;t_i<30;t_i=t_i+1){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<143>";
 			t_control_pos=bb_dronetournament.g_NewPoint(t_control_pos,t_start_angle,(float)(t_goal_angle),this.m_unit_type.m_maxRotation,this.m_unit_type.m_maxVelocity/30.0f);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<144>";
 			t_start_angle=t_control_pos.m_heading;
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<145>";
 			t_goal_angle=(int)((float)(Math.atan2(t_click_y-t_control_pos.m_y,t_click_x-t_control_pos.m_x)*bb_std_lang.R2D));
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<146>";
 			this.m_points.p_PushLast(t_control_pos);
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<149>";
 		this.m_control.m_position.p_Set4(t_control_pos.m_x,t_control_pos.m_y,t_control_pos.m_heading);
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_ControlSelected(float t_click_x,float t_click_y){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<87>";
 		if(this.m_control.m_selected){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<88>";
-			bb_std_lang.popErr();
 			return 1;
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<92>";
 			if(t_click_x>=this.m_control.m_position.m_x-this.m_control.m_width && t_click_x<=this.m_control.m_position.m_x+this.m_control.m_width && t_click_y>=this.m_control.m_position.m_y-this.m_control.m_width && t_click_y<=this.m_control.m_position.m_y+this.m_control.m_height){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<93>";
 				this.m_control.m_selected=true;
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<94>";
-				bb_std_lang.popErr();
 				return 1;
 			}else{
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<96>";
-				bb_std_lang.popErr();
 				return 0;
 			}
 		}
 	}
 	public final int p_ControlReleased(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<101>";
 		this.m_control.m_selected=false;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_Update(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<77>";
 		c_Vec2D t_next_point=this.m_points.p_PopFirst();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<79>";
 		this.m_heading=(float)(Math.atan2(t_next_point.m_y-this.m_position.m_y,t_next_point.m_x-this.m_position.m_x)*bb_std_lang.R2D);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<80>";
 		this.m_velocity.p_Set4(this.m_unit_type.m_maxVelocity*(float)Math.cos(m_heading*0.017453292500000002f),this.m_unit_type.m_maxVelocity*(float)Math.sin(this.m_heading*0.017453292500000002f),0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<81>";
 		this.m_position=t_next_point;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<82>";
 		this.m_currentEnergy=bb_math2.g_Min2(this.m_unit_type.m_maxEnergy,this.m_currentEnergy+this.m_unit_type.m_chargeEnergy);
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_FireWeapon(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<153>";
 		this.m_currentEnergy=0.0f;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_TakeDamage(int t_power){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<157>";
 		this.m_armor=this.m_armor-t_power;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_DrawStatic(String t_game_player_id,String t_game_state){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<41>";
 		int t_R=0;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<42>";
 		int t_G=0;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<43>";
 		int t_B=0;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<44>";
 		if(this.m_player_id.compareTo(t_game_player_id)==0){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<45>";
 			t_R=128;
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<46>";
 			t_G=255;
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<47>";
 			t_B=128;
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<49>";
 			t_R=255;
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<50>";
 			t_G=128;
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<51>";
 			t_B=128;
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<54>";
 		bb_graphics.g_SetColor((float)(t_R),(float)(t_G),(float)(t_B));
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<55>";
 		bb_graphics.g_DrawImage2(this.m_unit_type.m_image,this.m_position.m_x,this.m_position.m_y,-this.m_heading,1.0f,1.0f,0);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<56>";
 		for(int t_i=0;t_i<this.m_armor-1;t_i=t_i+1){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<57>";
 			bb_graphics.g_SetColor(0.0f,0.0f,255.0f);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<58>";
 			bb_graphics.g_DrawRect(this.m_position.m_x-20.0f+(float)(t_i*5),this.m_position.m_y+28.0f,5.0f,3.0f);
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<60>";
 		bb_graphics.g_SetColor((float)(t_R),(float)(t_G),(float)(t_B));
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<61>";
 		if((this.m_player_id.compareTo(t_game_player_id)==0) && ((t_game_state.compareTo("multiplayer")==0) || (t_game_state.compareTo("tutorial")==0) || (t_game_state.compareTo("end_turn")==0))){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<62>";
 			this.m_control.p_Draw2();
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<64>";
 			for(int t_i2=0;t_i2<this.m_points.p_Length()-1;t_i2=t_i2+1){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<65>";
 				if((this.m_currentEnergy+(float)(t_i2)*this.m_unit_type.m_chargeEnergy) % this.m_unit_type.m_maxEnergy==0.0f){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<66>";
 					bb_graphics.g_SetColor(100.0f,100.0f,255.0f);
 				}else{
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<68>";
 					bb_graphics.g_SetColor(255.0f,255.0f,255.0f);
 				}
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<70>";
 				c_Vec2D t_this_point=this.m_points.p_Get3(t_i2);
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit.monkey<71>";
 				bb_graphics.g_DrawPoint(t_this_point.m_x,t_this_point.m_y);
 			}
 		}
-		bb_std_lang.popErr();
 		return 0;
 	}
 }
 abstract class c_Map3 extends Object{
 	public final c_Map3 m_Map_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<7>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	c_Node5 m_root=null;
 	public abstract int p_Compare(int t_lhs,int t_rhs);
 	public final int p_RotateLeft3(c_Node5 t_node){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<251>";
 		c_Node5 t_child=t_node.m_right;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<252>";
 		t_node.m_right=t_child.m_left;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<253>";
 		if((t_child.m_left)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<254>";
 			t_child.m_left.m_parent=t_node;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<256>";
 		t_child.m_parent=t_node.m_parent;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<257>";
 		if((t_node.m_parent)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<258>";
 			if(t_node==t_node.m_parent.m_left){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<259>";
 				t_node.m_parent.m_left=t_child;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<261>";
 				t_node.m_parent.m_right=t_child;
 			}
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<264>";
 			m_root=t_child;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<266>";
 		t_child.m_left=t_node;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<267>";
 		t_node.m_parent=t_child;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_RotateRight3(c_Node5 t_node){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<271>";
 		c_Node5 t_child=t_node.m_left;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<272>";
 		t_node.m_left=t_child.m_right;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<273>";
 		if((t_child.m_right)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<274>";
 			t_child.m_right.m_parent=t_node;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<276>";
 		t_child.m_parent=t_node.m_parent;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<277>";
 		if((t_node.m_parent)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<278>";
 			if(t_node==t_node.m_parent.m_right){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<279>";
 				t_node.m_parent.m_right=t_child;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<281>";
 				t_node.m_parent.m_left=t_child;
 			}
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<284>";
 			m_root=t_child;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<286>";
 		t_child.m_right=t_node;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<287>";
 		t_node.m_parent=t_child;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_InsertFixup3(c_Node5 t_node){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<212>";
 		while(((t_node.m_parent)!=null) && t_node.m_parent.m_color==-1 && ((t_node.m_parent.m_parent)!=null)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<213>";
 			if(t_node.m_parent==t_node.m_parent.m_parent.m_left){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<214>";
 				c_Node5 t_uncle=t_node.m_parent.m_parent.m_right;
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<215>";
 				if(((t_uncle)!=null) && t_uncle.m_color==-1){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<216>";
 					t_node.m_parent.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<217>";
 					t_uncle.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<218>";
 					t_uncle.m_parent.m_color=-1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<219>";
 					t_node=t_uncle.m_parent;
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<221>";
 					if(t_node==t_node.m_parent.m_right){
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<222>";
 						t_node=t_node.m_parent;
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<223>";
 						p_RotateLeft3(t_node);
 					}
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<225>";
 					t_node.m_parent.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<226>";
 					t_node.m_parent.m_parent.m_color=-1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<227>";
 					p_RotateRight3(t_node.m_parent.m_parent);
 				}
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<230>";
 				c_Node5 t_uncle2=t_node.m_parent.m_parent.m_left;
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<231>";
 				if(((t_uncle2)!=null) && t_uncle2.m_color==-1){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<232>";
 					t_node.m_parent.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<233>";
 					t_uncle2.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<234>";
 					t_uncle2.m_parent.m_color=-1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<235>";
 					t_node=t_uncle2.m_parent;
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<237>";
 					if(t_node==t_node.m_parent.m_left){
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<238>";
 						t_node=t_node.m_parent;
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<239>";
 						p_RotateRight3(t_node);
 					}
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<241>";
 					t_node.m_parent.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<242>";
 					t_node.m_parent.m_parent.m_color=-1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<243>";
 					p_RotateLeft3(t_node.m_parent.m_parent);
 				}
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<247>";
 		m_root.m_color=1;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final boolean p_Add(int t_key,c_Unit t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<61>";
 		c_Node5 t_node=m_root;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<62>";
 		c_Node5 t_parent=null;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<62>";
 		int t_cmp=0;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<64>";
 		while((t_node)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<65>";
 			t_parent=t_node;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<66>";
 			t_cmp=p_Compare(t_key,t_node.m_key);
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<67>";
 			if(t_cmp>0){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<68>";
 				t_node=t_node.m_right;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<69>";
 				if(t_cmp<0){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<70>";
 					t_node=t_node.m_left;
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<72>";
-					bb_std_lang.popErr();
 					return false;
 				}
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<76>";
 		t_node=(new c_Node5()).m_Node_new(t_key,t_value,-1,t_parent);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<78>";
 		if((t_parent)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<79>";
 			if(t_cmp>0){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<80>";
 				t_parent.m_right=t_node;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<82>";
 				t_parent.m_left=t_node;
 			}
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<84>";
 			p_InsertFixup3(t_node);
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<86>";
 			m_root=t_node;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<88>";
-		bb_std_lang.popErr();
 		return true;
 	}
 	public final int p_Clear(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<13>";
 		m_root=null;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final c_Node5 p_FindNode(int t_key){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<157>";
 		c_Node5 t_node=m_root;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<159>";
 		while((t_node)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<160>";
 			int t_cmp=p_Compare(t_key,t_node.m_key);
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<161>";
 			if(t_cmp>0){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<162>";
 				t_node=t_node.m_right;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<163>";
 				if(t_cmp<0){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<164>";
 					t_node=t_node.m_left;
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<166>";
-					bb_std_lang.popErr();
 					return t_node;
 				}
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<169>";
-		bb_std_lang.popErr();
 		return t_node;
 	}
 	public final c_Unit p_Get3(int t_key){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<101>";
 		c_Node5 t_node=p_FindNode(t_key);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<102>";
 		if((t_node)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<102>";
-			bb_std_lang.popErr();
 			return t_node.m_value;
 		}
-		bb_std_lang.popErr();
 		return null;
 	}
 	public final boolean p_Set3(int t_key,c_Unit t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<29>";
 		c_Node5 t_node=m_root;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<30>";
 		c_Node5 t_parent=null;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<30>";
 		int t_cmp=0;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<32>";
 		while((t_node)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<33>";
 			t_parent=t_node;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<34>";
 			t_cmp=p_Compare(t_key,t_node.m_key);
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<35>";
 			if(t_cmp>0){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<36>";
 				t_node=t_node.m_right;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<37>";
 				if(t_cmp<0){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<38>";
 					t_node=t_node.m_left;
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<40>";
 					t_node.m_value=t_value;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<41>";
-					bb_std_lang.popErr();
 					return false;
 				}
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<45>";
 		t_node=(new c_Node5()).m_Node_new(t_key,t_value,-1,t_parent);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<47>";
 		if((t_parent)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<48>";
 			if(t_cmp>0){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<49>";
 				t_parent.m_right=t_node;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<51>";
 				t_parent.m_left=t_node;
 			}
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<53>";
 			p_InsertFixup3(t_node);
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<55>";
 			m_root=t_node;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<57>";
-		bb_std_lang.popErr();
 		return true;
 	}
 	public final c_MapKeys p_Keys(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<113>";
-		c_MapKeys t_=(new c_MapKeys()).m_MapKeys_new(this);
-		bb_std_lang.popErr();
-		return t_;
+		return (new c_MapKeys()).m_MapKeys_new(this);
 	}
 	public final c_Node5 p_FirstNode(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<125>";
 		if(!((m_root)!=null)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<125>";
-			bb_std_lang.popErr();
 			return null;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<127>";
 		c_Node5 t_node=m_root;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<128>";
 		while((t_node.m_left)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<129>";
 			t_node=t_node.m_left;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<131>";
-		bb_std_lang.popErr();
 		return t_node;
 	}
 }
 class c_IntMap2 extends c_Map3{
 	public final c_IntMap2 m_IntMap_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<534>";
 		super.m_Map_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<534>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final int p_Compare(int t_lhs,int t_rhs){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<537>";
-		int t_=t_lhs-t_rhs;
-		bb_std_lang.popErr();
-		return t_;
+		return t_lhs-t_rhs;
 	}
 }
 class c_List extends Object{
 	public final c_List m_List_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.popErr();
 		return this;
 	}
 	c_Node3 m__head=((new c_HeadNode()).m_HeadNode_new());
 	public final c_Node3 p_AddLast(c_Unit t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<108>";
-		c_Node3 t_=(new c_Node3()).m_Node_new(m__head,m__head.m__pred,t_data);
-		bb_std_lang.popErr();
-		return t_;
+		return (new c_Node3()).m_Node_new(m__head,m__head.m__pred,t_data);
 	}
 	public final c_List m_List_new2(c_Unit[] t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 		c_Unit[] t_=t_data;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 		int t_2=0;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 		while(t_2<bb_std_lang.length(t_)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 			c_Unit t_t=t_[t_2];
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 			t_2=t_2+1;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<14>";
 			p_AddLast(t_t);
 		}
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final int p_Clear(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<36>";
 		m__head.m__succ=m__head;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<37>";
 		m__head.m__pred=m__head;
-		bb_std_lang.popErr();
 		return 0;
 	}
 }
@@ -7277,37 +5427,22 @@ class c_Node3 extends Object{
 	c_Node3 m__pred=null;
 	c_Unit m__data=null;
 	public final c_Node3 m_Node_new(c_Node3 t_succ,c_Node3 t_pred,c_Unit t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<261>";
 		m__succ=t_succ;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<262>";
 		m__pred=t_pred;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<263>";
 		m__succ.m__pred=this;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<264>";
 		m__pred.m__succ=this;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<265>";
 		m__data=t_data;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_Node3 m_Node_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<258>";
-		bb_std_lang.popErr();
 		return this;
 	}
 }
 class c_HeadNode extends c_Node3{
 	public final c_HeadNode m_HeadNode_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<310>";
 		super.m_Node_new2();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<311>";
 		m__succ=(this);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<312>";
 		m__pred=(this);
-		bb_std_lang.popErr();
 		return this;
 	}
 }
@@ -7321,139 +5456,76 @@ class c_Particle extends Object{
 	int m_lifetime=0;
 	int m_team=0;
 	public final c_Particle m_Particle_new(c_Vec2D t_pos,float t_size,float t_power,float t_angle,float t_speed,int t_unit_team,int t_life_time){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/particle.monkey<15>";
 		this.m_position=(new c_Vec2D()).m_Vec2D_new(t_pos.m_x,t_pos.m_y,0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/particle.monkey<16>";
 		this.m_past_position=(new c_Vec2D()).m_Vec2D_new(t_pos.m_x,t_pos.m_y,0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/particle.monkey<17>";
 		this.m_size=t_size;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/particle.monkey<18>";
 		this.m_power=t_power;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/particle.monkey<19>";
 		this.m_speed=t_speed;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/particle.monkey<20>";
 		this.m_angle=t_angle;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/particle.monkey<21>";
 		this.m_lifetime=t_life_time;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/particle.monkey<22>";
 		this.m_team=t_unit_team;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_Particle m_Particle_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/particle.monkey<4>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final int p_Update(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/particle.monkey<32>";
 		float t_posx=m_position.m_x;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/particle.monkey<33>";
 		float t_posy=m_position.m_y;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/particle.monkey<34>";
 		m_past_position.p_Set4(t_posx,t_posy,0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/particle.monkey<35>";
 		m_position.p_Set4(m_position.m_x+m_speed*(float)Math.cos(m_angle*0.017453292500000002f),m_position.m_y+m_speed*(float)Math.sin(m_angle*0.017453292500000002f),0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/particle.monkey<36>";
 		m_lifetime=m_lifetime-1;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_Draw2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/particle.monkey<26>";
 		bb_graphics.g_SetColor((float)(55*this.m_team),0.0f,255.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/particle.monkey<27>";
 		bb_graphics.g_DrawCircle(m_position.m_x-m_size,m_position.m_y-m_size,m_size);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/particle.monkey<28>";
 		bb_graphics.g_DrawLine(m_past_position.m_x,m_past_position.m_y,m_position.m_x,m_position.m_y);
-		bb_std_lang.popErr();
 		return 0;
 	}
 }
 class c_List2 extends Object{
 	public final c_List2 m_List_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.popErr();
 		return this;
 	}
 	c_Node4 m__head=((new c_HeadNode2()).m_HeadNode_new());
 	public final c_Node4 p_AddLast2(c_Particle t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<108>";
-		c_Node4 t_=(new c_Node4()).m_Node_new(m__head,m__head.m__pred,t_data);
-		bb_std_lang.popErr();
-		return t_;
+		return (new c_Node4()).m_Node_new(m__head,m__head.m__pred,t_data);
 	}
 	public final c_List2 m_List_new2(c_Particle[] t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 		c_Particle[] t_=t_data;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 		int t_2=0;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 		while(t_2<bb_std_lang.length(t_)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 			c_Particle t_t=t_[t_2];
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 			t_2=t_2+1;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<14>";
 			p_AddLast2(t_t);
 		}
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final int p_Clear(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<36>";
 		m__head.m__succ=m__head;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<37>";
 		m__head.m__pred=m__head;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final c_Enumerator3 p_ObjectEnumerator(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<186>";
-		c_Enumerator3 t_=(new c_Enumerator3()).m_Enumerator_new(this);
-		bb_std_lang.popErr();
-		return t_;
+		return (new c_Enumerator3()).m_Enumerator_new(this);
 	}
 	public final boolean p_Equals(c_Particle t_lhs,c_Particle t_rhs){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<28>";
-		boolean t_=t_lhs==t_rhs;
-		bb_std_lang.popErr();
-		return t_;
+		return t_lhs==t_rhs;
 	}
 	public final int p_RemoveEach(c_Particle t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<151>";
 		c_Node4 t_node=m__head.m__succ;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<152>";
 		while(t_node!=m__head){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<153>";
 			c_Node4 t_succ=t_node.m__succ;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<154>";
 			if(p_Equals(t_node.m__data,t_value)){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<154>";
 				t_node.p_Remove2();
 			}
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<155>";
 			t_node=t_succ;
 		}
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final void p_Remove(c_Particle t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<137>";
 		p_RemoveEach(t_value);
-		bb_std_lang.popErr();
 	}
 }
 class c_Node4 extends Object{
@@ -7461,51 +5533,27 @@ class c_Node4 extends Object{
 	c_Node4 m__pred=null;
 	c_Particle m__data=null;
 	public final c_Node4 m_Node_new(c_Node4 t_succ,c_Node4 t_pred,c_Particle t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<261>";
 		m__succ=t_succ;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<262>";
 		m__pred=t_pred;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<263>";
 		m__succ.m__pred=this;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<264>";
 		m__pred.m__succ=this;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<265>";
 		m__data=t_data;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_Node4 m_Node_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<258>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final int p_Remove2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<274>";
-		if(m__succ.m__pred!=this){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<274>";
-			bb_std_lang.error("Illegal operation on removed node");
-		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<276>";
 		m__succ.m__pred=m__pred;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<277>";
 		m__pred.m__succ=m__succ;
-		bb_std_lang.popErr();
 		return 0;
 	}
 }
 class c_HeadNode2 extends c_Node4{
 	public final c_HeadNode2 m_HeadNode_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<310>";
 		super.m_Node_new2();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<311>";
 		m__succ=(this);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<312>";
 		m__pred=(this);
-		bb_std_lang.popErr();
 		return this;
 	}
 }
@@ -7519,296 +5567,171 @@ class c_UnitType extends Object{
 	int m_maxArmor=0;
 	c_Image m_image=null;
 	public final c_UnitType m_UnitType_new(c_JsonObject t_type_json){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit_type.monkey<17>";
 		this.m_id=t_type_json.p_GetInt("id",0);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit_type.monkey<18>";
 		this.m_name=t_type_json.p_GetString("name","");
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit_type.monkey<19>";
 		this.m_maxVelocity=t_type_json.p_GetFloat("speed",0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit_type.monkey<20>";
 		this.m_maxRotation=t_type_json.p_GetFloat("turn",0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit_type.monkey<21>";
 		this.m_maxEnergy=t_type_json.p_GetFloat("full_energy",0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit_type.monkey<22>";
 		this.m_chargeEnergy=t_type_json.p_GetFloat("charge_energy",0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit_type.monkey<23>";
 		this.m_maxArmor=t_type_json.p_GetInt("armor",0);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit_type.monkey<25>";
 		String t_image_name=t_type_json.p_GetString("image_name","");
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit_type.monkey<26>";
 		this.m_image=bb_graphics.g_LoadImage("images/"+t_image_name,1,1);
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_UnitType m_UnitType_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/unit_type.monkey<5>";
-		bb_std_lang.popErr();
 		return this;
 	}
 }
 abstract class c_Map4 extends Object{
 	public final c_Map4 m_Map_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<7>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	c_Node7 m_root=null;
 	public final int p_Clear(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<13>";
 		m_root=null;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public abstract int p_Compare(int t_lhs,int t_rhs);
 	public final int p_RotateLeft4(c_Node7 t_node){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<251>";
 		c_Node7 t_child=t_node.m_right;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<252>";
 		t_node.m_right=t_child.m_left;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<253>";
 		if((t_child.m_left)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<254>";
 			t_child.m_left.m_parent=t_node;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<256>";
 		t_child.m_parent=t_node.m_parent;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<257>";
 		if((t_node.m_parent)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<258>";
 			if(t_node==t_node.m_parent.m_left){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<259>";
 				t_node.m_parent.m_left=t_child;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<261>";
 				t_node.m_parent.m_right=t_child;
 			}
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<264>";
 			m_root=t_child;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<266>";
 		t_child.m_left=t_node;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<267>";
 		t_node.m_parent=t_child;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_RotateRight4(c_Node7 t_node){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<271>";
 		c_Node7 t_child=t_node.m_left;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<272>";
 		t_node.m_left=t_child.m_right;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<273>";
 		if((t_child.m_right)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<274>";
 			t_child.m_right.m_parent=t_node;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<276>";
 		t_child.m_parent=t_node.m_parent;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<277>";
 		if((t_node.m_parent)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<278>";
 			if(t_node==t_node.m_parent.m_right){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<279>";
 				t_node.m_parent.m_right=t_child;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<281>";
 				t_node.m_parent.m_left=t_child;
 			}
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<284>";
 			m_root=t_child;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<286>";
 		t_child.m_right=t_node;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<287>";
 		t_node.m_parent=t_child;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_InsertFixup4(c_Node7 t_node){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<212>";
 		while(((t_node.m_parent)!=null) && t_node.m_parent.m_color==-1 && ((t_node.m_parent.m_parent)!=null)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<213>";
 			if(t_node.m_parent==t_node.m_parent.m_parent.m_left){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<214>";
 				c_Node7 t_uncle=t_node.m_parent.m_parent.m_right;
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<215>";
 				if(((t_uncle)!=null) && t_uncle.m_color==-1){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<216>";
 					t_node.m_parent.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<217>";
 					t_uncle.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<218>";
 					t_uncle.m_parent.m_color=-1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<219>";
 					t_node=t_uncle.m_parent;
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<221>";
 					if(t_node==t_node.m_parent.m_right){
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<222>";
 						t_node=t_node.m_parent;
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<223>";
 						p_RotateLeft4(t_node);
 					}
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<225>";
 					t_node.m_parent.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<226>";
 					t_node.m_parent.m_parent.m_color=-1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<227>";
 					p_RotateRight4(t_node.m_parent.m_parent);
 				}
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<230>";
 				c_Node7 t_uncle2=t_node.m_parent.m_parent.m_left;
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<231>";
 				if(((t_uncle2)!=null) && t_uncle2.m_color==-1){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<232>";
 					t_node.m_parent.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<233>";
 					t_uncle2.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<234>";
 					t_uncle2.m_parent.m_color=-1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<235>";
 					t_node=t_uncle2.m_parent;
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<237>";
 					if(t_node==t_node.m_parent.m_left){
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<238>";
 						t_node=t_node.m_parent;
-						bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<239>";
 						p_RotateRight4(t_node);
 					}
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<241>";
 					t_node.m_parent.m_color=1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<242>";
 					t_node.m_parent.m_parent.m_color=-1;
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<243>";
 					p_RotateLeft4(t_node.m_parent.m_parent);
 				}
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<247>";
 		m_root.m_color=1;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final boolean p_Add2(int t_key,c_UnitType t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<61>";
 		c_Node7 t_node=m_root;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<62>";
 		c_Node7 t_parent=null;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<62>";
 		int t_cmp=0;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<64>";
 		while((t_node)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<65>";
 			t_parent=t_node;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<66>";
 			t_cmp=p_Compare(t_key,t_node.m_key);
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<67>";
 			if(t_cmp>0){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<68>";
 				t_node=t_node.m_right;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<69>";
 				if(t_cmp<0){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<70>";
 					t_node=t_node.m_left;
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<72>";
-					bb_std_lang.popErr();
 					return false;
 				}
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<76>";
 		t_node=(new c_Node7()).m_Node_new(t_key,t_value,-1,t_parent);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<78>";
 		if((t_parent)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<79>";
 			if(t_cmp>0){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<80>";
 				t_parent.m_right=t_node;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<82>";
 				t_parent.m_left=t_node;
 			}
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<84>";
 			p_InsertFixup4(t_node);
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<86>";
 			m_root=t_node;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<88>";
-		bb_std_lang.popErr();
 		return true;
 	}
 	public final c_Node7 p_FindNode(int t_key){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<157>";
 		c_Node7 t_node=m_root;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<159>";
 		while((t_node)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<160>";
 			int t_cmp=p_Compare(t_key,t_node.m_key);
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<161>";
 			if(t_cmp>0){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<162>";
 				t_node=t_node.m_right;
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<163>";
 				if(t_cmp<0){
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<164>";
 					t_node=t_node.m_left;
 				}else{
-					bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<166>";
-					bb_std_lang.popErr();
 					return t_node;
 				}
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<169>";
-		bb_std_lang.popErr();
 		return t_node;
 	}
 	public final c_UnitType p_Get3(int t_key){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<101>";
 		c_Node7 t_node=p_FindNode(t_key);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<102>";
 		if((t_node)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<102>";
-			bb_std_lang.popErr();
 			return t_node.m_value;
 		}
-		bb_std_lang.popErr();
 		return null;
 	}
 }
 class c_IntMap3 extends c_Map4{
 	public final c_IntMap3 m_IntMap_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<534>";
 		super.m_Map_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<534>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final int p_Compare(int t_lhs,int t_rhs){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<537>";
-		int t_=t_lhs-t_rhs;
-		bb_std_lang.popErr();
-		return t_;
+		return t_lhs-t_rhs;
 	}
 }
 class c_Button extends Object{
@@ -7816,34 +5739,19 @@ class c_Button extends Object{
 	c_Image m_image=null;
 	c_TouchBox m_touch_box=null;
 	public final c_Button m_Button_new(float t_x,float t_y,float t_hit_x,float t_hit_y,float t_width,float t_height,c_Image t_image){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<11>";
 		this.m_position=(new c_Vec2D()).m_Vec2D_new(t_x,t_y,0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<12>";
 		this.m_image=t_image;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<13>";
 		this.m_touch_box=(new c_TouchBox()).m_TouchBox_new(t_hit_x,t_hit_y,t_width,t_height);
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_Button m_Button_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<4>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final boolean p_Selected(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<17>";
-		boolean t_=this.m_touch_box.p_Selected2(bb_input.g_TouchX(0),bb_input.g_TouchY(0));
-		bb_std_lang.popErr();
-		return t_;
+		return this.m_touch_box.p_Selected2(bb_input.g_TouchX(0),bb_input.g_TouchY(0));
 	}
 	public final int p_Draw2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<21>";
 		bb_graphics.g_DrawImage(this.m_image,this.m_position.m_x,this.m_position.m_y,0);
-		bb_std_lang.popErr();
 		return 0;
 	}
 }
@@ -7852,21 +5760,13 @@ class c_Vec2D extends Object{
 	float m_y=.0f;
 	float m_heading=.0f;
 	public final int p_Set4(float t_x,float t_y,float t_h){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<23>";
 		this.m_x=t_x;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<24>";
 		this.m_y=t_y;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<25>";
 		this.m_heading=t_h;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final c_Vec2D m_Vec2D_new(float t_x,float t_y,float t_h){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<19>";
 		p_Set4(t_x,t_y,t_h);
-		bb_std_lang.popErr();
 		return this;
 	}
 }
@@ -7875,32 +5775,18 @@ class c_TouchBox extends Object{
 	float m_width=.0f;
 	float m_height=.0f;
 	public final c_TouchBox m_TouchBox_new(float t_x,float t_y,float t_width,float t_height){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<34>";
 		this.m_position=(new c_Vec2D()).m_Vec2D_new(t_x,t_y,0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<35>";
 		this.m_width=t_width;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<36>";
 		this.m_height=t_height;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_TouchBox m_TouchBox_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<28>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final boolean p_Selected2(float t_touch_x,float t_touch_y){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<43>";
 		if(t_touch_x>=this.m_position.m_x && t_touch_x<=this.m_position.m_x+this.m_width && t_touch_y>=this.m_position.m_y && t_touch_y<=this.m_position.m_y+this.m_height){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<44>";
-			bb_std_lang.popErr();
 			return true;
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<46>";
-			bb_std_lang.popErr();
 			return false;
 		}
 	}
@@ -7913,85 +5799,49 @@ class c_Camera extends Object{
 	int m_bottom_limit=0;
 	int m_right_limit=0;
 	public final c_Camera m_Camera_new(int t_game_width,int t_game_height,int t_screen_width,int t_screen_height){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<13>";
 		this.m_pan_distance=10.0f;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<14>";
 		this.m_position=(new c_Vec2D()).m_Vec2D_new(0.0f,0.0f,0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<16>";
 		this.m_top_limit=0;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<17>";
 		this.m_left_limit=0;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<18>";
 		this.m_bottom_limit=-1*(t_game_height-t_screen_height);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<19>";
 		this.m_right_limit=-1*(t_game_width-t_screen_width);
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final int p_Reset(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<23>";
 		this.m_position.m_x=0.0f;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<24>";
 		this.m_position.m_y=0.0f;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_MoveRight(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<28>";
 		bb_std_lang.print("Move Camera Right");
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<29>";
 		this.m_position.m_x-=m_pan_distance;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<30>";
 		if(this.m_position.m_x<(float)(this.m_right_limit)){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<31>";
 			this.m_position.m_x=(float)(this.m_right_limit);
 		}
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_MoveLeft(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<36>";
 		bb_std_lang.print("Move Camera Left");
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<37>";
 		this.m_position.m_x+=m_pan_distance;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<38>";
 		if(this.m_position.m_x>(float)(this.m_left_limit)){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<39>";
 			this.m_position.m_x=(float)(this.m_left_limit);
 		}
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_MoveUp(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<44>";
 		bb_std_lang.print("Move Camera Up");
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<45>";
 		this.m_position.m_y+=m_pan_distance;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<46>";
 		if(this.m_position.m_y>(float)(this.m_top_limit)){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<47>";
 			this.m_position.m_y=(float)(this.m_top_limit);
 		}
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public final int p_MoveDown(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<52>";
 		bb_std_lang.print("Move Camera Down");
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<53>";
 		this.m_position.m_y-=m_pan_distance;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<54>";
 		if(this.m_position.m_y<(float)(this.m_bottom_limit)){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/camera.monkey<55>";
 			this.m_position.m_y=(float)(this.m_bottom_limit);
 		}
-		bb_std_lang.popErr();
 		return 0;
 	}
 }
@@ -8000,261 +5850,147 @@ interface c_IAsyncEventSource{
 }
 class c_HttpRequest extends Object implements c_IAsyncEventSource{
 	public final c_HttpRequest m_HttpRequest_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.popErr();
 		return this;
 	}
 	BBHttpRequest m__req=null;
 	c_IOnHttpRequestComplete m__onComplete=null;
 	public final void p_Open(String t_req,String t_url,c_IOnHttpRequestComplete t_onComplete){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<38>";
 		if(((m__req)!=null) && m__req.IsRunning()){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<38>";
 			bb_std_lang.error("HttpRequest in progress");
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<40>";
 		m__req=(new BBHttpRequest());
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<41>";
 		m__onComplete=t_onComplete;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<43>";
 		m__req.Open(t_req,t_url);
-		bb_std_lang.popErr();
 	}
 	public final c_HttpRequest m_HttpRequest_new2(String t_req,String t_url,c_IOnHttpRequestComplete t_onComplete){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<34>";
 		p_Open(t_req,t_url,t_onComplete);
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final void p_Send(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<54>";
 		if(!((m__req)!=null)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<54>";
 			bb_std_lang.error("HttpRequest not open");
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<55>";
 		if(m__req.IsRunning()){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<55>";
 			bb_std_lang.error("HttpRequest in progress");
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<57>";
 		bb_asyncevent.g_AddAsyncEventSource(this);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<58>";
 		m__req.Send();
-		bb_std_lang.popErr();
 	}
 	public final void p_Send2(String t_data,String t_mimeType,String t_encoding){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<62>";
 		if(!((m__req)!=null)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<62>";
 			bb_std_lang.error("HttpRequest not open");
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<63>";
 		if(m__req.IsRunning()){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<63>";
 			bb_std_lang.error("HttpRequest in progress");
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<65>";
 		if((t_mimeType).length()!=0){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<65>";
 			m__req.SetHeader("Content-Type",t_mimeType);
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<67>";
 		bb_asyncevent.g_AddAsyncEventSource(this);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<68>";
 		m__req.SendText(t_data,t_encoding);
-		bb_std_lang.popErr();
 	}
 	public final void p_UpdateAsyncEvents(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<92>";
 		if(m__req.IsRunning()){
-			bb_std_lang.popErr();
 			return;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<93>";
 		bb_asyncevent.g_RemoveAsyncEventSource(this);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<94>";
 		m__onComplete.p_OnHttpRequestComplete(this);
-		bb_std_lang.popErr();
 	}
 	public final int p_Status(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<72>";
 		if(!((m__req)!=null)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<72>";
 			bb_std_lang.error("HttpRequest not open");
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<73>";
-		int t_=m__req.Status();
-		bb_std_lang.popErr();
-		return t_;
+		return m__req.Status();
 	}
 	public final String p_ResponseText(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<77>";
 		if(!((m__req)!=null)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<77>";
 			bb_std_lang.error("HttpRequest not open");
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/httprequest.monkey<78>";
-		String t_=m__req.ResponseText();
-		bb_std_lang.popErr();
-		return t_;
+		return m__req.ResponseText();
 	}
 }
 class c_Stack4 extends Object{
 	public final c_Stack4 m_Stack_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.popErr();
 		return this;
 	}
 	c_IAsyncEventSource[] m_data=new c_IAsyncEventSource[0];
 	int m_length=0;
 	public final c_Stack4 m_Stack_new2(c_IAsyncEventSource[] t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<13>";
 		this.m_data=((c_IAsyncEventSource[])bb_std_lang.sliceArray(t_data,0));
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<14>";
 		this.m_length=bb_std_lang.length(t_data);
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final boolean p_Equals2(c_IAsyncEventSource t_lhs,c_IAsyncEventSource t_rhs){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<26>";
-		boolean t_=t_lhs==t_rhs;
-		bb_std_lang.popErr();
-		return t_;
+		return t_lhs==t_rhs;
 	}
 	public final boolean p_Contains3(c_IAsyncEventSource t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<64>";
 		for(int t_i=0;t_i<m_length;t_i=t_i+1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<65>";
 			if(p_Equals2(m_data[t_i],t_value)){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<65>";
-				bb_std_lang.popErr();
 				return true;
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<67>";
-		bb_std_lang.popErr();
 		return false;
 	}
 	public final void p_Push10(c_IAsyncEventSource t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<71>";
 		if(m_length==bb_std_lang.length(m_data)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<72>";
 			m_data=(c_IAsyncEventSource[])bb_std_lang.resize(m_data,m_length*2+10,c_IAsyncEventSource.class);
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<74>";
 		m_data[m_length]=t_value;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<75>";
 		m_length+=1;
-		bb_std_lang.popErr();
 	}
 	public final void p_Push11(c_IAsyncEventSource[] t_values,int t_offset,int t_count){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<83>";
 		for(int t_i=0;t_i<t_count;t_i=t_i+1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<84>";
 			p_Push10(t_values[t_offset+t_i]);
 		}
-		bb_std_lang.popErr();
 	}
 	public final void p_Push12(c_IAsyncEventSource[] t_values,int t_offset){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<79>";
 		p_Push11(t_values,t_offset,bb_std_lang.length(t_values)-t_offset);
-		bb_std_lang.popErr();
 	}
 	static c_IAsyncEventSource m_NIL;
 	public final void p_Length2(int t_newlength){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<45>";
 		if(t_newlength<m_length){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<46>";
 			for(int t_i=t_newlength;t_i<m_length;t_i=t_i+1){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<47>";
 				m_data[t_i]=m_NIL;
 			}
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<49>";
 			if(t_newlength>bb_std_lang.length(m_data)){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<50>";
 				m_data=(c_IAsyncEventSource[])bb_std_lang.resize(m_data,bb_math2.g_Max(m_length*2+10,t_newlength),c_IAsyncEventSource.class);
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<52>";
 		m_length=t_newlength;
-		bb_std_lang.popErr();
 	}
 	public final int p_Length(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<56>";
-		bb_std_lang.popErr();
 		return m_length;
 	}
 	public final c_IAsyncEventSource p_Get3(int t_index){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<104>";
-		bb_std_lang.popErr();
 		return m_data[t_index];
 	}
 	public final void p_RemoveEach2(c_IAsyncEventSource t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<155>";
 		int t_i=0;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<155>";
 		int t_j=m_length;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<156>";
 		while(t_i<m_length){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<157>";
 			if(!p_Equals2(m_data[t_i],t_value)){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<158>";
 				t_i+=1;
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<159>";
 				continue;
 			}
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<161>";
 			int t_b=t_i;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<161>";
 			int t_e=t_i+1;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<162>";
 			while(t_e<m_length && p_Equals2(m_data[t_e],t_value)){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<163>";
 				t_e+=1;
 			}
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<165>";
 			while(t_e<m_length){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<166>";
 				m_data[t_b]=m_data[t_e];
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<167>";
 				t_b+=1;
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<168>";
 				t_e+=1;
 			}
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<170>";
 			m_length-=t_e-t_b;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<171>";
 			t_i+=1;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<173>";
 		t_i=m_length;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<174>";
 		while(t_i<t_j){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<175>";
 			m_data[t_i]=m_NIL;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/stack.monkey<176>";
 			t_i+=1;
 		}
-		bb_std_lang.popErr();
 	}
 }
 class c_ControlPoint extends Object{
@@ -8265,177 +6001,90 @@ class c_ControlPoint extends Object{
 	float m_heading=.0f;
 	c_Image m_image=null;
 	public final c_ControlPoint m_ControlPoint_new(float t_x,float t_y,float t_heading,float t_width,float t_height){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<12>";
 		this.m_position=(new c_Vec2D()).m_Vec2D_new(t_x,t_y,0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<13>";
 		this.m_width=t_width;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<14>";
 		this.m_height=t_height;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<15>";
 		this.m_selected=false;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<16>";
 		this.m_heading=t_heading;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<17>";
 		this.m_image=bb_graphics.g_LoadImage("images/control_point.png",1,1);
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_ControlPoint m_ControlPoint_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<3>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final int p_Draw2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<22>";
 		if(this.m_selected){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<23>";
 			bb_graphics.g_SetColor(255.0f,255.0f,128.0f);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<24>";
 			bb_graphics.g_DrawCircle(this.m_position.m_x,this.m_position.m_y,10.0f);
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<25>";
 			bb_graphics.g_SetColor(255.0f,255.0f,255.0f);
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/control_point.monkey<27>";
 		bb_graphics.g_DrawImage2(this.m_image,this.m_position.m_x,this.m_position.m_y,-this.m_position.m_heading,0.2f,0.2f,0);
-		bb_std_lang.popErr();
 		return 0;
 	}
 }
 class c_Deque extends Object{
 	public final c_Deque m_Deque_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.popErr();
 		return this;
 	}
 	c_Vec2D[] m__data=new c_Vec2D[4];
 	int m__capacity=0;
 	int m__last=0;
 	public final c_Deque m_Deque_new2(c_Vec2D[] t_arr){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<8>";
 		m__data=((c_Vec2D[])bb_std_lang.sliceArray(t_arr,0));
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<9>";
 		m__capacity=bb_std_lang.length(m__data);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<10>";
 		m__last=m__capacity;
-		bb_std_lang.popErr();
 		return this;
 	}
 	int m__first=0;
 	public final int p_Length(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<31>";
 		if(m__last>=m__first){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<31>";
-			int t_=m__last-m__first;
-			bb_std_lang.popErr();
-			return t_;
+			return m__last-m__first;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<32>";
-		int t_2=m__capacity-m__first+m__last;
-		bb_std_lang.popErr();
-		return t_2;
+		return m__capacity-m__first+m__last;
 	}
 	public final void p_Grow(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<135>";
 		c_Vec2D[] t_data=new c_Vec2D[m__capacity*2+10];
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<136>";
 		if(m__first<=m__last){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<137>";
 			for(int t_i=m__first;t_i<m__last;t_i=t_i+1){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<138>";
 				t_data[t_i-m__first]=m__data[t_i];
 			}
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<140>";
 			m__last-=m__first;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<141>";
 			m__first=0;
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<143>";
 			int t_n=m__capacity-m__first;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<144>";
 			for(int t_i2=0;t_i2<t_n;t_i2=t_i2+1){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<145>";
 				t_data[t_i2]=m__data[m__first+t_i2];
 			}
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<147>";
 			for(int t_i3=0;t_i3<m__last;t_i3=t_i3+1){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<148>";
 				t_data[t_n+t_i3]=m__data[t_i3];
 			}
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<150>";
 			m__last+=t_n;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<151>";
 			m__first=0;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<153>";
 		m__capacity=bb_std_lang.length(t_data);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<154>";
 		m__data=t_data;
-		bb_std_lang.popErr();
 	}
 	public final void p_PushLast(c_Vec2D t_value){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<83>";
 		if(p_Length()+1>=m__capacity){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<83>";
 			p_Grow();
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<84>";
 		m__data[m__last]=t_value;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<85>";
 		m__last+=1;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<86>";
 		if(m__last==m__capacity){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<86>";
 			m__last=0;
 		}
-		bb_std_lang.popErr();
 	}
 	public final c_Vec2D p_Get3(int t_index){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<63>";
-		if(t_index<0 || t_index>=p_Length()){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<63>";
-			bb_std_lang.error("Illegal deque index");
-		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<65>";
-		c_Vec2D t_=m__data[(t_index+m__first) % m__capacity];
-		bb_std_lang.popErr();
-		return t_;
-	}
-	public final boolean p_IsEmpty(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<36>";
-		boolean t_=m__first==m__last;
-		bb_std_lang.popErr();
-		return t_;
+		return m__data[(t_index+m__first) % m__capacity];
 	}
 	static c_Vec2D m_NIL;
 	public final c_Vec2D p_PopFirst(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<91>";
-		if(p_IsEmpty()){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<91>";
-			bb_std_lang.error("Illegal operation on empty deque");
-		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<93>";
 		c_Vec2D t_v=m__data[m__first];
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<94>";
 		m__data[m__first]=m_NIL;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<95>";
 		m__first+=1;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<96>";
 		if(m__first==m__capacity){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<96>";
 			m__first=0;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/deque.monkey<97>";
-		bb_std_lang.popErr();
 		return t_v;
 	}
 }
@@ -8447,54 +6096,30 @@ class c_Node5 extends Object{
 	int m_color=0;
 	c_Node5 m_parent=null;
 	public final c_Node5 m_Node_new(int t_key,c_Unit t_value,int t_color,c_Node5 t_parent){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<364>";
 		this.m_key=t_key;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<365>";
 		this.m_value=t_value;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<366>";
 		this.m_color=t_color;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<367>";
 		this.m_parent=t_parent;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_Node5 m_Node_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<361>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_Node5 p_NextNode(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<385>";
 		c_Node5 t_node=null;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<386>";
 		if((m_right)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<387>";
 			t_node=m_right;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<388>";
 			while((t_node.m_left)!=null){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<389>";
 				t_node=t_node.m_left;
 			}
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<391>";
-			bb_std_lang.popErr();
 			return t_node;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<393>";
 		t_node=this;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<394>";
 		c_Node5 t_parent=this.m_parent;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<395>";
 		while(((t_parent)!=null) && t_node==t_parent.m_right){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<396>";
 			t_node=t_parent;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<397>";
 			t_parent=t_parent.m_parent;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<399>";
-		bb_std_lang.popErr();
 		return t_parent;
 	}
 }
@@ -8502,80 +6127,44 @@ class c_GameSelect extends Object{
 	String m_game_id="";
 	c_TouchBox m_touch_box=null;
 	public final c_GameSelect m_GameSelect_new(float t_x,float t_y,float t_width,float t_height,String t_game_id){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<56>";
 		this.m_game_id=t_game_id;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<57>";
 		this.m_touch_box=(new c_TouchBox()).m_TouchBox_new(t_x,t_y,t_width,t_height);
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_GameSelect m_GameSelect_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<51>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final boolean p_Selected(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<61>";
-		boolean t_=this.m_touch_box.p_Selected2(bb_input.g_TouchX(0),bb_input.g_TouchY(0));
-		bb_std_lang.popErr();
-		return t_;
+		return this.m_touch_box.p_Selected2(bb_input.g_TouchX(0),bb_input.g_TouchY(0));
 	}
 	public final int p_Draw2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<65>";
 		bb_graphics.g_SetColor(0.0f,200.0f,0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<66>";
 		bb_graphics.g_DrawRect(this.m_touch_box.m_position.m_x,this.m_touch_box.m_position.m_y,this.m_touch_box.m_width,this.m_touch_box.m_height);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<67>";
 		bb_graphics.g_SetColor(255.0f,255.0f,255.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/user_interface.monkey<68>";
 		bb_graphics.g_DrawText(this.m_game_id,this.m_touch_box.m_position.m_x+5.0f,this.m_touch_box.m_position.m_y+5.0f,0.0f,0.0f);
-		bb_std_lang.popErr();
 		return 0;
 	}
 }
 class c_List3 extends Object{
 	public final c_List3 m_List_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.popErr();
 		return this;
 	}
 	c_Node6 m__head=((new c_HeadNode3()).m_HeadNode_new());
 	public final c_Node6 p_AddLast3(c_GameSelect t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<108>";
-		c_Node6 t_=(new c_Node6()).m_Node_new(m__head,m__head.m__pred,t_data);
-		bb_std_lang.popErr();
-		return t_;
+		return (new c_Node6()).m_Node_new(m__head,m__head.m__pred,t_data);
 	}
 	public final c_List3 m_List_new2(c_GameSelect[] t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 		c_GameSelect[] t_=t_data;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 		int t_2=0;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 		while(t_2<bb_std_lang.length(t_)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 			c_GameSelect t_t=t_[t_2];
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 			t_2=t_2+1;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<14>";
 			p_AddLast3(t_t);
 		}
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_Enumerator p_ObjectEnumerator(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<186>";
-		c_Enumerator t_=(new c_Enumerator()).m_Enumerator_new(this);
-		bb_std_lang.popErr();
-		return t_;
+		return (new c_Enumerator()).m_Enumerator_new(this);
 	}
 }
 class c_Node6 extends Object{
@@ -8583,37 +6172,22 @@ class c_Node6 extends Object{
 	c_Node6 m__pred=null;
 	c_GameSelect m__data=null;
 	public final c_Node6 m_Node_new(c_Node6 t_succ,c_Node6 t_pred,c_GameSelect t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<261>";
 		m__succ=t_succ;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<262>";
 		m__pred=t_pred;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<263>";
 		m__succ.m__pred=this;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<264>";
 		m__pred.m__succ=this;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<265>";
 		m__data=t_data;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_Node6 m_Node_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<258>";
-		bb_std_lang.popErr();
 		return this;
 	}
 }
 class c_HeadNode3 extends c_Node6{
 	public final c_HeadNode3 m_HeadNode_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<310>";
 		super.m_Node_new2();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<311>";
 		m__succ=(this);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<312>";
 		m__pred=(this);
-		bb_std_lang.popErr();
 		return this;
 	}
 }
@@ -8625,78 +6199,44 @@ class c_Node7 extends Object{
 	int m_color=0;
 	c_Node7 m_parent=null;
 	public final c_Node7 m_Node_new(int t_key,c_UnitType t_value,int t_color,c_Node7 t_parent){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<364>";
 		this.m_key=t_key;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<365>";
 		this.m_value=t_value;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<366>";
 		this.m_color=t_color;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<367>";
 		this.m_parent=t_parent;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_Node7 m_Node_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<361>";
-		bb_std_lang.popErr();
 		return this;
 	}
 }
 class c_MapKeys extends Object{
 	c_Map3 m_map=null;
 	public final c_MapKeys m_MapKeys_new(c_Map3 t_map){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<503>";
 		this.m_map=t_map;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_MapKeys m_MapKeys_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<500>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_KeyEnumerator p_ObjectEnumerator(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<507>";
-		c_KeyEnumerator t_=(new c_KeyEnumerator()).m_KeyEnumerator_new(m_map.p_FirstNode());
-		bb_std_lang.popErr();
-		return t_;
+		return (new c_KeyEnumerator()).m_KeyEnumerator_new(m_map.p_FirstNode());
 	}
 }
 class c_KeyEnumerator extends Object{
 	c_Node5 m_node=null;
 	public final c_KeyEnumerator m_KeyEnumerator_new(c_Node5 t_node){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<459>";
 		this.m_node=t_node;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_KeyEnumerator m_KeyEnumerator_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<456>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final boolean p_HasNext(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<463>";
-		boolean t_=m_node!=null;
-		bb_std_lang.popErr();
-		return t_;
+		return m_node!=null;
 	}
 	public final int p_NextObject(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<467>";
 		c_Node5 t_t=m_node;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<468>";
 		m_node=m_node.p_NextNode();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/map.monkey<469>";
-		bb_std_lang.popErr();
 		return t_t.m_key;
 	}
 }
@@ -8704,120 +6244,64 @@ class c_Enumerator extends Object{
 	c_List3 m__list=null;
 	c_Node6 m__curr=null;
 	public final c_Enumerator m_Enumerator_new(c_List3 t_list){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<326>";
 		m__list=t_list;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<327>";
 		m__curr=t_list.m__head.m__succ;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_Enumerator m_Enumerator_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<323>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final boolean p_HasNext(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<331>";
 		while(m__curr.m__succ.m__pred!=m__curr){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<332>";
 			m__curr=m__curr.m__succ;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<334>";
-		boolean t_=m__curr!=m__list.m__head;
-		bb_std_lang.popErr();
-		return t_;
+		return m__curr!=m__list.m__head;
 	}
 	public final c_GameSelect p_NextObject(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<338>";
 		c_GameSelect t_data=m__curr.m__data;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<339>";
 		m__curr=m__curr.m__succ;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<340>";
-		bb_std_lang.popErr();
 		return t_data;
 	}
 }
 class c_List4 extends Object{
 	public final c_List4 m_List_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.popErr();
 		return this;
 	}
 	c_Node8 m__head=((new c_HeadNode4()).m_HeadNode_new());
 	public final c_Node8 p_AddLast4(int t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<108>";
-		c_Node8 t_=(new c_Node8()).m_Node_new(m__head,m__head.m__pred,t_data);
-		bb_std_lang.popErr();
-		return t_;
+		return (new c_Node8()).m_Node_new(m__head,m__head.m__pred,t_data);
 	}
 	public final c_List4 m_List_new2(int[] t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 		int[] t_=t_data;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 		int t_2=0;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 		while(t_2<bb_std_lang.length(t_)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 			int t_t=t_[t_2];
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<13>";
 			t_2=t_2+1;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<14>";
 			p_AddLast4(t_t);
 		}
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final int p_Count(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<41>";
 		int t_n=0;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<41>";
 		c_Node8 t_node=m__head.m__succ;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<42>";
 		while(t_node!=m__head){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<43>";
 			t_node=t_node.m__succ;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<44>";
 			t_n+=1;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<46>";
-		bb_std_lang.popErr();
 		return t_n;
 	}
 	public final c_Enumerator2 p_ObjectEnumerator(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<186>";
-		c_Enumerator2 t_=(new c_Enumerator2()).m_Enumerator_new(this);
-		bb_std_lang.popErr();
-		return t_;
+		return (new c_Enumerator2()).m_Enumerator_new(this);
 	}
 	public final int[] p_ToArray(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<19>";
 		int[] t_arr=new int[p_Count()];
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<19>";
 		int t_i=0;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<20>";
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<20>";
 		c_Enumerator2 t_=this.p_ObjectEnumerator();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<20>";
 		while(t_.p_HasNext()){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<20>";
 			int t_t=t_.p_NextObject();
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<21>";
 			t_arr[t_i]=t_t;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<22>";
 			t_i+=1;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<24>";
-		bb_std_lang.popErr();
 		return t_arr;
 	}
 }
@@ -8826,37 +6310,22 @@ class c_Node8 extends Object{
 	c_Node8 m__pred=null;
 	int m__data=0;
 	public final c_Node8 m_Node_new(c_Node8 t_succ,c_Node8 t_pred,int t_data){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<261>";
 		m__succ=t_succ;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<262>";
 		m__pred=t_pred;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<263>";
 		m__succ.m__pred=this;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<264>";
 		m__pred.m__succ=this;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<265>";
 		m__data=t_data;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_Node8 m_Node_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<258>";
-		bb_std_lang.popErr();
 		return this;
 	}
 }
 class c_HeadNode4 extends c_Node8{
 	public final c_HeadNode4 m_HeadNode_new(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<310>";
 		super.m_Node_new2();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<311>";
 		m__succ=(this);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<312>";
 		m__pred=(this);
-		bb_std_lang.popErr();
 		return this;
 	}
 }
@@ -8864,40 +6333,22 @@ class c_Enumerator2 extends Object{
 	c_List4 m__list=null;
 	c_Node8 m__curr=null;
 	public final c_Enumerator2 m_Enumerator_new(c_List4 t_list){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<326>";
 		m__list=t_list;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<327>";
 		m__curr=t_list.m__head.m__succ;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_Enumerator2 m_Enumerator_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<323>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final boolean p_HasNext(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<331>";
 		while(m__curr.m__succ.m__pred!=m__curr){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<332>";
 			m__curr=m__curr.m__succ;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<334>";
-		boolean t_=m__curr!=m__list.m__head;
-		bb_std_lang.popErr();
-		return t_;
+		return m__curr!=m__list.m__head;
 	}
 	public final int p_NextObject(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<338>";
 		int t_data=m__curr.m__data;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<339>";
 		m__curr=m__curr.m__succ;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<340>";
-		bb_std_lang.popErr();
 		return t_data;
 	}
 }
@@ -8905,40 +6356,22 @@ class c_Enumerator3 extends Object{
 	c_List2 m__list=null;
 	c_Node4 m__curr=null;
 	public final c_Enumerator3 m_Enumerator_new(c_List2 t_list){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<326>";
 		m__list=t_list;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<327>";
 		m__curr=t_list.m__head.m__succ;
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final c_Enumerator3 m_Enumerator_new2(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<323>";
-		bb_std_lang.popErr();
 		return this;
 	}
 	public final boolean p_HasNext(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<331>";
 		while(m__curr.m__succ.m__pred!=m__curr){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<332>";
 			m__curr=m__curr.m__succ;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<334>";
-		boolean t_=m__curr!=m__list.m__head;
-		bb_std_lang.popErr();
-		return t_;
+		return m__curr!=m__list.m__head;
 	}
 	public final c_Particle p_NextObject(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<338>";
 		c_Particle t_data=m__curr.m__data;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<339>";
 		m__curr=m__curr.m__succ;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/list.monkey<340>";
-		bb_std_lang.popErr();
 		return t_data;
 	}
 }
@@ -8949,54 +6382,32 @@ class bb_Mojo{
 class bb_asyncevent{
 	static c_Stack4 g__sources;
 	public static void g_AddAsyncEventSource(c_IAsyncEventSource t_source){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<14>";
 		if(bb_asyncevent.g__sources.p_Contains3(t_source)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<14>";
 			bb_std_lang.error("Async event source is already active");
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<15>";
 		bb_asyncevent.g__sources.p_Push10(t_source);
-		bb_std_lang.popErr();
 	}
 	static c_IAsyncEventSource g__current;
 	public static int g_UpdateAsyncEvents(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<24>";
 		if((bb_asyncevent.g__current)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<24>";
-			bb_std_lang.popErr();
 			return 0;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<25>";
 		int t_i=0;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<26>";
 		while(t_i<bb_asyncevent.g__sources.p_Length()){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<27>";
 			bb_asyncevent.g__current=bb_asyncevent.g__sources.p_Get3(t_i);
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<28>";
 			bb_asyncevent.g__current.p_UpdateAsyncEvents();
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<29>";
 			if((bb_asyncevent.g__current)!=null){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<29>";
 				t_i+=1;
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<31>";
 		bb_asyncevent.g__current=null;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static void g_RemoveAsyncEventSource(c_IAsyncEventSource t_source){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<19>";
 		if(t_source==bb_asyncevent.g__current){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<19>";
 			bb_asyncevent.g__current=null;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/asyncevent.monkey<20>";
 		bb_asyncevent.g__sources.p_RemoveEach2(t_source);
-		bb_std_lang.popErr();
 	}
 }
 class bb_gametarget{
@@ -9005,8 +6416,6 @@ class bb_httprequest{
 }
 class bb_json{
 	public static void g_ThrowError(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/brl/json.monkey<6>";
 		throw (new c_JsonError()).m_JsonError_new();
 	}
 }
@@ -9019,103 +6428,58 @@ class bb_app{
 	static int g__devWidth;
 	static int g__devHeight;
 	public static void g_ValidateDeviceWindow(boolean t_notifyApp){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<57>";
 		int t_w=bb_app.g__game.GetDeviceWidth();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<58>";
 		int t_h=bb_app.g__game.GetDeviceHeight();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<59>";
 		if(t_w==bb_app.g__devWidth && t_h==bb_app.g__devHeight){
-			bb_std_lang.popErr();
 			return;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<60>";
 		bb_app.g__devWidth=t_w;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<61>";
 		bb_app.g__devHeight=t_h;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<62>";
 		if(t_notifyApp){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<62>";
 			bb_app.g__app.p_OnResize();
 		}
-		bb_std_lang.popErr();
 	}
 	static c_DisplayMode[] g__displayModes;
 	static c_DisplayMode g__desktopMode;
 	public static int g_DeviceWidth(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<263>";
-		bb_std_lang.popErr();
 		return bb_app.g__devWidth;
 	}
 	public static int g_DeviceHeight(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<267>";
-		bb_std_lang.popErr();
 		return bb_app.g__devHeight;
 	}
 	public static void g_EnumDisplayModes(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<33>";
 		BBDisplayMode[] t_modes=bb_app.g__game.GetDisplayModes();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<34>";
 		c_IntMap t_mmap=(new c_IntMap()).m_IntMap_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<35>";
 		c_Stack t_mstack=(new c_Stack()).m_Stack_new();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<36>";
 		for(int t_i=0;t_i<bb_std_lang.length(t_modes);t_i=t_i+1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<37>";
 			int t_w=t_modes[t_i].width;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<38>";
 			int t_h=t_modes[t_i].height;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<39>";
 			int t_size=t_w<<16|t_h;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<40>";
 			if(t_mmap.p_Contains(t_size)){
 			}else{
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<42>";
 				c_DisplayMode t_mode=(new c_DisplayMode()).m_DisplayMode_new(t_modes[t_i].width,t_modes[t_i].height);
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<43>";
 				t_mmap.p_Insert(t_size,t_mode);
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<44>";
 				t_mstack.p_Push(t_mode);
 			}
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<47>";
 		bb_app.g__displayModes=t_mstack.p_ToArray();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<48>";
 		BBDisplayMode t_mode2=bb_app.g__game.GetDesktopMode();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<49>";
 		if((t_mode2)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<50>";
 			bb_app.g__desktopMode=(new c_DisplayMode()).m_DisplayMode_new(t_mode2.width,t_mode2.height);
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<52>";
 			bb_app.g__desktopMode=(new c_DisplayMode()).m_DisplayMode_new(bb_app.g_DeviceWidth(),bb_app.g_DeviceHeight());
 		}
-		bb_std_lang.popErr();
 	}
 	public static void g_EndApp(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<259>";
 		bb_std_lang.error("");
-		bb_std_lang.popErr();
 	}
 	public static int g_Millisecs(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<233>";
-		int t_=bb_app.g__game.Millisecs();
-		bb_std_lang.popErr();
-		return t_;
+		return bb_app.g__game.Millisecs();
 	}
 	static int g__updateRate;
 	public static void g_SetUpdateRate(int t_hertz){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<224>";
 		bb_app.g__updateRate=t_hertz;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/app.monkey<225>";
 		bb_app.g__game.SetUpdateRate(t_hertz);
-		bb_std_lang.popErr();
 	}
 }
 class bb_asyncimageloader{
@@ -9127,10 +6491,7 @@ class bb_asyncsoundloader{
 class bb_audio{
 	static gxtkAudio g_device;
 	public static int g_SetAudioDevice(gxtkAudio t_dev){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/audio.monkey<22>";
 		bb_audio.g_device=t_dev;
-		bb_std_lang.popErr();
 		return 0;
 	}
 }
@@ -9138,25 +6499,14 @@ class bb_audiodevice{
 }
 class bb_data{
 	public static String g_FixDataPath(String t_path){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/data.monkey<7>";
 		int t_i=t_path.indexOf(":/",0);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/data.monkey<8>";
 		if(t_i!=-1 && t_path.indexOf("/",0)==t_i+1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/data.monkey<8>";
-			bb_std_lang.popErr();
 			return t_path;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/data.monkey<9>";
 		if(t_path.startsWith("./") || t_path.startsWith("/")){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/data.monkey<9>";
-			bb_std_lang.popErr();
 			return t_path;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/data.monkey<10>";
-		String t_="monkey://data/"+t_path;
-		bb_std_lang.popErr();
-		return t_;
+		return "monkey://data/"+t_path;
 	}
 }
 class bb_driver{
@@ -9164,399 +6514,201 @@ class bb_driver{
 class bb_graphics{
 	static gxtkGraphics g_device;
 	public static int g_SetGraphicsDevice(gxtkGraphics t_dev){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<63>";
 		bb_graphics.g_device=t_dev;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	static c_GraphicsContext g_context;
 	public static c_Image g_LoadImage(String t_path,int t_frameCount,int t_flags){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<239>";
 		gxtkSurface t_surf=bb_graphics.g_device.LoadSurface(bb_data.g_FixDataPath(t_path));
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<240>";
 		if((t_surf)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<240>";
-			c_Image t_=((new c_Image()).m_Image_new()).p_Init(t_surf,t_frameCount,t_flags);
-			bb_std_lang.popErr();
-			return t_;
+			return ((new c_Image()).m_Image_new()).p_Init(t_surf,t_frameCount,t_flags);
 		}
-		bb_std_lang.popErr();
 		return null;
 	}
 	public static c_Image g_LoadImage2(String t_path,int t_frameWidth,int t_frameHeight,int t_frameCount,int t_flags){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<244>";
 		gxtkSurface t_surf=bb_graphics.g_device.LoadSurface(bb_data.g_FixDataPath(t_path));
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<245>";
 		if((t_surf)!=null){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<245>";
-			c_Image t_=((new c_Image()).m_Image_new()).p_Init2(t_surf,0,0,t_frameWidth,t_frameHeight,t_frameCount,t_flags,null,0,0,t_surf.Width(),t_surf.Height());
-			bb_std_lang.popErr();
-			return t_;
+			return ((new c_Image()).m_Image_new()).p_Init2(t_surf,0,0,t_frameWidth,t_frameHeight,t_frameCount,t_flags,null,0,0,t_surf.Width(),t_surf.Height());
 		}
-		bb_std_lang.popErr();
 		return null;
 	}
 	public static int g_SetFont(c_Image t_font,int t_firstChar){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<548>";
 		if(!((t_font)!=null)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<549>";
 			if(!((bb_graphics.g_context.m_defaultFont)!=null)){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<550>";
 				bb_graphics.g_context.m_defaultFont=bb_graphics.g_LoadImage("mojo_font.png",96,2);
 			}
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<552>";
 			t_font=bb_graphics.g_context.m_defaultFont;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<553>";
 			t_firstChar=32;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<555>";
 		bb_graphics.g_context.m_font=t_font;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<556>";
 		bb_graphics.g_context.m_firstChar=t_firstChar;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	static gxtkGraphics g_renderDevice;
 	public static int g_SetMatrix(float t_ix,float t_iy,float t_jx,float t_jy,float t_tx,float t_ty){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<312>";
 		bb_graphics.g_context.m_ix=t_ix;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<313>";
 		bb_graphics.g_context.m_iy=t_iy;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<314>";
 		bb_graphics.g_context.m_jx=t_jx;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<315>";
 		bb_graphics.g_context.m_jy=t_jy;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<316>";
 		bb_graphics.g_context.m_tx=t_tx;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<317>";
 		bb_graphics.g_context.m_ty=t_ty;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<318>";
 		bb_graphics.g_context.m_tformed=((t_ix!=1.0f || t_iy!=0.0f || t_jx!=0.0f || t_jy!=1.0f || t_tx!=0.0f || t_ty!=0.0f)?1:0);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<319>";
 		bb_graphics.g_context.m_matDirty=1;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_SetMatrix2(float[] t_m){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<308>";
 		bb_graphics.g_SetMatrix(t_m[0],t_m[1],t_m[2],t_m[3],t_m[4],t_m[5]);
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_SetColor(float t_r,float t_g,float t_b){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<254>";
 		bb_graphics.g_context.m_color_r=t_r;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<255>";
 		bb_graphics.g_context.m_color_g=t_g;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<256>";
 		bb_graphics.g_context.m_color_b=t_b;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<257>";
 		bb_graphics.g_renderDevice.SetColor(t_r,t_g,t_b);
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_SetAlpha(float t_alpha){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<271>";
 		bb_graphics.g_context.m_alpha=t_alpha;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<272>";
 		bb_graphics.g_renderDevice.SetAlpha(t_alpha);
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_SetBlend(int t_blend){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<280>";
 		bb_graphics.g_context.m_blend=t_blend;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<281>";
 		bb_graphics.g_renderDevice.SetBlend(t_blend);
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_SetScissor(float t_x,float t_y,float t_width,float t_height){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<289>";
 		bb_graphics.g_context.m_scissor_x=t_x;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<290>";
 		bb_graphics.g_context.m_scissor_y=t_y;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<291>";
 		bb_graphics.g_context.m_scissor_width=t_width;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<292>";
 		bb_graphics.g_context.m_scissor_height=t_height;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<293>";
 		bb_graphics.g_renderDevice.SetScissor((int)(t_x),(int)(t_y),(int)(t_width),(int)(t_height));
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_BeginRender(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<225>";
 		bb_graphics.g_renderDevice=bb_graphics.g_device;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<226>";
 		bb_graphics.g_context.m_matrixSp=0;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<227>";
 		bb_graphics.g_SetMatrix(1.0f,0.0f,0.0f,1.0f,0.0f,0.0f);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<228>";
 		bb_graphics.g_SetColor(255.0f,255.0f,255.0f);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<229>";
 		bb_graphics.g_SetAlpha(1.0f);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<230>";
 		bb_graphics.g_SetBlend(0);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<231>";
 		bb_graphics.g_SetScissor(0.0f,0.0f,(float)(bb_app.g_DeviceWidth()),(float)(bb_app.g_DeviceHeight()));
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_EndRender(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<235>";
 		bb_graphics.g_renderDevice=null;
-		bb_std_lang.popErr();
-		return 0;
-	}
-	public static int g_DebugRenderDevice(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<53>";
-		if(!((bb_graphics.g_renderDevice)!=null)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<53>";
-			bb_std_lang.error("Rendering operations can only be performed inside OnRender");
-		}
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_Cls(float t_r,float t_g,float t_b){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<378>";
-		bb_graphics.g_DebugRenderDevice();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<380>";
 		bb_graphics.g_renderDevice.Cls(t_r,t_g,t_b);
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_DrawImage(c_Image t_image,float t_x,float t_y,int t_frame){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<452>";
-		bb_graphics.g_DebugRenderDevice();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<453>";
-		if(t_frame<0 || t_frame>=bb_std_lang.length(t_image.m_frames)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<453>";
-			bb_std_lang.error("Invalid image frame");
-		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<456>";
 		c_Frame t_f=t_image.m_frames[t_frame];
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<458>";
 		bb_graphics.g_context.p_Validate();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<460>";
 		if((t_image.m_flags&65536)!=0){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<461>";
 			bb_graphics.g_renderDevice.DrawSurface(t_image.m_surface,t_x-t_image.m_tx,t_y-t_image.m_ty);
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<463>";
 			bb_graphics.g_renderDevice.DrawSurface2(t_image.m_surface,t_x-t_image.m_tx,t_y-t_image.m_ty,t_f.m_x,t_f.m_y,t_image.m_width,t_image.m_height);
 		}
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_PushMatrix(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<333>";
 		int t_sp=bb_graphics.g_context.m_matrixSp;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<334>";
 		if(t_sp==bb_std_lang.length(bb_graphics.g_context.m_matrixStack)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<334>";
 			bb_graphics.g_context.m_matrixStack=(float[])bb_std_lang.resize(bb_graphics.g_context.m_matrixStack,t_sp*2,float.class);
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<335>";
 		bb_graphics.g_context.m_matrixStack[t_sp+0]=bb_graphics.g_context.m_ix;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<336>";
 		bb_graphics.g_context.m_matrixStack[t_sp+1]=bb_graphics.g_context.m_iy;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<337>";
 		bb_graphics.g_context.m_matrixStack[t_sp+2]=bb_graphics.g_context.m_jx;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<338>";
 		bb_graphics.g_context.m_matrixStack[t_sp+3]=bb_graphics.g_context.m_jy;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<339>";
 		bb_graphics.g_context.m_matrixStack[t_sp+4]=bb_graphics.g_context.m_tx;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<340>";
 		bb_graphics.g_context.m_matrixStack[t_sp+5]=bb_graphics.g_context.m_ty;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<341>";
 		bb_graphics.g_context.m_matrixSp=t_sp+6;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_Transform(float t_ix,float t_iy,float t_jx,float t_jy,float t_tx,float t_ty){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<355>";
 		float t_ix2=t_ix*bb_graphics.g_context.m_ix+t_iy*bb_graphics.g_context.m_jx;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<356>";
 		float t_iy2=t_ix*bb_graphics.g_context.m_iy+t_iy*bb_graphics.g_context.m_jy;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<357>";
 		float t_jx2=t_jx*bb_graphics.g_context.m_ix+t_jy*bb_graphics.g_context.m_jx;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<358>";
 		float t_jy2=t_jx*bb_graphics.g_context.m_iy+t_jy*bb_graphics.g_context.m_jy;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<359>";
 		float t_tx2=t_tx*bb_graphics.g_context.m_ix+t_ty*bb_graphics.g_context.m_jx+bb_graphics.g_context.m_tx;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<360>";
 		float t_ty2=t_tx*bb_graphics.g_context.m_iy+t_ty*bb_graphics.g_context.m_jy+bb_graphics.g_context.m_ty;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<361>";
 		bb_graphics.g_SetMatrix(t_ix2,t_iy2,t_jx2,t_jy2,t_tx2,t_ty2);
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_Transform2(float[] t_m){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<351>";
 		bb_graphics.g_Transform(t_m[0],t_m[1],t_m[2],t_m[3],t_m[4],t_m[5]);
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_Translate(float t_x,float t_y){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<365>";
 		bb_graphics.g_Transform(1.0f,0.0f,0.0f,1.0f,t_x,t_y);
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_Rotate(float t_angle){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<373>";
 		bb_graphics.g_Transform((float)Math.cos((t_angle)*bb_std_lang.D2R),-(float)Math.sin((t_angle)*bb_std_lang.D2R),(float)Math.sin((t_angle)*bb_std_lang.D2R),(float)Math.cos((t_angle)*bb_std_lang.D2R),0.0f,0.0f);
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_Scale(float t_x,float t_y){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<369>";
 		bb_graphics.g_Transform(t_x,0.0f,0.0f,t_y,0.0f,0.0f);
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_PopMatrix(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<345>";
 		int t_sp=bb_graphics.g_context.m_matrixSp-6;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<346>";
 		bb_graphics.g_SetMatrix(bb_graphics.g_context.m_matrixStack[t_sp+0],bb_graphics.g_context.m_matrixStack[t_sp+1],bb_graphics.g_context.m_matrixStack[t_sp+2],bb_graphics.g_context.m_matrixStack[t_sp+3],bb_graphics.g_context.m_matrixStack[t_sp+4],bb_graphics.g_context.m_matrixStack[t_sp+5]);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<347>";
 		bb_graphics.g_context.m_matrixSp=t_sp;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_DrawImage2(c_Image t_image,float t_x,float t_y,float t_rotation,float t_scaleX,float t_scaleY,int t_frame){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<470>";
-		bb_graphics.g_DebugRenderDevice();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<471>";
-		if(t_frame<0 || t_frame>=bb_std_lang.length(t_image.m_frames)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<471>";
-			bb_std_lang.error("Invalid image frame");
-		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<474>";
 		c_Frame t_f=t_image.m_frames[t_frame];
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<476>";
 		bb_graphics.g_PushMatrix();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<478>";
 		bb_graphics.g_Translate(t_x,t_y);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<479>";
 		bb_graphics.g_Rotate(t_rotation);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<480>";
 		bb_graphics.g_Scale(t_scaleX,t_scaleY);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<482>";
 		bb_graphics.g_Translate(-t_image.m_tx,-t_image.m_ty);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<484>";
 		bb_graphics.g_context.p_Validate();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<486>";
 		if((t_image.m_flags&65536)!=0){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<487>";
 			bb_graphics.g_renderDevice.DrawSurface(t_image.m_surface,0.0f,0.0f);
 		}else{
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<489>";
 			bb_graphics.g_renderDevice.DrawSurface2(t_image.m_surface,0.0f,0.0f,t_f.m_x,t_f.m_y,t_image.m_width,t_image.m_height);
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<492>";
 		bb_graphics.g_PopMatrix();
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_DrawText(String t_text,float t_x,float t_y,float t_xalign,float t_yalign){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<577>";
-		bb_graphics.g_DebugRenderDevice();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<579>";
 		if(!((bb_graphics.g_context.m_font)!=null)){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<579>";
-			bb_std_lang.popErr();
 			return 0;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<581>";
 		int t_w=bb_graphics.g_context.m_font.p_Width();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<582>";
 		int t_h=bb_graphics.g_context.m_font.p_Height();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<584>";
 		t_x-=(float)Math.floor((float)(t_w*t_text.length())*t_xalign);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<585>";
 		t_y-=(float)Math.floor((float)(t_h)*t_yalign);
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<587>";
 		for(int t_i=0;t_i<t_text.length();t_i=t_i+1){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<588>";
 			int t_ch=(int)t_text.charAt(t_i)-bb_graphics.g_context.m_firstChar;
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<589>";
 			if(t_ch>=0 && t_ch<bb_graphics.g_context.m_font.p_Frames()){
-				bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<590>";
 				bb_graphics.g_DrawImage(bb_graphics.g_context.m_font,t_x+(float)(t_i*t_w),t_y,t_ch);
 			}
 		}
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_DrawRect(float t_x,float t_y,float t_w,float t_h){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<393>";
-		bb_graphics.g_DebugRenderDevice();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<395>";
 		bb_graphics.g_context.p_Validate();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<396>";
 		bb_graphics.g_renderDevice.DrawRect(t_x,t_y,t_w,t_h);
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_DrawCircle(float t_x,float t_y,float t_r){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<417>";
-		bb_graphics.g_DebugRenderDevice();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<419>";
 		bb_graphics.g_context.p_Validate();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<420>";
 		bb_graphics.g_renderDevice.DrawOval(t_x-t_r,t_y-t_r,t_r*2.0f,t_r*2.0f);
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_DrawPoint(float t_x,float t_y){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<385>";
-		bb_graphics.g_DebugRenderDevice();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<387>";
 		bb_graphics.g_context.p_Validate();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<388>";
 		bb_graphics.g_renderDevice.DrawPoint(t_x,t_y);
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_DrawLine(float t_x1,float t_y1,float t_x2,float t_y2){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<401>";
-		bb_graphics.g_DebugRenderDevice();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<403>";
 		bb_graphics.g_context.p_Validate();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/graphics.monkey<404>";
 		bb_graphics.g_renderDevice.DrawLine(t_x1,t_y1,t_x2,t_y2);
-		bb_std_lang.popErr();
 		return 0;
 	}
 }
@@ -9565,60 +6717,29 @@ class bb_graphicsdevice{
 class bb_input{
 	static c_InputDevice g_device;
 	public static int g_SetInputDevice(c_InputDevice t_dev){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/input.monkey<22>";
 		bb_input.g_device=t_dev;
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int g_GetChar(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/input.monkey<48>";
-		int t_=bb_input.g_device.p_GetChar();
-		bb_std_lang.popErr();
-		return t_;
+		return bb_input.g_device.p_GetChar();
 	}
 	public static int g_DisableKeyboard(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/input.monkey<36>";
-		int t_=bb_input.g_device.p_SetKeyboardEnabled(false);
-		bb_std_lang.popErr();
-		return t_;
+		return bb_input.g_device.p_SetKeyboardEnabled(false);
 	}
 	public static int g_EnableKeyboard(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/input.monkey<32>";
-		int t_=bb_input.g_device.p_SetKeyboardEnabled(true);
-		bb_std_lang.popErr();
-		return t_;
+		return bb_input.g_device.p_SetKeyboardEnabled(true);
 	}
 	public static int g_TouchDown(int t_index){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/input.monkey<84>";
-		int t_=((bb_input.g_device.p_KeyDown(384+t_index))?1:0);
-		bb_std_lang.popErr();
-		return t_;
+		return ((bb_input.g_device.p_KeyDown(384+t_index))?1:0);
 	}
 	public static float g_TouchX(int t_index){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/input.monkey<76>";
-		float t_=bb_input.g_device.p_TouchX(t_index);
-		bb_std_lang.popErr();
-		return t_;
+		return bb_input.g_device.p_TouchX(t_index);
 	}
 	public static float g_TouchY(int t_index){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/input.monkey<80>";
-		float t_=bb_input.g_device.p_TouchY(t_index);
-		bb_std_lang.popErr();
-		return t_;
+		return bb_input.g_device.p_TouchY(t_index);
 	}
 	public static int g_KeyHit(int t_key){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/mojo/input.monkey<44>";
-		int t_=bb_input.g_device.p_KeyHit(t_key);
-		bb_std_lang.popErr();
-		return t_;
+		return bb_input.g_device.p_KeyHit(t_key);
 	}
 }
 class bb_inputdevice{
@@ -9637,51 +6758,27 @@ class bb_map{
 }
 class bb_math2{
 	public static int g_Min(int t_x,int t_y){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<51>";
 		if(t_x<t_y){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<51>";
-			bb_std_lang.popErr();
 			return t_x;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<52>";
-		bb_std_lang.popErr();
 		return t_y;
 	}
 	public static float g_Min2(float t_x,float t_y){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<78>";
 		if(t_x<t_y){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<78>";
-			bb_std_lang.popErr();
 			return t_x;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<79>";
-		bb_std_lang.popErr();
 		return t_y;
 	}
 	public static int g_Max(int t_x,int t_y){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<56>";
 		if(t_x>t_y){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<56>";
-			bb_std_lang.popErr();
 			return t_x;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<57>";
-		bb_std_lang.popErr();
 		return t_y;
 	}
 	public static float g_Max2(float t_x,float t_y){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<83>";
 		if(t_x>t_y){
-			bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<83>";
-			bb_std_lang.popErr();
 			return t_x;
 		}
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/math.monkey<84>";
-		bb_std_lang.popErr();
 		return t_y;
 	}
 }
@@ -9690,27 +6787,14 @@ class bb_monkey{
 class bb_random{
 	static int g_Seed;
 	public static float g_Rnd(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/random.monkey<21>";
 		bb_random.g_Seed=bb_random.g_Seed*1664525+1013904223|0;
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/random.monkey<22>";
-		float t_=(float)(bb_random.g_Seed>>8&16777215)/16777216.0f;
-		bb_std_lang.popErr();
-		return t_;
+		return (float)(bb_random.g_Seed>>8&16777215)/16777216.0f;
 	}
 	public static float g_Rnd2(float t_low,float t_high){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/random.monkey<30>";
-		float t_=bb_random.g_Rnd3(t_high-t_low)+t_low;
-		bb_std_lang.popErr();
-		return t_;
+		return bb_random.g_Rnd3(t_high-t_low)+t_low;
 	}
 	public static float g_Rnd3(float t_range){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Applications/MonkeyXPro86e/modules/monkey/random.monkey<26>";
-		float t_=bb_random.g_Rnd()*t_range;
-		bb_std_lang.popErr();
-		return t_;
+		return bb_random.g_Rnd()*t_range;
 	}
 }
 class bb_set{
@@ -9725,109 +6809,61 @@ class bb_control_point{
 }
 class bb_dronetournament{
 	public static c_Vec2D g_NewPoint(c_Vec2D t_start_point,float t_start_angle,float t_goal_angle,float t_max_angle_change,float t_distance){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<31>";
 		float t_new_angle=0.0f;
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<33>";
 		if(t_start_angle<0.0f){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<34>";
 			t_start_angle=t_start_angle % 360.0f+360.0f;
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<36>";
 			t_start_angle=t_start_angle % 360.0f;
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<39>";
 		if(t_goal_angle<0.0f){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<40>";
 			t_goal_angle=t_goal_angle % 360.0f+360.0f;
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<42>";
 			t_goal_angle=t_goal_angle % 360.0f;
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<46>";
 		if(t_start_angle>t_goal_angle){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<47>";
 			if(t_start_angle-t_goal_angle<180.0f){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<48>";
 				t_new_angle=t_start_angle-bb_math2.g_Min2(t_start_angle-t_goal_angle,t_max_angle_change);
 			}else{
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<50>";
 				t_new_angle=t_start_angle+t_max_angle_change;
 			}
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<52>";
 			if(t_start_angle<t_goal_angle){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<53>";
 				if(t_goal_angle-t_start_angle<180.0f){
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<54>";
 					t_new_angle=t_start_angle+bb_math2.g_Min2(t_goal_angle-t_start_angle,t_max_angle_change);
 				}else{
-					bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<56>";
 					t_new_angle=t_start_angle-t_max_angle_change;
 				}
 			}else{
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<59>";
 				t_new_angle=t_start_angle;
 			}
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<62>";
-		c_Vec2D t_=(new c_Vec2D()).m_Vec2D_new(t_start_point.m_x+t_distance*(float)Math.cos(t_new_angle*0.017453292500000002f),t_start_point.m_y+t_distance*(float)Math.sin(t_new_angle*0.017453292500000002f),t_new_angle);
-		bb_std_lang.popErr();
-		return t_;
+		return (new c_Vec2D()).m_Vec2D_new(t_start_point.m_x+t_distance*(float)Math.cos(t_new_angle*0.017453292500000002f),t_start_point.m_y+t_distance*(float)Math.sin(t_new_angle*0.017453292500000002f),t_new_angle);
 	}
 	public static boolean g_CounterClockwise(c_Vec2D t_pointOne,c_Vec2D t_pointTwo,c_Vec2D t_pointThree){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<67>";
-		boolean t_=(t_pointThree.m_y-t_pointOne.m_y)*(t_pointTwo.m_x-t_pointOne.m_x)>(t_pointTwo.m_y-t_pointOne.m_y)*(t_pointThree.m_x-t_pointOne.m_x);
-		bb_std_lang.popErr();
-		return t_;
+		return (t_pointThree.m_y-t_pointOne.m_y)*(t_pointTwo.m_x-t_pointOne.m_x)>(t_pointTwo.m_y-t_pointOne.m_y)*(t_pointThree.m_x-t_pointOne.m_x);
 	}
 	public static boolean g_LinesIntersect(c_Vec2D t_pointA,c_Vec2D t_pointB,c_Vec2D t_pointC,c_Vec2D t_pointD){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<73>";
 		boolean t_abc=bb_dronetournament.g_CounterClockwise(t_pointA,t_pointB,t_pointC);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<74>";
 		boolean t_abd=bb_dronetournament.g_CounterClockwise(t_pointA,t_pointB,t_pointD);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<75>";
 		boolean t_cda=bb_dronetournament.g_CounterClockwise(t_pointC,t_pointD,t_pointA);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<76>";
 		boolean t_cdb=bb_dronetournament.g_CounterClockwise(t_pointC,t_pointD,t_pointB);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<78>";
-		boolean t_=t_abc!=t_abd && t_cda!=t_cdb;
-		bb_std_lang.popErr();
-		return t_;
+		return t_abc!=t_abd && t_cda!=t_cdb;
 	}
 	public static int g_Collided(c_Particle t_particle,c_Unit t_unit){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<83>";
 		if(t_unit.m_armor<=0){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<84>";
-			bb_std_lang.popErr();
 			return 0;
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<85>";
 			if(t_particle.m_team==t_unit.m_team){
-				bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<86>";
-				bb_std_lang.popErr();
 				return 0;
 			}
 		}
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<89>";
 		c_Vec2D t_top_left=(new c_Vec2D()).m_Vec2D_new(t_unit.m_position.m_x-10.0f,t_unit.m_position.m_y-10.0f,0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<90>";
 		c_Vec2D t_top_right=(new c_Vec2D()).m_Vec2D_new(t_unit.m_position.m_x+10.0f,t_unit.m_position.m_y-10.0f,0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<91>";
 		c_Vec2D t_bottom_left=(new c_Vec2D()).m_Vec2D_new(t_unit.m_position.m_x-10.0f,t_unit.m_position.m_y+10.0f,0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<92>";
 		c_Vec2D t_bottom_right=(new c_Vec2D()).m_Vec2D_new(t_unit.m_position.m_x+10.0f,t_unit.m_position.m_y+10.0f,0.0f);
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<96>";
 		if(bb_dronetournament.g_LinesIntersect(t_particle.m_past_position,t_particle.m_position,t_top_left,t_top_right) || bb_dronetournament.g_LinesIntersect(t_particle.m_past_position,t_particle.m_position,t_top_left,t_bottom_left) || bb_dronetournament.g_LinesIntersect(t_particle.m_past_position,t_particle.m_position,t_top_right,t_bottom_right) || bb_dronetournament.g_LinesIntersect(t_particle.m_past_position,t_particle.m_position,t_bottom_right,t_bottom_left)){
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<98>";
-			bb_std_lang.popErr();
 			return 1;
 		}else{
-			bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/dronetournament.monkey<100>";
-			bb_std_lang.popErr();
 			return 0;
 		}
 	}
@@ -9836,10 +6872,7 @@ class bb_game{
 }
 class bb_{
 	public static int bbMain(){
-		bb_std_lang.pushErr();
-		bb_std_lang.errInfo="/Users/tcooper/projects/monkeygames/dronetournament/main.monkey<602>";
 		(new c_DroneTournamentGame()).m_DroneTournamentGame_new();
-		bb_std_lang.popErr();
 		return 0;
 	}
 	public static int bbInit(){
